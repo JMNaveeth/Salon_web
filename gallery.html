@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - JK Salon</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html"><h2>JK Salon</h2></a>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="services.html" class="nav-link">Services</a>
+                <a href="#gallery" class="nav-link active">Gallery</a>
+                <a href="index.html#reviews" class="nav-link">Reviews</a>
+                <a href="index.html#contact" class="nav-link">Contact</a>
+                <a href="booking.html" class="nav-link btn-primary">Book Now</a>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Gallery Hero -->
+    <section class="gallery-hero">
+        <div class="container">
+            <div class="gallery-hero-content" data-aos="fade-up">
+                <h1>Our Gallery</h1>
+                <p>Explore our portfolio of stunning transformations and beauty work</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="gallery-section">
+        <div class="container">
+            <!-- Gallery Filter -->
+            <div class="gallery-filter" data-aos="fade-up">
+                <button class="filter-btn active" data-filter="all">All Work</button>
+                <button class="filter-btn" data-filter="hair">Hair Styling</button>
+                <button class="filter-btn" data-filter="bridal">Bridal</button>
+                <button class="filter-btn" data-filter="facial">Facials</button>
+                <button class="filter-btn" data-filter="spa">Spa Treatments</button>
+            </div>
+
+            <!-- Gallery Grid -->
+            <div class="gallery-showcase" id="galleryGrid">
+                <!-- Hair Styling Gallery -->
+                <div class="gallery-item hair" data-aos="zoom-in" data-aos-delay="100">
+                    <img src="assets/images/gallery/hair-1.jpg" alt="Hair Styling 1" onerror="this.style.display='none'">
+                    <div class="gallery-placeholder">
+                        <i class="fas fa-cut"></i>
+                        <p>Hair Styling</p>
+                    </div>
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h4>Hair Transformation</h4>
+                            <p>Professional styling and coloring</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gallery-item hair" data-aos="zoom-in" data-aos-delay="150">
+                    <img src="assets/images/gallery/hair-2.jpg" alt="Hair Styling 2" onerror="this.style.display='none'">
+                    <div class="gallery-placeholder">
+                        <i class="fas fa-magic"></i>
+                        <p>Hair Treatment</p>
+                    </div>
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h4>Deep Conditioning</h4>
+                            <p>Restorative hair treatment</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gallery-item hair" data-aos="zoom-in" data-aos-delay="200">
+                    <img src="assets/images/gallery/hair-3.jpg" alt="Hair Styling 3" onerror="this.style.display='none'">
+                    <div class="gallery-placeholder">
+                        <i class="fas fa-palette"></i>
+                        <p>Hair Coloring</p>
+                    </div>
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h4>Balayage Highlights</h4>
+                            <p>Natural-looking highlights</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bridal Gallery -->
+                <div class="gallery-item bridal" data-aos="zoom-in" data-aos-delay="100">
+                    <img src="assets/images/gallery/bridal-1.jpg" alt="Bridal Makeup 1" onerror="this.style.display='none'">
+                    <div class="gallery-placeholder">
+                        <i class="fas fa-crown"></i>
+                        <p>Bridal Makeup</p>
+                    </div>
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h4>Bridal Glow</h4>
+                            <p>Complete bridal beauty package</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gallery-item bridal" data-aos="zoom-in" data-aos-delay="150">
+                    <img src="assets/images/gallery/bridal-2.jpg" alt="Bridal Hair 1" onerror="this.style.display='none'">
+                    <div class="gallery-placeholder">
+                        <i class="fas fa-ring"></i>
+                        <p>Bridal Hair</p>
+                    </div>
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h4>Elegant Updo</h4>
+                            <p>Wedding day hairstyle</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Facial Gallery -->
+                <div class="gallery-item facial" data-aos="zoom-in" data-aos-delay="100">
+                    <img src="assets/images/gallery/facial-1.jpg" alt="Facial Treatment 1" onerror="this.style.display='none'">
+                    <div class="gallery-placeholder">
+                        <i class="fas fa-spa"></i>
+                        <p>Facial Treatment</p>
+                    </div>
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h4>Hydrating Facial</h4>
+                            <p>Deep cleansing and moisturizing</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spa Gallery -->
+                <div class="gallery-item spa" data-aos="zoom-in" data-aos-delay="100">
+                    <img src="assets/images/gallery/spa-1.jpg" alt="Spa Treatment 1" onerror="this.style.display='none'">
+                    <div class="gallery-placeholder">
+                        <i class="fas fa-hands"></i>
+                        <p>Spa Massage</p>
+                    </div>
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h4>Swedish Massage</h4>
+                            <p>Relaxing full-body treatment</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gallery-item spa" data-aos="zoom-in" data-aos-delay="150">
+                    <img src="assets/images/gallery/spa-2.jpg" alt="Spa Treatment 2" onerror="this.style.display='none'">
+                    <div class="gallery-placeholder">
+                        <i class="fas fa-hand-sparkles"></i>
+                        <p>Manicure</p>
+                    </div>
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h4>Gel Manicure</h4>
+                            <p>Professional nail care</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- More Gallery Items -->
+                <div class="gallery-item hair" data-aos="zoom-in" data-aos-delay="250">
+                    <img src="assets/images/gallery/hair-4.jpg" alt="Hair Styling 4" onerror="this.style.display='none'">
+                    <div class="gallery-placeholder">
+                        <i class="fas fa-wind"></i>
+                        <p>Hair Styling</p>
+                    </div>
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h4>Bob Cut</h4>
+                            <p>Modern and chic haircut</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gallery-item bridal" data-aos="zoom-in" data-aos-delay="200">
+                    <img src="assets/images/gallery/bridal-3.jpg" alt="Bridal Makeup 2" onerror="this.style.display='none'">
+                    <div class="gallery-placeholder">
+                        <i class="fas fa-heart"></i>
+                        <p>Bridal Beauty</p>
+                    </div>
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h4>Natural Makeup</h4>
+                            <p>Soft and elegant bridal look</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gallery-item facial" data-aos="zoom-in" data-aos-delay="150">
+                    <img src="assets/images/gallery/facial-2.jpg" alt="Facial Treatment 2" onerror="this.style.display='none'">
+                    <div class="gallery-placeholder">
+                        <i class="fas fa-leaf"></i>
+                        <p>Skin Care</p>
+                    </div>
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h4>Anti-Aging Facial</h4>
+                            <p>Youth-enhancing treatment</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Before/After Slider -->
+            <div class="before-after-section" data-aos="fade-up">
+                <div class="section-header">
+                    <h2>Before & After Transformations</h2>
+                    <p>See the amazing results our clients achieve</p>
+                </div>
+
+                <div class="before-after-slider">
+                    <div class="slider-container" data-aos="zoom-in">
+                        <div class="slider-item">
+                            <div class="before-after-image">
+                                <img src="assets/images/before-after-1.jpg" alt="Before After 1" onerror="this.style.display='none'">
+                                <div class="before-after-placeholder">
+                                    <i class="fas fa-images"></i>
+                                    <p>Hair Color Transformation</p>
+                                </div>
+                            </div>
+                            <div class="slider-info">
+                                <h4>Hair Color Makeover</h4>
+                                <p>From dull to vibrant - a complete hair color transformation</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="slider-container" data-aos="zoom-in" data-aos-delay="150">
+                        <div class="slider-item">
+                            <div class="before-after-image">
+                                <img src="assets/images/before-after-2.jpg" alt="Before After 2" onerror="this.style.display='none'">
+                                <div class="before-after-placeholder">
+                                    <i class="fas fa-images"></i>
+                                    <p>Cut & Style Transformation</p>
+                                </div>
+                            </div>
+                            <div class="slider-info">
+                                <h4>Haircut & Styling</h4>
+                                <p>Professional cut and styling for a fresh new look</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonials Section -->
+            <div class="gallery-testimonials" data-aos="fade-up">
+                <div class="section-header">
+                    <h2>Client Love</h2>
+                    <p>What our clients say about their transformations</p>
+                </div>
+
+                <div class="testimonials-grid">
+                    <div class="testimonial-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="testimonial-content">
+                            <p>"Absolutely amazed by my hair transformation! The color is perfect and the styling is exactly what I wanted."</p>
+                        </div>
+                        <div class="testimonial-author">
+                            <strong>Sarah M.</strong>
+                            <span>Hair Coloring & Styling</span>
+                        </div>
+                    </div>
+
+                    <div class="testimonial-card" data-aos="fade-up" data-aos-delay="150">
+                        <div class="testimonial-content">
+                            <p>"My bridal makeup and hair were flawless! I felt like a princess on my special day. Thank you JK Salon!"</p>
+                        </div>
+                        <div class="testimonial-author">
+                            <strong>Jennifer L.</strong>
+                            <span>Bridal Package</span>
+                        </div>
+                    </div>
+
+                    <div class="testimonial-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="testimonial-content">
+                            <p>"The facial treatment was incredible! My skin looks and feels amazing. Highly recommend their spa services."</p>
+                        </div>
+                        <div class="testimonial-author">
+                            <strong>Michelle R.</strong>
+                            <span>Spa & Facial Treatment</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="gallery-cta" data-aos="fade-up">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready for Your Transformation?</h2>
+                <p>Book your appointment today and experience the JK Salon difference</p>
+                <div class="cta-buttons">
+                    <a href="booking.html" class="btn-primary">Book Appointment</a>
+                    <a href="services.html" class="btn-secondary">View Services</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>JK Salon</h3>
+                    <p>Your premier destination for beauty and wellness services. We provide exceptional care and professional treatments.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="services.html">Services</a></li>
+                        <li><a href="booking.html">Book Appointment</a></li>
+                        <li><a href="gallery.html">Gallery</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <ul>
+                        <li>Hair Styling</li>
+                        <li>Spa Treatments</li>
+                        <li>Beauty Care</li>
+                        <li>Bridal Packages</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 JK Salon. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/gallery.js"></script>
+</body>
+</html>

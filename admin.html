@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - JK Salon</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html"><h2>JK Salon</h2></a>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="services.html" class="nav-link">Services</a>
+                <a href="gallery.html" class="nav-link">Gallery</a>
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="booking.html" class="nav-link btn-primary">Book Now</a>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Admin Header -->
+    <section class="admin-header">
+        <div class="container">
+            <div class="admin-header-content" data-aos="fade-up">
+                <h1><i class="fas fa-cog"></i> Admin Panel</h1>
+                <p>Manage bookings, services, and salon operations</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Admin Dashboard -->
+    <section class="admin-section">
+        <div class="container">
+            <div class="admin-layout">
+                <!-- Sidebar -->
+                <div class="admin-sidebar" data-aos="fade-right">
+                    <div class="sidebar-menu">
+                        <a href="#overview" class="sidebar-link active" data-section="overview">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Overview
+                        </a>
+                        <a href="#bookings" class="sidebar-link" data-section="bookings">
+                            <i class="fas fa-calendar-check"></i>
+                            Bookings
+                        </a>
+                        <a href="#services" class="sidebar-link" data-section="services">
+                            <i class="fas fa-concierge-bell"></i>
+                            Services
+                        </a>
+                        <a href="#staff" class="sidebar-link" data-section="staff">
+                            <i class="fas fa-users"></i>
+                            Staff
+                        </a>
+                        <a href="#analytics" class="sidebar-link" data-section="analytics">
+                            <i class="fas fa-chart-bar"></i>
+                            Analytics
+                        </a>
+                        <a href="#settings" class="sidebar-link" data-section="settings">
+                            <i class="fas fa-cogs"></i>
+                            Settings
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="admin-main">
+                    <!-- Overview -->
+                    <div id="overview-section" class="admin-content active" data-aos="fade-left">
+                        <div class="content-header">
+                            <h2>Dashboard Overview</h2>
+                        </div>
+
+                        <!-- Stats Cards -->
+                        <div class="stats-grid">
+                            <div class="stat-card" data-aos="zoom-in" data-aos-delay="100">
+                                <div class="stat-icon">
+                                    <i class="fas fa-calendar-day"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <div class="stat-number" id="todayBookings">0</div>
+                                    <div class="stat-label">Today's Bookings</div>
+                                </div>
+                            </div>
+                            <div class="stat-card" data-aos="zoom-in" data-aos-delay="200">
+                                <div class="stat-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <div class="stat-number" id="upcomingBookings">0</div>
+                                    <div class="stat-label">Upcoming</div>
+                                </div>
+                            </div>
+                            <div class="stat-card" data-aos="zoom-in" data-aos-delay="300">
+                                <div class="stat-icon">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <div class="stat-number" id="totalRevenue">$0</div>
+                                    <div class="stat-label">Revenue</div>
+                                </div>
+                            </div>
+                            <div class="stat-card" data-aos="zoom-in" data-aos-delay="400">
+                                <div class="stat-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <div class="stat-number" id="totalCustomers">0</div>
+                                    <div class="stat-label">Customers</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Activity -->
+                        <div class="recent-activity">
+                            <h3>Recent Activity</h3>
+                            <div class="activity-list" id="recentActivity">
+                                <!-- Activity items will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bookings Management -->
+                    <div id="bookings-section" class="admin-content">
+                        <div class="content-header">
+                            <h2>Bookings Management</h2>
+                            <div class="header-actions">
+                                <input type="date" id="bookingDateFilter">
+                                <select id="bookingStatusFilter">
+                                    <option value="all">All Status</option>
+                                    <option value="confirmed">Confirmed</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="bookings-table-container">
+                            <table class="admin-table" id="bookingsTable">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Customer</th>
+                                        <th>Service</th>
+                                        <th>Date & Time</th>
+                                        <th>Staff</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bookingsTableBody">
+                                    <!-- Bookings will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Services Management -->
+                    <div id="services-section" class="admin-content">
+                        <div class="content-header">
+                            <h2>Services Management</h2>
+                            <button class="btn-primary" onclick="showAddServiceModal()">
+                                <i class="fas fa-plus"></i> Add Service
+                            </button>
+                        </div>
+
+                        <div class="services-grid-admin" id="servicesGridAdmin">
+                            <!-- Services will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Staff Management -->
+                    <div id="staff-section" class="admin-content">
+                        <div class="content-header">
+                            <h2>Staff Management</h2>
+                            <button class="btn-primary" onclick="showAddStaffModal()">
+                                <i class="fas fa-plus"></i> Add Staff
+                            </button>
+                        </div>
+
+                        <div class="staff-grid" id="staffGrid">
+                            <!-- Staff will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Analytics -->
+                    <div id="analytics-section" class="admin-content">
+                        <div class="content-header">
+                            <h2>Analytics</h2>
+                        </div>
+
+                        <div class="analytics-grid">
+                            <div class="analytics-card">
+                                <h4>Popular Services</h4>
+                                <div class="chart-placeholder">
+                                    <i class="fas fa-chart-pie"></i>
+                                    <p>Service popularity chart would go here</p>
+                                </div>
+                            </div>
+                            <div class="analytics-card">
+                                <h4>Revenue Trends</h4>
+                                <div class="chart-placeholder">
+                                    <i class="fas fa-chart-line"></i>
+                                    <p>Revenue trends chart would go here</p>
+                                </div>
+                            </div>
+                            <div class="analytics-card">
+                                <h4>Peak Hours</h4>
+                                <div class="chart-placeholder">
+                                    <i class="fas fa-chart-bar"></i>
+                                    <p>Peak booking hours chart would go here</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Settings -->
+                    <div id="settings-section" class="admin-content">
+                        <div class="content-header">
+                            <h2>Settings</h2>
+                        </div>
+
+                        <div class="settings-form">
+                            <form id="settingsForm">
+                                <div class="form-section">
+                                    <h3>Business Information</h3>
+                                    <div class="form-group">
+                                        <label for="businessName">Business Name</label>
+                                        <input type="text" id="businessName" name="businessName" value="JK Salon">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="businessEmail">Contact Email</label>
+                                        <input type="email" id="businessEmail" name="businessEmail" value="info@jksalon.com">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="businessPhone">Phone Number</label>
+                                        <input type="tel" id="businessPhone" name="businessPhone" value="+1 (555) 123-4567">
+                                    </div>
+                                </div>
+
+                                <div class="form-section">
+                                    <h3>Booking Settings</h3>
+                                    <div class="form-group">
+                                        <label for="maxAdvanceBooking">Maximum Advance Booking (days)</label>
+                                        <input type="number" id="maxAdvanceBooking" name="maxAdvanceBooking" value="30">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cancellationHours">Cancellation Notice (hours)</label>
+                                        <input type="number" id="cancellationHours" name="cancellationHours" value="24">
+                                    </div>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn-primary">Save Settings</button>
+                                    <button type="button" class="btn-secondary" onclick="resetSettings()">Reset</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modals -->
+    <!-- Service Modal -->
+    <div id="serviceModal" class="admin-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="serviceModalTitle">Add Service</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="serviceForm">
+                    <div class="form-group">
+                        <label for="serviceName">Service Name *</label>
+                        <input type="text" id="serviceName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceCategory">Category *</label>
+                        <select id="serviceCategory" name="category" required>
+                            <option value="">Select category</option>
+                            <option value="hair">Hair Care</option>
+                            <option value="skin">Skin Care</option>
+                            <option value="bridal">Bridal</option>
+                            <option value="spa">Spa & Wellness</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="servicePrice">Price ($) *</label>
+                        <input type="number" id="servicePrice" name="price" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceDuration">Duration (minutes) *</label>
+                        <input type="number" id="serviceDuration" name="duration" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceDescription">Description</label>
+                        <textarea id="serviceDescription" name="description" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeServiceModal()">Cancel</button>
+                <button class="btn-primary" onclick="saveService()">Save Service</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Staff Modal -->
+    <div id="staffModal" class="admin-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="staffModalTitle">Add Staff</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="staffForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="staffFirstName">First Name *</label>
+                            <input type="text" id="staffFirstName" name="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="staffLastName">Last Name *</label>
+                            <input type="text" id="staffLastName" name="lastName" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="staffEmail">Email</label>
+                        <input type="email" id="staffEmail" name="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="staffPhone">Phone</label>
+                        <input type="tel" id="staffPhone" name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="staffSpecialty">Specialty *</label>
+                        <select id="staffSpecialty" name="specialty" required>
+                            <option value="">Select specialty</option>
+                            <option value="Hair Specialist">Hair Specialist</option>
+                            <option value="Color Expert">Color Expert</option>
+                            <option value="Skin Care Specialist">Skin Care Specialist</option>
+                            <option value="Spa Therapist">Spa Therapist</option>
+                            <option value="Bridal Specialist">Bridal Specialist</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="staffBio">Bio</label>
+                        <textarea id="staffBio" name="bio" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeStaffModal()">Cancel</button>
+                <button class="btn-primary" onclick="saveStaff()">Save Staff</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>JK Salon</h3>
+                    <p>Your premier destination for beauty and wellness services. We provide exceptional care and professional treatments.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="services.html">Services</a></li>
+                        <li><a href="booking.html">Book Appointment</a></li>
+                        <li><a href="gallery.html">Gallery</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <ul>
+                        <li>Hair Styling</li>
+                        <li>Spa Treatments</li>
+                        <li>Beauty Care</li>
+                        <li>Bridal Packages</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 JK Salon. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

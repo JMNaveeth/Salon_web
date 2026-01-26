@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - JK Salon</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html"><h2>JK Salon</h2></a>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="services.html" class="nav-link">Services</a>
+                <a href="gallery.html" class="nav-link">Gallery</a>
+                <a href="index.html#reviews" class="nav-link">Reviews</a>
+                <a href="index.html#contact" class="nav-link">Contact</a>
+                <a href="booking.html" class="nav-link btn-primary active">Book Now</a>
+            </div>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Booking Hero -->
+    <section class="booking-hero">
+        <div class="container">
+            <div class="booking-hero-content" data-aos="fade-up">
+                <h1>Book Your Appointment</h1>
+                <p>Schedule your beauty treatment with ease. Choose your preferred date, time, and service.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Form -->
+    <section class="booking-section">
+        <div class="container">
+            <div class="booking-container">
+                <div class="booking-form-section" data-aos="fade-right">
+                    <form id="bookingForm" class="booking-form">
+                        <!-- Step 1: Service Selection -->
+                        <div class="booking-step active" id="step1">
+                            <div class="step-header">
+                                <div class="step-number">1</div>
+                                <h3>Choose Service</h3>
+                            </div>
+                            <div class="form-group">
+                                <label for="service">Select Service *</label>
+                                <select id="service" name="service" required>
+                                    <option value="">Choose a service...</option>
+                                    <optgroup label="Hair Care">
+                                        <option value="Haircut & Styling">Haircut & Styling - $45</option>
+                                        <option value="Hair Coloring">Hair Coloring - $85</option>
+                                        <option value="Hair Treatment">Hair Treatment - $65</option>
+                                    </optgroup>
+                                    <optgroup label="Skin Care">
+                                        <option value="Facial Treatment">Facial Treatment - $75</option>
+                                        <option value="Body Waxing">Body Waxing - $35</option>
+                                    </optgroup>
+                                    <optgroup label="Bridal">
+                                        <option value="Bridal Makeup">Bridal Makeup - $150</option>
+                                        <option value="Bridal Hair">Bridal Hair - $120</option>
+                                    </optgroup>
+                                    <optgroup label="Spa & Wellness">
+                                        <option value="Swedish Massage">Swedish Massage - $80</option>
+                                        <option value="Manicure & Pedicure">Manicure & Pedicure - $55</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="staff">Preferred Staff (Optional)</label>
+                                <select id="staff" name="staff">
+                                    <option value="">Any available staff</option>
+                                    <option value="Sarah Johnson">Sarah Johnson (Hair Specialist)</option>
+                                    <option value="Mike Chen">Mike Chen (Color Expert)</option>
+                                    <option value="Emma Davis">Emma Davis (Spa Therapist)</option>
+                                    <option value="Lisa Wong">Lisa Wong (Bridal Specialist)</option>
+                                </select>
+                            </div>
+                            <button type="button" class="btn-primary next-step">Next Step</button>
+                        </div>
+
+                        <!-- Step 2: Date & Time Selection -->
+                        <div class="booking-step" id="step2">
+                            <div class="step-header">
+                                <div class="step-number">2</div>
+                                <h3>Select Date & Time</h3>
+                            </div>
+                            <div class="date-time-selection">
+                                <div class="form-group">
+                                    <label for="date">Select Date *</label>
+                                    <input type="date" id="date" name="date" required>
+                                </div>
+                                <div class="time-slots">
+                                    <label>Available Time Slots</label>
+                                    <div class="time-grid" id="timeSlots">
+                                        <!-- Time slots will be populated by JavaScript -->
+                                    </div>
+                                    <input type="hidden" id="selectedTime" name="time" required>
+                                </div>
+                            </div>
+                            <div class="step-navigation">
+                                <button type="button" class="btn-secondary prev-step">Previous</button>
+                                <button type="button" class="btn-primary next-step">Next Step</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Customer Details -->
+                        <div class="booking-step" id="step3">
+                            <div class="step-header">
+                                <div class="step-number">3</div>
+                                <h3>Your Details</h3>
+                            </div>
+                            <div class="customer-details">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="firstName">First Name *</label>
+                                        <input type="text" id="firstName" name="firstName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="lastName">Last Name *</label>
+                                        <input type="text" id="lastName" name="lastName" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email Address *</label>
+                                    <input type="email" id="email" name="email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Phone Number *</label>
+                                    <input type="tel" id="phone" name="phone" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="notes">Special Requests (Optional)</label>
+                                    <textarea id="notes" name="notes" rows="3" placeholder="Any special requests or notes..."></textarea>
+                                </div>
+                            </div>
+                            <div class="step-navigation">
+                                <button type="button" class="btn-secondary prev-step">Previous</button>
+                                <button type="submit" class="btn-primary">Book Appointment</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Booking Summary -->
+                <div class="booking-summary" data-aos="fade-left">
+                    <div class="summary-card">
+                        <h3>Booking Summary</h3>
+                        <div class="summary-item">
+                            <span class="label">Service:</span>
+                            <span class="value" id="summaryService">Not selected</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Date:</span>
+                            <span class="value" id="summaryDate">Not selected</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Time:</span>
+                            <span class="value" id="summaryTime">Not selected</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Staff:</span>
+                            <span class="value" id="summaryStaff">Any available</span>
+                        </div>
+                        <div class="summary-divider"></div>
+                        <div class="summary-item total">
+                            <span class="label">Total:</span>
+                            <span class="value price" id="summaryPrice">$0</span>
+                        </div>
+                    </div>
+
+                    <!-- Quick Info -->
+                    <div class="booking-info">
+                        <h4>Important Information</h4>
+                        <ul>
+                            <li><i class="fas fa-clock"></i> Appointments can be cancelled up to 24 hours in advance</li>
+                            <li><i class="fas fa-credit-card"></i> Payment due at time of service</li>
+                            <li><i class="fas fa-phone"></i> Confirmation call 24 hours before appointment</li>
+                            <li><i class="fas fa-map-marker-alt"></i> Located at 123 Beauty Street</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Confirmation Modal -->
+    <div id="confirmationModal" class="confirmation-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-check-circle"></i> Booking Confirmed!</h3>
+            </div>
+            <div class="modal-body">
+                <div class="confirmation-details">
+                    <p>Thank you for booking with JK Salon! Your appointment has been confirmed.</p>
+                    <div class="booking-details">
+                        <div class="detail-row">
+                            <span class="label">Service:</span>
+                            <span class="value" id="confirmService"></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Date:</span>
+                            <span class="value" id="confirmDate"></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Time:</span>
+                            <span class="value" id="confirmTime"></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Booking ID:</span>
+                            <span class="value" id="bookingId"></span>
+                        </div>
+                    </div>
+                    <div class="confirmation-message">
+                        <p><strong>What happens next?</strong></p>
+                        <ul>
+                            <li>You will receive a confirmation email shortly</li>
+                            <li>We will call you 24 hours before your appointment</li>
+                            <li>You can view/manage your booking in your dashboard</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeConfirmationModal()">Close</button>
+                <a href="dashboard.html" class="btn-primary">View My Bookings</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>JK Salon</h3>
+                    <p>Your premier destination for beauty and wellness services. We provide exceptional care and professional treatments.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="services.html">Services</a></li>
+                        <li><a href="booking.html">Book Appointment</a></li>
+                        <li><a href="gallery.html">Gallery</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <ul>
+                        <li>Hair Styling</li>
+                        <li>Spa Treatments</li>
+                        <li>Beauty Care</li>
+                        <li>Bridal Packages</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 JK Salon. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/booking.js"></script>
+</body>
+</html>
