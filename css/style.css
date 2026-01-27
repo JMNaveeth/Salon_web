@@ -117,14 +117,16 @@ body {
 }
 
 .btn-secondary {
-    background: transparent;
-    color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
     padding: 12px 24px;
     border-radius: var(--border-radius);
     text-decoration: none;
     font-weight: 600;
-    border: 2px solid var(--primary-color);
     transition: var(--transition);
+    border: none;
+    cursor: pointer;
+    display: inline-block;
 }
 
 .btn-secondary:hover {
