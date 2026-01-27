@@ -674,6 +674,20 @@ body {
 /* Responsive Design */
 @media (max-width: 768px) {
     .nav-menu {
+
+.footer-admin {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.95rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.footer-admin:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
         display: none;
     }
 
