@@ -26,6 +26,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Admin access gate
     initAdminAccess();
+
+    // 3D parallax effects
+    init3DParallax();
+
+    // Card tilt and glow on mouse move
+    initCardInteractivity();
 });
 
 // Mobile Menu Toggle
@@ -453,3 +459,47 @@ function addMessageStyles() {
 
 // Initialize message styles
 addMessageStyles();
+
+// 3D Parallax Effect on scroll
+function init3DParallax() {
+    const parallaxElements = document.querySelectorAll('[data-parallax]');
+    
+    if (parallaxElements.length === 0) return;
+
+    window.addEventListener('scroll', () => {
+        const scrollY = window.scrollY;
+        parallaxElements.forEach(element => {
+            const depth = element.dataset.parallax || 0.5;
+            element.style.transform = `translateY(${scrollY * depth}px)`;
+        });
+    });
+}
+
+// Card interactivity - mouse follow glow and tilt
+function initCardInteractivity() {
+    const tiltCards = document.querySelectorAll('.tilt');
+    
+    tiltCards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Store mouse position for radial gradient
+            card.style.setProperty('--x', x + 'px');
+            card.style.setProperty('--y', y + 'px');
+            
+            // Calculate rotation based on mouse position
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = (y - centerY) / 10;
+            const rotateY = (centerX - x) / 10;
+            
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(15px)`;
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
+        });
+    });
+}
