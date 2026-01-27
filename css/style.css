@@ -2345,6 +2345,138 @@ body {
     opacity: 0.9;
 }
 
+
+/* Admin gate (owner-only access) */
+body.no-scroll {
+    overflow: hidden;
+}
+
+.nav-link.admin-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-link.admin-link i {
+    font-size: 0.9rem;
+}
+
+.admin-gate {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    z-index: 1200;
+    padding: 20px;
+}
+
+.admin-gate.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.admin-gate__dialog {
+    position: relative;
+    width: min(480px, 100%);
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 28px 32px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.12);
+    animation: slideUp 0.3s ease;
+}
+
+.admin-gate__close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: #6B7280;
+    line-height: 1;
+}
+
+.admin-gate__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #EEF2FF;
+    color: #4338CA;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+}
+
+.admin-gate__dialog h3 {
+    margin: 0 0 8px 0;
+    color: #0F172A;
+}
+
+.admin-gate__hint {
+    margin: 0 0 18px 0;
+    color: #475569;
+    line-height: 1.5;
+}
+
+.admin-gate__form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.admin-gate__form label {
+    font-weight: 600;
+    color: #1F2937;
+}
+
+.admin-gate__form input {
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #E5E7EB;
+    background: #F9FAFB;
+    font-size: 1rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-gate__form input:focus {
+    outline: none;
+    border-color: #6366F1;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+}
+
+.admin-gate__submit {
+    width: 100%;
+    text-align: center;
+    margin-top: 6px;
+}
+
+.admin-gate__note {
+    margin: 12px 0 0 0;
+    color: #6B7280;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(8px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@media (max-width: 540px) {
+    .admin-gate__dialog {
+        padding: 22px;
+        border-radius: 14px;
+    }
+}
 .gallery-placeholder p {
     font-size: 1rem;
     font-weight: 500;

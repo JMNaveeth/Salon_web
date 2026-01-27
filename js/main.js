@@ -23,6 +23,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Navbar scroll effect
     initNavbarScroll();
+
+    // Admin access gate
+    initAdminAccess();
 });
 
 // Mobile Menu Toggle
@@ -194,6 +197,80 @@ function initNavbarScroll() {
         }
 
         lastScrollTop = scrollTop;
+    });
+}
+
+// Admin access gate (simple front-end gate with client-side validation)
+function initAdminAccess() {
+    const triggers = document.querySelectorAll('[data-admin-login]');
+    const modal = document.getElementById('adminGate');
+    const closeBtn = modal ? modal.querySelector('.admin-gate__close') : null;
+    const form = document.getElementById('adminLoginForm');
+    const emailInput = document.getElementById('adminEmail');
+    const codeInput = document.getElementById('adminAccessCode');
+
+    if (!triggers.length || !modal || !form || !emailInput || !codeInput) {
+        return;
+    }
+
+    const ownerEmail = 'owner@kinniyasalon.com';
+    const accessCode = 'salon-admin-2024';
+
+    const openModal = () => {
+        modal.classList.add('show');
+        document.body.classList.add('no-scroll');
+        modal.setAttribute('aria-hidden', 'false');
+        emailInput.focus();
+    };
+
+    const closeModal = () => {
+        modal.classList.remove('show');
+        document.body.classList.remove('no-scroll');
+        modal.setAttribute('aria-hidden', 'true');
+        form.reset();
+    };
+
+    triggers.forEach(trigger => {
+        trigger.addEventListener('click', function(e) {
+            e.preventDefault();
+            openModal();
+        });
+    });
+
+    closeBtn?.addEventListener('click', closeModal);
+
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.classList.contains('show')) {
+            closeModal();
+        }
+    });
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const email = emailInput.value.trim().toLowerCase();
+        const code = codeInput.value.trim();
+
+        if (!email || !code) {
+            showMessage('Please provide your work email and access code.', 'error');
+            return;
+        }
+
+        if (email === ownerEmail && code === accessCode) {
+            showMessage('Access granted. Redirecting to admin dashboard...', 'success');
+            setTimeout(() => {
+                closeModal();
+                window.location.href = 'admin.html';
+            }, 800);
+        } else {
+            showMessage('Invalid admin credentials. Contact the owner if you need access.', 'error');
+        }
     });
 }
 

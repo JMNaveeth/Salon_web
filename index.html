@@ -21,6 +21,7 @@
                 <a href="#gallery" class="nav-link">Gallery</a>
                 <a href="#reviews" class="nav-link">Reviews</a>
                 <a href="#contact" class="nav-link">Contact</a>
+                <a href="#" class="nav-link admin-link" data-admin-login>Admin</a>
                 <a href="booking.html" class="nav-link btn-primary">Book Now</a>
             </div>
             <div class="hamburger">
@@ -274,6 +275,31 @@
             </div>
         </div>
     </section>
+
+    <!-- Admin Access Modal -->
+    <div id="adminGate" class="admin-gate" aria-hidden="true">
+        <div class="admin-gate__dialog" role="dialog" aria-modal="true" aria-labelledby="adminGateTitle">
+            <button class="admin-gate__close" aria-label="Close admin access">&times;</button>
+            <div class="admin-gate__badge">
+                <i class="fas fa-lock"></i>
+                <span>Owner Access</span>
+            </div>
+            <h3 id="adminGateTitle">Admin sign-in required</h3>
+            <p class="admin-gate__hint">Only salon owners and authorized staff can access the admin dashboard.</p>
+            <form id="adminLoginForm" class="admin-gate__form">
+                <div class="form-group">
+                    <label for="adminEmail">Work email</label>
+                    <input type="email" id="adminEmail" name="adminEmail" placeholder="owner@kinniyasalon.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="adminAccessCode">Access code</label>
+                    <input type="password" id="adminAccessCode" name="adminAccessCode" placeholder="Enter secure code" required>
+                </div>
+                <button type="submit" class="btn-primary admin-gate__submit">Continue to admin</button>
+                <p class="admin-gate__note">Need access? Contact the salon owner to request your admin code.</p>
+            </form>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">
