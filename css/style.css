@@ -2509,59 +2509,77 @@ body {
     line-height: 1.5;
 }
 
-/* Top services */
-.top-services {
+/* Slots (same-day availability) */
+.slots {
     padding: 80px 0;
     background: linear-gradient(180deg, #F9FAFB 0%, #FFFFFF 100%);
 }
 
-.top-services-grid {
+.slots-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 18px;
     margin-top: 24px;
 }
 
-.top-service-card {
+.slot-card {
     background: #ffffff;
     border: 1px solid #E5E7EB;
     border-radius: 14px;
     padding: 18px;
-    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.05);
-    text-align: left;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.icon-circle {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: #EEF2FF;
-    color: #4338CA;
+.slot-head {
     display: flex;
     align-items: center;
-    justify-content: center;
-    margin-bottom: 10px;
-    font-size: 1.1rem;
+    justify-content: space-between;
+    gap: 8px;
 }
 
-.top-service-card h3 {
-    margin: 0 0 6px 0;
-    color: #111827;
+.slot-head h3 {
+    margin: 0;
+    color: #0F172A;
 }
 
-.top-service-card p {
-    margin: 0 0 10px 0;
-    color: #4B5563;
+.slot-meta {
+    margin: 0;
+    color: #6B7280;
 }
 
-.top-service-card .service-link {
+.slot-times {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.slot-time {
+    padding: 10px 12px;
+    border: 1px solid #E5E7EB;
+    border-radius: 10px;
+    background: #F8FAFC;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.slot-time:hover:not(:disabled) {
+    border-color: #4338CA;
     color: #4338CA;
-    font-weight: 700;
-    text-decoration: none;
 }
 
-.top-service-card .service-link:hover {
-    text-decoration: underline;
+.slot-time:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+@media (max-width: 640px) {
+    .slot-head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
 
 @media (max-width: 640px) {

@@ -20,7 +20,7 @@
                 <a href="#home" class="nav-link active">Home</a>
                 <a href="#salons" class="nav-link">Salons</a>
                 <a href="#howitworks" class="nav-link">How it works</a>
-                <a href="#topservices" class="nav-link">Top services</a>
+                <a href="#slots" class="nav-link">Available today</a>
                 <a href="#contact" class="nav-link">Contact</a>
                 <a href="booking.html" class="nav-link btn-primary">Book Now</a>
             </div>
@@ -40,7 +40,7 @@
                 <p data-aos="fade-up" data-aos-delay="200">Compare nearby salons, see available times, and lock your spot instantly. No calls, no waiting rooms.</p>
                 <div class="hero-buttons" data-aos="fade-up" data-aos-delay="400">
                     <a href="#salons" class="btn-primary">Browse Salons</a>
-                    <a href="#howitworks" class="btn-secondary">How it works</a>
+                    <a href="#slots" class="btn-secondary">See slots today</a>
                 </div>
             </div>
             <div class="hero-image" data-aos="fade-left">
@@ -149,37 +149,54 @@
         </div>
     </section>
 
-    <!-- Top services -->
-    <section id="topservices" class="top-services">
+    <!-- Same-day availability -->
+    <section id="slots" class="slots">
         <div class="container">
             <div class="section-header" data-aos="fade-up">
-                <h2>Top services in your area</h2>
-                <p>Popular picks locals are booking today.</p>
+                <h2>Available today</h2>
+                <p>Grab a same-day slot before it fills up.</p>
             </div>
-            <div class="top-services-grid">
-                <div class="top-service-card" data-aos="fade-up" data-aos-delay="100">
-                    <div class="icon-circle"><i class="fas fa-cut"></i></div>
-                    <h3>Skin fade + style</h3>
-                    <p>45 min • From $25</p>
-                    <a href="booking.html?service=fade" class="service-link">Check times</a>
+            <div class="slots-grid">
+                <div class="slot-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="slot-head">
+                        <h3>Central Cut Studio</h3>
+                        <span class="badge badge--open">Open</span>
+                    </div>
+                    <p class="slot-meta">2.1 km • Main Street</p>
+                    <div class="slot-times">
+                        <button class="slot-time">3:00 PM</button>
+                        <button class="slot-time">3:30 PM</button>
+                        <button class="slot-time">4:00 PM</button>
+                    </div>
+                    <a class="btn-primary" href="booking.html?salon=central">Reserve</a>
                 </div>
-                <div class="top-service-card" data-aos="fade-up" data-aos-delay="200">
-                    <div class="icon-circle"><i class="fas fa-beard"></i></div>
-                    <h3>Beard trim & line-up</h3>
-                    <p>25 min • From $15</p>
-                    <a href="booking.html?service=beard" class="service-link">Check times</a>
+
+                <div class="slot-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="slot-head">
+                        <h3>Lakeside Gents</h3>
+                        <span class="badge badge--open">Open</span>
+                    </div>
+                    <p class="slot-meta">3.4 km • Lakeside Road</p>
+                    <div class="slot-times">
+                        <button class="slot-time">4:15 PM</button>
+                        <button class="slot-time">4:45 PM</button>
+                        <button class="slot-time">5:15 PM</button>
+                    </div>
+                    <a class="btn-primary" href="booking.html?salon=lakeside">Reserve</a>
                 </div>
-                <div class="top-service-card" data-aos="fade-up" data-aos-delay="300">
-                    <div class="icon-circle"><i class="fas fa-child"></i></div>
-                    <h3>Kids cut</h3>
-                    <p>30 min • From $18</p>
-                    <a href="booking.html?service=kids" class="service-link">Check times</a>
-                </div>
-                <div class="top-service-card" data-aos="fade-up" data-aos-delay="400">
-                    <div class="icon-circle"><i class="fas fa-spa"></i></div>
-                    <h3>Wash & scalp care</h3>
-                    <p>30 min • From $20</p>
-                    <a href="booking.html?service=scalp" class="service-link">Check times</a>
+
+                <div class="slot-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="slot-head">
+                        <h3>Old Town Barber</h3>
+                        <span class="badge badge--closed">Opens 10 AM</span>
+                    </div>
+                    <p class="slot-meta">4.0 km • Market Lane</p>
+                    <div class="slot-times">
+                        <button class="slot-time" disabled>10:30 AM</button>
+                        <button class="slot-time" disabled>11:00 AM</button>
+                        <button class="slot-time" disabled>11:30 AM</button>
+                    </div>
+                    <a class="btn-secondary" href="booking.html?salon=oldtown">Join waitlist</a>
                 </div>
             </div>
         </div>
