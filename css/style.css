@@ -36,6 +36,71 @@ body {
     cursor: none;
 }
 
+/* Dark Mode Styles */
+body.dark-mode {
+    --text: #f0f0f0;
+    --text-light: #cccccc;
+    --bg: #121212;
+    --bg-light: #1e1e1e;
+    --dark: #ffffff;
+    --shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .navbar,
+body.dark-mode .navbar.scrolled {
+    background: rgba(18, 18, 18, 0.95);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+body.dark-mode .salon-card,
+body.dark-mode .slot-card,
+body.dark-mode .how-card,
+body.dark-mode .contact-form,
+body.dark-mode .admin-gate__dialog {
+    background: rgba(30, 30, 30, 0.6);
+    border-color: rgba(212, 175, 55, 0.15);
+}
+
+body.dark-mode .contact-preview,
+body.dark-mode .how-it-works,
+body.dark-mode .salon-directory {
+    background: #121212;
+}
+
+body.dark-mode .hero {
+    background: radial-gradient(circle at center, #1e1e1e 0%, #121212 100%);
+}
+
+body.dark-mode .footer {
+    background: #000000;
+}
+body.dark-mode .footer-wave {
+    background: #000000;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    background: transparent;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.1rem;
+    margin-left: 15px;
+}
+
+.theme-toggle:hover {
+    background: var(--primary);
+    color: white;
+    transform: rotate(15deg);
+}
+
 /* Custom Cursor */
 .cursor-dot {
     width: 8px;
@@ -223,11 +288,11 @@ button:hover ~ .cursor-outline {
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    gap: 10px;
-    padding: 14px 20px;
+    gap: 8px;
+    padding: 10px 24px;
     border-radius: 50px;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     text-decoration: none;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
