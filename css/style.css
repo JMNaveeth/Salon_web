@@ -64,8 +64,9 @@ body.dark-mode .admin-gate__dialog {
 
 body.dark-mode .contact-preview,
 body.dark-mode .how-it-works,
-body.dark-mode .salon-directory {
-    background: #121212;
+body.dark-mode .salon-directory,
+body.dark-mode .slots {
+    background: radial-gradient(circle at center, #1e1e1e 0%, #121212 100%);
 }
 
 body.dark-mode .hero {
@@ -153,6 +154,8 @@ button:hover ~ .cursor-outline {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 30px;
+    position: relative;
+    z-index: 2;
 }
 
 /* ===================================
@@ -289,11 +292,11 @@ button:hover ~ .cursor-outline {
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    gap: 8px;
-    padding: 10px 24px;
+    gap: 6px;
+    padding: 8px 18px;
     border-radius: 50px;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     text-decoration: none;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
@@ -677,7 +680,8 @@ button:hover ~ .cursor-outline {
 .salon-directory {
     padding: 120px 0;
     position: relative;
-    background: var(--bg-light);
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    overflow: hidden;
 }
 
 .section-bg-pattern {
@@ -854,7 +858,9 @@ button:hover ~ .cursor-outline {
    =================================== */
 .how-it-works {
     padding: 120px 0;
-    background: white;
+    position: relative;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    overflow: hidden;
 }
 
 .how-grid {
@@ -960,7 +966,7 @@ button:hover ~ .cursor-outline {
    =================================== */
 .slots {
     padding: 120px 0;
-    background: var(--bg-light);
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
     position: relative;
     overflow: hidden;
 }
@@ -1071,7 +1077,9 @@ button:hover ~ .cursor-outline {
    =================================== */
 .contact-preview {
     padding: 120px 0;
-    background: white;
+    position: relative;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    overflow: hidden;
 }
 
 .contact-grid {
