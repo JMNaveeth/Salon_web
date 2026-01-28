@@ -1605,3 +1605,427 @@ button:hover ~ .cursor-outline {
     opacity: 1;
     transform: translateY(0);
 }
+
+
+
+/* ===================================
+   SERVICES PAGE STYLES
+   =================================== */
+
+/* Services Hero Section */
+.services-hero-section {
+    min-height: 70vh;
+    padding: 120px 0 80px;
+}
+
+.services-hero-section .hero-placeholder i {
+    font-size: 120px;
+}
+
+/* Services Filter Section */
+.services-filter-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 60px;
+    flex-wrap: wrap;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 12px 28px;
+    background: transparent;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.filter-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: var(--primary);
+    transition: width 0.5s, height 0.5s, top 0.5s, left 0.5s;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+}
+
+.filter-btn:hover::before,
+.filter-btn.active::before {
+    width: 300px;
+    height: 300px;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+}
+
+.search-box {
+    position: relative;
+    min-width: 280px;
+}
+
+.search-box i {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--primary);
+    font-size: 1.1rem;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 14px 20px 14px 50px;
+    border: 2px solid var(--primary);
+    border-radius: 50px;
+    font-size: 0.95rem;
+    background: rgba(212, 175, 55, 0.05);
+    color: var(--text);
+    transition: all 0.3s ease;
+}
+
+.search-box input:focus {
+    outline: none;
+    background: white;
+    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.2);
+    border-color: var(--primary-dark);
+}
+
+.search-box input::placeholder {
+    color: var(--text-light);
+}
+
+/* Service Cards Enhancement */
+.service-card {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.service-card:hover {
+    transform: translateY(-12px);
+}
+
+.service-image-wrapper {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gradient-radial);
+    border-radius: 16px 16px 0 0;
+    margin: -20px -20px 20px -20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.service-image-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--gradient);
+    opacity: 0.1;
+    transition: opacity 0.3s ease;
+}
+
+.service-card:hover .service-image-wrapper::before {
+    opacity: 0.2;
+}
+
+.service-icon-placeholder {
+    width: 120px;
+    height: 120px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 15px 40px rgba(212, 175, 55, 0.2);
+    transition: all 0.4s ease;
+    z-index: 1;
+}
+
+.service-card:hover .service-icon-placeholder {
+    transform: scale(1.1) rotateY(360deg);
+    box-shadow: 0 20px 50px rgba(212, 175, 55, 0.35);
+}
+
+.service-icon-placeholder i {
+    font-size: 48px;
+    color: var(--primary);
+    transition: all 0.3s ease;
+}
+
+.service-card:hover .service-icon-placeholder i {
+    color: var(--primary-dark);
+}
+
+.badge--price {
+    background: var(--gradient);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+/* Service Modal Styles */
+.service-modal-dialog {
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.service-modal-content {
+    text-align: center;
+}
+
+.service-modal-icon {
+    width: 100px;
+    height: 100px;
+    background: var(--gradient);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 25px;
+    box-shadow: 0 15px 40px rgba(212, 175, 55, 0.3);
+}
+
+.service-modal-icon i {
+    font-size: 48px;
+    color: white;
+}
+
+.service-modal-dialog h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: 20px;
+}
+
+.service-modal-price {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 25px;
+    padding: 20px;
+    background: var(--gradient-radial);
+    border-radius: 16px;
+}
+
+.service-modal-price span:first-child {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.service-modal-price span:last-child {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+}
+
+.service-modal-description {
+    text-align: left;
+    line-height: 1.8;
+    margin-bottom: 30px;
+    color: var(--text);
+}
+
+.service-modal-features {
+    text-align: left;
+    margin-bottom: 30px;
+}
+
+.service-modal-features h4 {
+    color: var(--primary);
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.service-modal-features ul {
+    list-style: none;
+    padding: 0;
+}
+
+.service-modal-features li {
+    padding: 12px 0;
+    padding-left: 30px;
+    position: relative;
+    line-height: 1.6;
+    color: var(--text);
+}
+
+.service-modal-features li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.service-modal-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.service-modal-actions .btn-primary,
+.service-modal-actions .btn-secondary {
+    flex: 1;
+    max-width: 200px;
+}
+
+/* Services Grid Container */
+.services-grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
+}
+
+/* Dark Mode Adjustments */
+body.dark-mode .search-box input {
+    background: rgba(212, 175, 55, 0.1);
+    color: var(--text);
+}
+
+body.dark-mode .search-box input:focus {
+    background: rgba(30, 30, 30, 0.8);
+}
+
+body.dark-mode .service-icon-placeholder {
+    background: rgba(30, 30, 30, 0.9);
+}
+
+body.dark-mode .service-modal-dialog {
+    background: rgba(30, 30, 30, 0.95);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .services-filter-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-buttons {
+        justify-content: center;
+    }
+
+    .search-box {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .services-grid-container {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    .service-image-wrapper {
+        height: 160px;
+    }
+
+    .service-icon-placeholder {
+        width: 90px;
+        height: 90px;
+    }
+
+    .service-icon-placeholder i {
+        font-size: 36px;
+    }
+
+    .service-modal-dialog {
+        margin: 20px;
+        max-width: calc(100% - 40px);
+    }
+
+    .service-modal-price {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .service-modal-actions {
+        flex-direction: column;
+    }
+
+    .service-modal-actions .btn-primary,
+    .service-modal-actions .btn-secondary {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .filter-btn {
+        padding: 10px 20px;
+        font-size: 0.85rem;
+    }
+
+    .services-hero-section {
+        min-height: 60vh;
+        padding: 100px 0 60px;
+    }
+
+    .services-hero-section .hero-placeholder i {
+        font-size: 80px;
+    }
+}
+
+/* Animation Enhancements */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.service-card:hover .badge--price {
+    animation: pulse 1s infinite;
+}
+
+/* Scrollbar Styling for Modal */
+.service-modal-dialog::-webkit-scrollbar {
+    width: 8px;
+}
+
+.service-modal-dialog::-webkit-scrollbar-track {
+    background: rgba(212, 175, 55, 0.1);
+    border-radius: 10px;
+}
+
+.service-modal-dialog::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
+}
+
+.service-modal-dialog::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-dark);
+}
