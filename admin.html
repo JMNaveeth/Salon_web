@@ -87,6 +87,18 @@
                                 <i class="fas fa-users"></i>
                                 <span>Staff</span>
                             </a>
+                            <a href="#reviews" class="sidebar-link" data-section="reviews">
+                                <i class="fas fa-star"></i>
+                                <span>Reviews</span>
+                            </a>
+                            <a href="#gallery" class="sidebar-link" data-section="gallery">
+                                <i class="fas fa-images"></i>
+                                <span>Gallery</span>
+                            </a>
+                            <a href="#content" class="sidebar-link" data-section="content">
+                                <i class="fas fa-edit"></i>
+                                <span>Content</span>
+                            </a>
                             <a href="#analytics" class="sidebar-link" data-section="analytics">
                                 <i class="fas fa-chart-line"></i>
                                 <span>Analytics</span>
@@ -216,6 +228,133 @@
 
                         <div class="staff-grid" id="staffGrid">
                             <!-- Staff will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Reviews Management -->
+                    <div id="reviews-section" class="admin-content">
+                        <div class="content-header">
+                            <h2>Customer Reviews</h2>
+                            <div class="header-filters">
+                                <select class="form-select">
+                                    <option>All Ratings</option>
+                                    <option>5 Stars</option>
+                                    <option>1-2 Stars</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="reviews-grid-admin">
+                            <!-- Review Card 1 -->
+                            <div class="review-admin-card">
+                                <div class="review-header">
+                                    <div class="reviewer-info">
+                                        <strong>Sarah Johnson</strong>
+                                        <span class="service-tag">Hair Styling</span>
+                                    </div>
+                                    <div class="review-stars">
+                                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                                <p class="review-text">"Amazing experience! The staff is very professional and the results exceeded my expectations."</p>
+                                <div class="review-actions">
+                                    <span class="status-badge confirmed">Published</span>
+                                    <div class="action-buttons">
+                                        <button class="btn-icon" title="Reply"><i class="fas fa-reply"></i></button>
+                                        <button class="btn-icon delete" title="Delete"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Review Card 2 -->
+                            <div class="review-admin-card">
+                                <div class="review-header">
+                                    <div class="reviewer-info">
+                                        <strong>Mike Chen</strong>
+                                        <span class="service-tag">Facial Treatment</span>
+                                    </div>
+                                    <div class="review-stars">
+                                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                                <p class="review-text">"Best salon in town! They made me feel so comfortable and the service was top-notch."</p>
+                                <div class="review-actions">
+                                    <span class="status-badge confirmed">Published</span>
+                                    <div class="action-buttons">
+                                        <button class="btn-icon" title="Reply"><i class="fas fa-reply"></i></button>
+                                        <button class="btn-icon delete" title="Delete"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gallery Management -->
+                    <div id="gallery-section" class="admin-content">
+                        <div class="content-header">
+                            <h2>Portfolio Gallery</h2>
+                            <button class="btn-primary">
+                                <i class="fas fa-cloud-upload-alt"></i> Upload New
+                            </button>
+                        </div>
+                        <div class="gallery-grid-admin">
+                            <div class="gallery-admin-item">
+                                <img src="assets/images/gallery-1.jpg" alt="Gallery 1" onerror="this.src='https://via.placeholder.com/300x200?text=Work+1'">
+                                <div class="gallery-overlay">
+                                    <div class="gallery-actions">
+                                        <button class="btn-icon delete"><i class="fas fa-trash"></i></button>
+                                        <button class="btn-icon"><i class="fas fa-edit"></i></button>
+                                    </div>
+                                    <span class="gallery-caption">Wedding Hair</span>
+                                </div>
+                            </div>
+                            <div class="gallery-admin-item">
+                                <img src="assets/images/gallery-2.jpg" alt="Gallery 2" onerror="this.src='https://via.placeholder.com/300x200?text=Work+2'">
+                                <div class="gallery-overlay">
+                                    <div class="gallery-actions">
+                                        <button class="btn-icon delete"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                    <span class="gallery-caption">Color Treatment</span>
+                                </div>
+                            </div>
+                            <div class="gallery-admin-item add-new">
+                                <i class="fas fa-plus-circle"></i>
+                                <p>Add Photo</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content Management (Why Choose Us) -->
+                    <div id="content-section" class="admin-content">
+                         <div class="content-header">
+                            <h2>Site Content Management</h2>
+                        </div>
+                        
+                        <div class="content-panel">
+                            <h3><i class="fas fa-star"></i> Why Choose Us Features</h3>
+                            <div class="features-edit-grid">
+                                <div class="feature-edit-card">
+                                    <div class="feature-icon-select">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="feature-inputs">
+                                        <input type="text" value="Convenient Booking" class="form-input">
+                                        <textarea class="form-textarea">Book appointments online 24/7</textarea>
+                                    </div>
+                                </div>
+                                <div class="feature-edit-card">
+                                    <div class="feature-icon-select">
+                                        <i class="fas fa-user-md"></i>
+                                    </div>
+                                    <div class="feature-inputs">
+                                        <input type="text" value="Expert Stylists" class="form-input">
+                                        <textarea class="form-textarea">Certified professionals with years of experience</textarea>
+                                    </div>
+                                </div>
+                                <button class="btn-secondary full-width"><i class="fas fa-plus"></i> Add Feature</button>
+                            </div>
+                            
+                            <div class="form-actions" style="justify-content: flex-end; margin-top: 20px;">
+                                <button class="btn-primary">Save Changes</button>
+                            </div>
                         </div>
                     </div>
 
