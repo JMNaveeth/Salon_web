@@ -48,8 +48,9 @@ body.dark-mode {
 
 body.dark-mode .navbar,
 body.dark-mode .navbar.scrolled {
-    background: rgba(18, 18, 18, 0.95);
+    background: rgba(18, 18, 18, 0.98) !important;
     border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
 }
 
 body.dark-mode .salon-card,
