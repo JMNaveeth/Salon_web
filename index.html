@@ -7,14 +7,22 @@
     <title>Kinniya Salon - Professional Beauty Services</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- 3D Canvas Background -->
+    <canvas id="webgl-canvas"></canvas>
+    
+    <!-- Cursor Follower -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
     <!-- Navigation -->
-    <nav class="navbar">
+    <nav class="navbar" id="navbar">
         <div class="nav-container">
             <div class="nav-logo">
                 <h2>Kinniya Salon</h2>
+                <div class="logo-accent"></div>
             </div>
             <div class="nav-menu">
                 <a href="#home" class="nav-link active">Home</a>
@@ -34,119 +42,200 @@
 
     <!-- Hero Section -->
     <section id="home" class="hero">
+        <div class="hero-3d-container">
+            <div class="floating-orb orb-1"></div>
+            <div class="floating-orb orb-2"></div>
+            <div class="floating-orb orb-3"></div>
+        </div>
         <div class="hero-container">
             <div class="hero-content">
-                <h1 data-aos="fade-up">Book the right barber in <span class="highlight">your area</span></h1>
-                <p data-aos="fade-up" data-aos-delay="200">Compare nearby salons, see available times, and lock your spot instantly. No calls, no waiting rooms.</p>
-                <div class="hero-buttons" data-aos="fade-up" data-aos-delay="400">
-                    <a href="#salons" class="btn-primary">Browse Salons</a>
-                    <a href="#slots" class="btn-secondary">See slots today</a>
+                <div class="hero-badge">Premium Beauty Experience</div>
+                <h1 class="hero-title">
+                    Book the right barber in 
+                    <span class="highlight">your area</span>
+                </h1>
+                <p class="hero-description">Compare nearby salons, see available times, and lock your spot instantly. No calls, no waiting rooms.</p>
+                <div class="hero-buttons">
+                    <a href="#salons" class="btn-primary">
+                        <span>Browse Salons</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <a href="#slots" class="btn-secondary">
+                        <span>See slots today</span>
+                        <i class="fas fa-clock"></i>
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">500+</div>
+                        <div class="stat-label">Happy Clients</div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label">Expert Stylists</div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <div class="stat-number">4.9</div>
+                        <div class="stat-label">Average Rating</div>
+                    </div>
                 </div>
             </div>
-            <div class="hero-image" data-aos="fade-left">
-                <img src="assets/images/hero-salon.jpg" alt="Kinniya Salon" onerror="this.style.display='none'">
-                <div class="hero-placeholder">
-                    <i class="fas fa-spa"></i>
-                    <p>Premium Salon Experience</p>
+            <div class="hero-image">
+                <div class="hero-visual-container">
+                    <div class="hero-circle hero-circle-1"></div>
+                    <div class="hero-circle hero-circle-2"></div>
+                    <div class="hero-circle hero-circle-3"></div>
+                    <div class="hero-placeholder">
+                        <i class="fas fa-scissors"></i>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="hero-3d">
-            <span class="orb orb-1"></span>
-            <span class="orb orb-2"></span>
-            <span class="orb orb-3"></span>
         </div>
     </section>
 
     <!-- Salon Directory -->
-    <section id="salons" class="salon-directory section-3d">
+    <section id="salons" class="salon-directory">
+        <div class="section-bg-pattern"></div>
         <div class="container">
-            <div class="section-header" data-aos="fade-up">
-                <h2>Salons near you</h2>
-                <p>Pick a shop, see openings, and reserve a time.</p>
+            <div class="section-header">
+                <div class="section-tag">Discover</div>
+                <h2 class="section-title">Salons near you</h2>
+                <p class="section-subtitle">Pick a shop, see openings, and reserve a time.</p>
             </div>
             <div class="salon-grid">
-                <div class="salon-card tilt" data-aos="fade-up" data-aos-delay="100">
-                    <div class="salon-card__top">
-                        <div>
-                            <h3>Central Cut Studio</h3>
-                            <p class="salon-meta">2.1 km • Main Street</p>
+                <div class="salon-card">
+                    <div class="salon-card-glow"></div>
+                    <div class="salon-card-content">
+                        <div class="salon-card__top">
+                            <div>
+                                <h3>Central Cut Studio</h3>
+                                <p class="salon-meta">
+                                    <i class="fas fa-location-dot"></i>
+                                    2.1 km • Main Street
+                                </p>
+                            </div>
+                            <span class="badge badge--open">
+                                <span class="badge-pulse"></span>
+                                Open
+                            </span>
                         </div>
-                        <span class="badge badge--open">Open</span>
-                    </div>
-                    <p class="salon-desc">Classic fades, beard trims, and quick weekday slots.</p>
-                    <div class="salon-stats">
-                        <span><i class="fas fa-star"></i> 4.8 (210)</span>
-                        <span><i class="fas fa-clock"></i> Next: 3:00 PM</span>
-                    </div>
-                    <div class="salon-actions">
-                        <a class="btn-primary" href="booking.html?salon=central">Book this shop</a>
-                        <a class="btn-ghost" href="services.html">View services</a>
+                        <p class="salon-desc">Classic fades, beard trims, and quick weekday slots.</p>
+                        <div class="salon-stats">
+                            <span><i class="fas fa-star"></i> 4.8 (210)</span>
+                            <span><i class="fas fa-clock"></i> Next: 3:00 PM</span>
+                        </div>
+                        <div class="salon-actions">
+                            <a class="btn-primary" href="booking.html?salon=central">
+                                Book this shop
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                            <a class="btn-ghost" href="services.html">View services</a>
+                        </div>
                     </div>
                 </div>
 
-                <div class="salon-card tilt" data-aos="fade-up" data-aos-delay="200">
-                    <div class="salon-card__top">
-                        <div>
-                            <h3>Lakeside Gents</h3>
-                            <p class="salon-meta">3.4 km • Lakeside Road</p>
+                <div class="salon-card">
+                    <div class="salon-card-glow"></div>
+                    <div class="salon-card-content">
+                        <div class="salon-card__top">
+                            <div>
+                                <h3>Lakeside Gents</h3>
+                                <p class="salon-meta">
+                                    <i class="fas fa-location-dot"></i>
+                                    3.4 km • Lakeside Road
+                                </p>
+                            </div>
+                            <span class="badge badge--open">
+                                <span class="badge-pulse"></span>
+                                Open
+                            </span>
                         </div>
-                        <span class="badge badge--open">Open</span>
-                    </div>
-                    <p class="salon-desc">Family-friendly barbers with weekend availability.</p>
-                    <div class="salon-stats">
-                        <span><i class="fas fa-star"></i> 4.6 (150)</span>
-                        <span><i class="fas fa-clock"></i> Next: 4:15 PM</span>
-                    </div>
-                    <div class="salon-actions">
-                        <a class="btn-primary" href="booking.html?salon=lakeside">Book this shop</a>
-                        <a class="btn-ghost" href="services.html">View services</a>
+                        <p class="salon-desc">Family-friendly barbers with weekend availability.</p>
+                        <div class="salon-stats">
+                            <span><i class="fas fa-star"></i> 4.6 (150)</span>
+                            <span><i class="fas fa-clock"></i> Next: 4:15 PM</span>
+                        </div>
+                        <div class="salon-actions">
+                            <a class="btn-primary" href="booking.html?salon=lakeside">
+                                Book this shop
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                            <a class="btn-ghost" href="services.html">View services</a>
+                        </div>
                     </div>
                 </div>
 
-                <div class="salon-card tilt" data-aos="fade-up" data-aos-delay="300">
-                    <div class="salon-card__top">
-                        <div>
-                            <h3>Old Town Barber</h3>
-                            <p class="salon-meta">4.0 km • Market Lane</p>
+                <div class="salon-card">
+                    <div class="salon-card-glow"></div>
+                    <div class="salon-card-content">
+                        <div class="salon-card__top">
+                            <div>
+                                <h3>Old Town Barber</h3>
+                                <p class="salon-meta">
+                                    <i class="fas fa-location-dot"></i>
+                                    4.0 km • Market Lane
+                                </p>
+                            </div>
+                            <span class="badge badge--closed">Opens 10 AM</span>
                         </div>
-                        <span class="badge badge--closed">Opens 10 AM</span>
-                    </div>
-                    <p class="salon-desc">Traditional cuts with modern styling products.</p>
-                    <div class="salon-stats">
-                        <span><i class="fas fa-star"></i> 4.7 (185)</span>
-                        <span><i class="fas fa-clock"></i> Next: 10:30 AM</span>
-                    </div>
-                    <div class="salon-actions">
-                        <a class="btn-primary" href="booking.html?salon=oldtown">Book this shop</a>
-                        <a class="btn-ghost" href="services.html">View services</a>
+                        <p class="salon-desc">Traditional cuts with modern styling products.</p>
+                        <div class="salon-stats">
+                            <span><i class="fas fa-star"></i> 4.7 (185)</span>
+                            <span><i class="fas fa-clock"></i> Next: 10:30 AM</span>
+                        </div>
+                        <div class="salon-actions">
+                            <a class="btn-primary" href="booking.html?salon=oldtown">
+                                Book this shop
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                            <a class="btn-ghost" href="services.html">View services</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-
     <!-- How it works -->
-    <section id="howitworks" class="how-it-works section-3d">
+    <section id="howitworks" class="how-it-works">
         <div class="container">
-            <div class="section-header" data-aos="fade-up">
-                <h2>How booking works</h2>
-                <p>Three quick steps to get your cut on the calendar.</p>
+            <div class="section-header">
+                <div class="section-tag">Simple Process</div>
+                <h2 class="section-title">How booking works</h2>
+                <p class="section-subtitle">Three quick steps to get your cut on the calendar.</p>
             </div>
             <div class="how-grid">
-                <div class="how-card tilt" data-aos="fade-up" data-aos-delay="100">
-                    <div class="how-step">1</div>
+                <div class="how-card">
+                    <div class="how-icon-wrapper">
+                        <div class="how-step-number">1</div>
+                        <div class="how-icon">
+                            <i class="fas fa-store"></i>
+                        </div>
+                    </div>
                     <h3>Pick a salon</h3>
                     <p>Browse nearby shops and choose the vibe, distance, and price that fit you.</p>
+                    <div class="how-line"></div>
                 </div>
-                <div class="how-card tilt" data-aos="fade-up" data-aos-delay="200">
-                    <div class="how-step">2</div>
+                <div class="how-card">
+                    <div class="how-icon-wrapper">
+                        <div class="how-step-number">2</div>
+                        <div class="how-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                    </div>
                     <h3>Choose a time</h3>
                     <p>See real-time availability and reserve the slot that works for your day.</p>
+                    <div class="how-line"></div>
                 </div>
-                <div class="how-card tilt" data-aos="fade-up" data-aos-delay="300">
-                    <div class="how-step">3</div>
+                <div class="how-card">
+                    <div class="how-icon-wrapper">
+                        <div class="how-step-number">3</div>
+                        <div class="how-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
                     <h3>Confirm & relax</h3>
                     <p>Get instant confirmation and reminders so you arrive on time, stress-free.</p>
                 </div>
@@ -155,88 +244,127 @@
     </section>
 
     <!-- Same-day availability -->
-    <section id="slots" class="slots section-3d">
+    <section id="slots" class="slots">
+        <div class="section-bg-gradient"></div>
         <div class="container">
-            <div class="section-header" data-aos="fade-up">
-                <h2>Available today</h2>
-                <p>Grab a same-day slot before it fills up.</p>
+            <div class="section-header">
+                <div class="section-tag">Today's Availability</div>
+                <h2 class="section-title">Available today</h2>
+                <p class="section-subtitle">Grab a same-day slot before it fills up.</p>
             </div>
-            <div class="slots-grid">
-                <div class="slot-card tilt" data-aos="fade-up" data-aos-delay="100">
+            <div class="slot-grid">
+                <div class="slot-card">
+                    <div class="slot-card-shine"></div>
                     <div class="slot-head">
                         <h3>Central Cut Studio</h3>
-                        <span class="badge badge--open">Open</span>
+                        <span class="badge badge--open">
+                            <span class="badge-pulse"></span>
+                            Open
+                        </span>
                     </div>
-                    <p class="slot-meta">2.1 km • Main Street</p>
+                    <p class="slot-meta">
+                        <i class="fas fa-location-dot"></i>
+                        2.1 km • Main Street
+                    </p>
                     <div class="slot-times">
                         <button class="slot-time">3:00 PM</button>
                         <button class="slot-time">3:30 PM</button>
                         <button class="slot-time">4:00 PM</button>
                     </div>
-                    <a class="btn-primary" href="booking.html?salon=central">Reserve</a>
+                    <a class="btn-primary" href="booking.html?salon=central">
+                        Reserve
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
                 </div>
 
-                <div class="slot-card tilt" data-aos="fade-up" data-aos-delay="200">
+                <div class="slot-card">
+                    <div class="slot-card-shine"></div>
                     <div class="slot-head">
                         <h3>Lakeside Gents</h3>
-                        <span class="badge badge--open">Open</span>
+                        <span class="badge badge--open">
+                            <span class="badge-pulse"></span>
+                            Open
+                        </span>
                     </div>
-                    <p class="slot-meta">3.4 km • Lakeside Road</p>
+                    <p class="slot-meta">
+                        <i class="fas fa-location-dot"></i>
+                        3.4 km • Lakeside Road
+                    </p>
                     <div class="slot-times">
                         <button class="slot-time">4:15 PM</button>
                         <button class="slot-time">4:45 PM</button>
                         <button class="slot-time">5:15 PM</button>
                     </div>
-                    <a class="btn-primary" href="booking.html?salon=lakeside">Reserve</a>
+                    <a class="btn-primary" href="booking.html?salon=lakeside">
+                        Reserve
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
                 </div>
 
-                <div class="slot-card tilt" data-aos="fade-up" data-aos-delay="300">
+                <div class="slot-card">
+                    <div class="slot-card-shine"></div>
                     <div class="slot-head">
                         <h3>Old Town Barber</h3>
                         <span class="badge badge--closed">Opens 10 AM</span>
                     </div>
-                    <p class="slot-meta">4.0 km • Market Lane</p>
+                    <p class="slot-meta">
+                        <i class="fas fa-location-dot"></i>
+                        4.0 km • Market Lane
+                    </p>
                     <div class="slot-times">
                         <button class="slot-time" disabled>10:30 AM</button>
                         <button class="slot-time" disabled>11:00 AM</button>
                         <button class="slot-time" disabled>11:30 AM</button>
                     </div>
-                    <a class="btn-secondary" href="booking.html?salon=oldtown">Join waitlist</a>
+                    <a class="btn-secondary" href="booking.html?salon=oldtown">
+                        Join waitlist
+                        <i class="fas fa-clock"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Contact Preview -->
-    <section id="contact" class="contact-preview section-3d">
+    <section id="contact" class="contact-preview">
         <div class="container">
             <div class="contact-grid">
-                <div class="contact-info tilt" data-aos="fade-right">
-                    <h2>Get In Touch</h2>
+                <div class="contact-info">
+                    <div class="section-tag">Get In Touch</div>
+                    <h2>Let's Connect</h2>
+                    <p class="contact-intro">Have questions? We're here to help you find the perfect salon experience.</p>
                     <div class="contact-details">
                         <div class="contact-item">
-                            <i class="fas fa-map-marker-alt"></i>
+                            <div class="contact-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
                             <div>
                                 <strong>Address</strong>
                                 <p>123 Beauty Street, Glamour City, GC 12345</p>
                             </div>
                         </div>
                         <div class="contact-item">
-                            <i class="fas fa-phone"></i>
+                            <div class="contact-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
                             <div>
                                 <strong>Phone</strong>
                                 <p>+1 (555) 123-4567</p>
                             </div>
                         </div>
                         <div class="contact-item">
-                            <i class="fas fa-envelope"></i>
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
                             <div>
                                 <strong>Email</strong>
-                                <p>info@kinniyasalon.com</p>
+                                <p>hello@kinniyasalon.com</p>
                             </div>
                         </div>
                         <div class="contact-item">
-                            <i class="fas fa-clock"></i>
+                            <div class="contact-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
                             <div>
                                 <strong>Hours</strong>
                                 <p>Mon-Sat: 9AM-8PM<br>Sunday: 10AM-6PM</p>
@@ -244,22 +372,29 @@
                         </div>
                     </div>
                 </div>
-                <div class="contact-form tilt" data-aos="fade-left">
+                <div class="contact-form">
                     <h3>Send us a Message</h3>
                     <form id="contactForm">
                         <div class="form-group">
                             <input type="text" id="name" placeholder="Your Name" required>
+                            <span class="form-line"></span>
                         </div>
                         <div class="form-group">
                             <input type="email" id="email" placeholder="Your Email" required>
+                            <span class="form-line"></span>
                         </div>
                         <div class="form-group">
                             <input type="tel" id="phone" placeholder="Your Phone" required>
+                            <span class="form-line"></span>
                         </div>
                         <div class="form-group">
                             <textarea id="message" placeholder="Your Message" rows="4" required></textarea>
+                            <span class="form-line"></span>
                         </div>
-                        <button type="submit" class="btn-primary">Send Message</button>
+                        <button type="submit" class="btn-primary">
+                            Send Message
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
                     </form>
                 </div>
             </div>
@@ -268,6 +403,7 @@
 
     <!-- Admin Access Modal -->
     <div id="adminGate" class="admin-gate" aria-hidden="true">
+        <div class="admin-gate__backdrop"></div>
         <div class="admin-gate__dialog" role="dialog" aria-modal="true" aria-labelledby="adminGateTitle">
             <button class="admin-gate__close" aria-label="Close admin access">&times;</button>
             <div class="admin-gate__badge">
@@ -293,16 +429,17 @@
 
     <!-- Footer -->
     <footer class="footer">
+        <div class="footer-wave"></div>
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>Kinniya Salon</h3>
                     <p>Your premier destination for beauty and wellness services. We provide exceptional care and professional treatments.</p>
                     <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
                     </div>
                 </div>
                 <div class="footer-section">
@@ -331,7 +468,8 @@
         </div>
     </footer>
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- Three.js for 3D background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

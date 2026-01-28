@@ -32,7 +32,51 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Card tilt and glow on mouse move
     initCardInteractivity();
+
+    // Custom Cursor Logic
+    initCustomCursor();
 });
+
+// Custom Cursor Logic
+function initCustomCursor() {
+    const cursorDot = document.querySelector('.cursor-dot');
+    const cursorOutline = document.querySelector('.cursor-outline');
+
+    if (!cursorDot || !cursorOutline) return;
+
+    // Hide default cursor
+    document.body.style.cursor = 'none';
+
+    window.addEventListener('mousemove', function(e) {
+        const posX = e.clientX;
+        const posY = e.clientY;
+
+        // Dot follows instantly
+        cursorDot.style.left = `${posX}px`;
+        cursorDot.style.top = `${posY}px`;
+
+        // Outline follows with slight delay/trail
+        cursorOutline.animate({
+            left: `${posX}px`,
+            top: `${posY}px`
+        }, { duration: 500, fill: "forwards" });
+    });
+
+    // Add pointer hover effect
+    const interactables = document.querySelectorAll('a, button, input, textarea, .hover-trigger, .card, .service-item, .salon-card, .slot-card');
+    
+    interactables.forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            cursorOutline.style.transform = 'scale(1.5)';
+            cursorOutline.style.backgroundColor = 'rgba(212, 175, 55, 0.1)';
+        });
+        
+        el.addEventListener('mouseleave', () => {
+             cursorOutline.style.transform = 'scale(1)';
+             cursorOutline.style.backgroundColor = 'transparent';
+        });
+    });
+}
 
 // Mobile Menu Toggle
 function initMobileMenu() {
@@ -477,7 +521,10 @@ function init3DParallax() {
 
 // Card interactivity - mouse follow glow and tilt
 function initCardInteractivity() {
-    const tiltCards = document.querySelectorAll('.tilt');
+    // Select cards from all pages including dashboard/services/admin
+    const tiltCards = document.querySelectorAll(
+        '.tilt, .service-item, .gallery-item, .admin-card, .service-card, .sidebar-menu, .sidebar-stats, .appointment-card, .how-card, .salon-card, .slot-card, .contact-info-card'
+    );
     
     tiltCards.forEach(card => {
         card.addEventListener('mousemove', (e) => {
@@ -492,14 +539,30 @@ function initCardInteractivity() {
             // Calculate rotation based on mouse position
             const centerX = rect.width / 2;
             const centerY = rect.height / 2;
-            const rotateX = (y - centerY) / 10;
-            const rotateY = (centerX - x) / 10;
             
-            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(15px)`;
+            // limit rotation to max 8 degrees for subtler effect on content cards
+            const rotateX = ((y - centerY) / centerY) * -8;
+            const rotateY = ((x - centerX) / centerX) * 8;
+            
+            // Use specific z-translation based on card type importance
+            const zDepth = card.classList.contains('service-item') || card.classList.contains('gallery-item') ? 15 : 10;
+            
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(${zDepth}px)`;
         });
         
         card.addEventListener('mouseleave', () => {
+            // Reset transforms with smooth transition
+            card.style.transition = 'transform 0.5s ease';
             card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
+            
+            // Remove transition after it completes to allow instant mouse movement tracking later
+            setTimeout(() => {
+                card.style.transition = '';
+            }, 500);
         });
+        
+        // Add entrance animation class for 3D reveal
+        card.classList.add('card-3d-entrance');
     });
 }
+
