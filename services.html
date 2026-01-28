@@ -3,25 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Services - JK Salon</title>
+    <meta name="description" content="Explore Kinniya Salon's premium services including hair care, spa treatments, bridal packages, and more.">
+    <title>Our Services - Kinniya Salon</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- 3D Canvas Background -->
+    <canvas id="webgl-canvas"></canvas>
+    
+    <!-- Cursor Follower -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
     <!-- Navigation -->
-    <nav class="navbar">
+    <nav class="navbar" id="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <a href="index.html"><h2>JK Salon</h2></a>
+                <a href="index.html" style="text-decoration: none; color: inherit;">
+                    <h2>Kinniya Salon</h2>
+                    <div class="logo-accent"></div>
+                </a>
             </div>
             <div class="nav-menu">
                 <a href="index.html" class="nav-link">Home</a>
-                <a href="#services" class="nav-link active">Services</a>
-                <a href="gallery.html" class="nav-link">Gallery</a>
-                <a href="index.html#reviews" class="nav-link">Reviews</a>
+                <a href="index.html#salons" class="nav-link">Salons</a>
+                <a href="index.html#howitworks" class="nav-link">How it works</a>
+                <a href="services.html" class="nav-link active">Services</a>
                 <a href="index.html#contact" class="nav-link">Contact</a>
-                <a href="booking.html" class="nav-link btn-primary">Book Now</a>
+                <a href="admin.html" class="btn-ghost">
+                    <i class="fas fa-store"></i>
+                    Shop Owner
+                </a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
             <div class="hamburger">
                 <span></span>
@@ -31,20 +48,61 @@
         </div>
     </nav>
 
-    <!-- Services Hero -->
-    <section class="services-hero">
-        <div class="container">
-            <div class="services-hero-content" data-aos="fade-up">
-                <h1>Our Premium Services</h1>
-                <p>Discover our complete range of professional beauty treatments and services</p>
+    <!-- Services Hero Section -->
+    <section class="hero services-hero-section">
+        <div class="hero-3d-container">
+            <div class="floating-orb orb-1"></div>
+            <div class="floating-orb orb-2"></div>
+            <div class="floating-orb orb-3"></div>
+        </div>
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">Premium Services</div>
+                <h1 class="hero-title">
+                    Transform Your Look with
+                    <span class="highlight">Expert Care</span>
+                </h1>
+                <p class="hero-description">Discover our complete range of professional beauty treatments designed to enhance your natural beauty and boost your confidence.</p>
+                <div class="hero-buttons">
+                    <a href="#services-grid" class="btn-primary">
+                        <span>Explore Services</span>
+                        <i class="fas fa-arrow-down"></i>
+                    </a>
+                    <a href="booking.html" class="btn-secondary">
+                        <span>Book Appointment</span>
+                        <i class="fas fa-calendar-check"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="hero-visual-container">
+                    <div class="hero-circle hero-circle-1"></div>
+                    <div class="hero-circle hero-circle-2"></div>
+                    <div class="hero-circle hero-circle-3"></div>
+                    <div class="hero-placeholder">
+                        <i class="fas fa-spa"></i>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Services Filter -->
-    <section class="services-section">
+    <!-- Services Directory -->
+    <section id="services-grid" class="salon-directory services-section">
+        <div class="hero-3d-container">
+            <div class="floating-orb orb-1" style="transform: scale(0.8);"></div>
+            <div class="floating-orb orb-2" style="animation-delay: 2s; transform: scale(0.8);"></div>
+            <div class="floating-orb orb-3" style="animation-delay: 7s; opacity: 0.2;"></div>
+        </div>
         <div class="container">
-            <div class="filter-section" data-aos="fade-up">
+            <div class="section-header">
+                <div class="section-tag">Our Services</div>
+                <h2 class="section-title">What We Offer</h2>
+                <p class="section-subtitle">Professional treatments tailored to your needs</p>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="services-filter-section">
                 <div class="filter-buttons">
                     <button class="filter-btn active" data-filter="all">All Services</button>
                     <button class="filter-btn" data-filter="hair">Hair Care</button>
@@ -53,331 +111,408 @@
                     <button class="filter-btn" data-filter="spa">Spa & Wellness</button>
                 </div>
                 <div class="search-box">
-                    <input type="text" id="serviceSearch" placeholder="Search services...">
                     <i class="fas fa-search"></i>
+                    <input type="text" id="serviceSearch" placeholder="Search services...">
                 </div>
             </div>
 
             <!-- Services Grid -->
-            <div class="services-grid" id="servicesGrid">
+            <div class="salon-grid services-grid-container">
                 <!-- Hair Services -->
-                <div class="service-item" data-category="hair" data-aos="fade-up" data-aos-delay="100">
-                    <div class="service-image">
-                        <img src="assets/images/haircut.jpg" alt="Haircut & Styling" onerror="this.style.display='none'">
-                        <div class="service-placeholder">
-                            <i class="fas fa-cut"></i>
-                        </div>
-                        <div class="service-overlay">
-                            <button class="book-service-btn" data-service="Haircut & Styling">Book Now</button>
-                        </div>
-                    </div>
-                    <div class="service-content">
-                        <div class="service-category">Hair Care</div>
-                        <h3>Haircut & Styling</h3>
-                        <p>Professional haircuts, styling, and finishing for all hair types</p>
-                        <div class="service-details">
-                            <div class="service-price">
-                                <span class="price">$45</span>
-                                <span class="duration">45 mins</span>
-                            </div>
-                            <div class="service-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                                <span class="rating-text">(4.8)</span>
+                <div class="salon-card service-card" data-category="hair">
+                    <div class="salon-card-glow"></div>
+                    <div class="salon-card-content">
+                        <div class="service-image-wrapper">
+                            <div class="service-icon-placeholder">
+                                <i class="fas fa-cut"></i>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <div class="service-item" data-category="hair" data-aos="fade-up" data-aos-delay="150">
-                    <div class="service-image">
-                        <img src="assets/images/hair-color.jpg" alt="Hair Coloring" onerror="this.style.display='none'">
-                        <div class="service-placeholder">
-                            <i class="fas fa-palette"></i>
-                        </div>
-                        <div class="service-overlay">
-                            <button class="book-service-btn" data-service="Hair Coloring">Book Now</button>
-                        </div>
-                    </div>
-                    <div class="service-content">
-                        <div class="service-category">Hair Care</div>
-                        <h3>Hair Coloring</h3>
-                        <p>Expert hair coloring services including highlights, balayage, and full color</p>
-                        <div class="service-details">
-                            <div class="service-price">
-                                <span class="price">$85</span>
-                                <span class="duration">90 mins</span>
+                        <div class="salon-card__top">
+                            <div>
+                                <h3>Haircut & Styling</h3>
+                                <p class="salon-meta">
+                                    <i class="fas fa-tag"></i>
+                                    Hair Care
+                                </p>
                             </div>
-                            <div class="service-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <span class="rating-text">(5.0)</span>
-                            </div>
+                            <span class="badge badge--price">$45</span>
+                        </div>
+                        <p class="salon-desc">Professional haircuts, styling, and finishing for all hair types with expert consultation.</p>
+                        <div class="salon-stats">
+                            <span><i class="fas fa-star"></i> 4.8 (210)</span>
+                            <span><i class="fas fa-clock"></i> 45 mins</span>
+                        </div>
+                        <div class="salon-actions">
+                            <a class="btn-primary" href="booking.html?service=haircut">
+                                Book Now
+                                <i class="fas fa-calendar-check"></i>
+                            </a>
+                            <button class="btn-secondary view-details-btn" data-service="haircut">
+                                Details
+                                <i class="fas fa-info-circle"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="service-item" data-category="hair" data-aos="fade-up" data-aos-delay="200">
-                    <div class="service-image">
-                        <img src="assets/images/hair-treatment.jpg" alt="Hair Treatment" onerror="this.style.display='none'">
-                        <div class="service-placeholder">
-                            <i class="fas fa-magic"></i>
+                <div class="salon-card service-card" data-category="hair">
+                    <div class="salon-card-glow"></div>
+                    <div class="salon-card-content">
+                        <div class="service-image-wrapper">
+                            <div class="service-icon-placeholder">
+                                <i class="fas fa-palette"></i>
+                            </div>
                         </div>
-                        <div class="service-overlay">
-                            <button class="book-service-btn" data-service="Hair Treatment">Book Now</button>
+                        <div class="salon-card__top">
+                            <div>
+                                <h3>Hair Coloring</h3>
+                                <p class="salon-meta">
+                                    <i class="fas fa-tag"></i>
+                                    Hair Care
+                                </p>
+                            </div>
+                            <span class="badge badge--price">$85</span>
+                        </div>
+                        <p class="salon-desc">Expert hair coloring services including highlights, balayage, and full color transformation.</p>
+                        <div class="salon-stats">
+                            <span><i class="fas fa-star"></i> 5.0 (180)</span>
+                            <span><i class="fas fa-clock"></i> 90 mins</span>
+                        </div>
+                        <div class="salon-actions">
+                            <a class="btn-primary" href="booking.html?service=coloring">
+                                Book Now
+                                <i class="fas fa-calendar-check"></i>
+                            </a>
+                            <button class="btn-secondary view-details-btn" data-service="coloring">
+                                Details
+                                <i class="fas fa-info-circle"></i>
+                            </button>
                         </div>
                     </div>
-                    <div class="service-content">
-                        <div class="service-category">Hair Care</div>
-                        <h3>Hair Treatment</h3>
-                        <p>Deep conditioning treatments, keratin smoothing, and hair repair services</p>
-                        <div class="service-details">
-                            <div class="service-price">
-                                <span class="price">$65</span>
-                                <span class="duration">60 mins</span>
+                </div>
+
+                <div class="salon-card service-card" data-category="hair">
+                    <div class="salon-card-glow"></div>
+                    <div class="salon-card-content">
+                        <div class="service-image-wrapper">
+                            <div class="service-icon-placeholder">
+                                <i class="fas fa-magic"></i>
                             </div>
-                            <div class="service-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <span class="rating-text">(4.9)</span>
+                        </div>
+                        <div class="salon-card__top">
+                            <div>
+                                <h3>Hair Treatment</h3>
+                                <p class="salon-meta">
+                                    <i class="fas fa-tag"></i>
+                                    Hair Care
+                                </p>
                             </div>
+                            <span class="badge badge--price">$65</span>
+                        </div>
+                        <p class="salon-desc">Deep conditioning treatments, keratin smoothing, and comprehensive hair repair services.</p>
+                        <div class="salon-stats">
+                            <span><i class="fas fa-star"></i> 4.9 (165)</span>
+                            <span><i class="fas fa-clock"></i> 60 mins</span>
+                        </div>
+                        <div class="salon-actions">
+                            <a class="btn-primary" href="booking.html?service=treatment">
+                                Book Now
+                                <i class="fas fa-calendar-check"></i>
+                            </a>
+                            <button class="btn-secondary view-details-btn" data-service="treatment">
+                                Details
+                                <i class="fas fa-info-circle"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Skin Services -->
-                <div class="service-item" data-category="skin" data-aos="fade-up" data-aos-delay="100">
-                    <div class="service-image">
-                        <img src="assets/images/facial.jpg" alt="Facial Treatment" onerror="this.style.display='none'">
-                        <div class="service-placeholder">
-                            <i class="fas fa-spa"></i>
-                        </div>
-                        <div class="service-overlay">
-                            <button class="book-service-btn" data-service="Facial Treatment">Book Now</button>
-                        </div>
-                    </div>
-                    <div class="service-content">
-                        <div class="service-category">Skin Care</div>
-                        <h3>Facial Treatment</h3>
-                        <p>Customized facial treatments for all skin types and concerns</p>
-                        <div class="service-details">
-                            <div class="service-price">
-                                <span class="price">$75</span>
-                                <span class="duration">60 mins</span>
+                <div class="salon-card service-card" data-category="skin">
+                    <div class="salon-card-glow"></div>
+                    <div class="salon-card-content">
+                        <div class="service-image-wrapper">
+                            <div class="service-icon-placeholder">
+                                <i class="fas fa-face-smile"></i>
                             </div>
-                            <div class="service-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                                <span class="rating-text">(4.7)</span>
+                        </div>
+                        <div class="salon-card__top">
+                            <div>
+                                <h3>Facial Treatment</h3>
+                                <p class="salon-meta">
+                                    <i class="fas fa-tag"></i>
+                                    Skin Care
+                                </p>
                             </div>
+                            <span class="badge badge--price">$70</span>
+                        </div>
+                        <p class="salon-desc">Customized facial treatments with deep cleansing, exfoliation, and moisturizing therapy.</p>
+                        <div class="salon-stats">
+                            <span><i class="fas fa-star"></i> 4.7 (142)</span>
+                            <span><i class="fas fa-clock"></i> 75 mins</span>
+                        </div>
+                        <div class="salon-actions">
+                            <a class="btn-primary" href="booking.html?service=facial">
+                                Book Now
+                                <i class="fas fa-calendar-check"></i>
+                            </a>
+                            <button class="btn-secondary view-details-btn" data-service="facial">
+                                Details
+                                <i class="fas fa-info-circle"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="service-item" data-category="skin" data-aos="fade-up" data-aos-delay="150">
-                    <div class="service-image">
-                        <img src="assets/images/waxing.jpg" alt="Body Waxing" onerror="this.style.display='none'">
-                        <div class="service-placeholder">
-                            <i class="fas fa-leaf"></i>
-                        </div>
-                        <div class="service-overlay">
-                            <button class="book-service-btn" data-service="Body Waxing">Book Now</button>
-                        </div>
-                    </div>
-                    <div class="service-content">
-                        <div class="service-category">Skin Care</div>
-                        <h3>Body Waxing</h3>
-                        <p>Professional waxing services for smooth, hair-free skin</p>
-                        <div class="service-details">
-                            <div class="service-price">
-                                <span class="price">$35</span>
-                                <span class="duration">30 mins</span>
+                <div class="salon-card service-card" data-category="skin">
+                    <div class="salon-card-glow"></div>
+                    <div class="salon-card-content">
+                        <div class="service-image-wrapper">
+                            <div class="service-icon-placeholder">
+                                <i class="fas fa-spray-can"></i>
                             </div>
-                            <div class="service-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <span class="rating-text">(4.9)</span>
+                        </div>
+                        <div class="salon-card__top">
+                            <div>
+                                <h3>Body Waxing</h3>
+                                <p class="salon-meta">
+                                    <i class="fas fa-tag"></i>
+                                    Skin Care
+                                </p>
                             </div>
+                            <span class="badge badge--price">$40</span>
+                        </div>
+                        <p class="salon-desc">Professional body waxing with premium products and gentle hair removal techniques.</p>
+                        <div class="salon-stats">
+                            <span><i class="fas fa-star"></i> 4.6 (128)</span>
+                            <span><i class="fas fa-clock"></i> 45 mins</span>
+                        </div>
+                        <div class="salon-actions">
+                            <a class="btn-primary" href="booking.html?service=waxing">
+                                Book Now
+                                <i class="fas fa-calendar-check"></i>
+                            </a>
+                            <button class="btn-secondary view-details-btn" data-service="waxing">
+                                Details
+                                <i class="fas fa-info-circle"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Bridal Services -->
-                <div class="service-item" data-category="bridal" data-aos="fade-up" data-aos-delay="100">
-                    <div class="service-image">
-                        <img src="assets/images/bridal-makeup.jpg" alt="Bridal Makeup" onerror="this.style.display='none'">
-                        <div class="service-placeholder">
-                            <i class="fas fa-crown"></i>
-                        </div>
-                        <div class="service-overlay">
-                            <button class="book-service-btn" data-service="Bridal Makeup">Book Now</button>
-                        </div>
-                    </div>
-                    <div class="service-content">
-                        <div class="service-category">Bridal</div>
-                        <h3>Bridal Makeup</h3>
-                        <p>Complete bridal makeup packages for your special day</p>
-                        <div class="service-details">
-                            <div class="service-price">
-                                <span class="price">$150</span>
-                                <span class="duration">90 mins</span>
+                <div class="salon-card service-card" data-category="bridal">
+                    <div class="salon-card-glow"></div>
+                    <div class="salon-card-content">
+                        <div class="service-image-wrapper">
+                            <div class="service-icon-placeholder">
+                                <i class="fas fa-gem"></i>
                             </div>
-                            <div class="service-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <span class="rating-text">(5.0)</span>
+                        </div>
+                        <div class="salon-card__top">
+                            <div>
+                                <h3>Bridal Makeup</h3>
+                                <p class="salon-meta">
+                                    <i class="fas fa-tag"></i>
+                                    Bridal Package
+                                </p>
                             </div>
+                            <span class="badge badge--price">$150</span>
+                        </div>
+                        <p class="salon-desc">Complete bridal makeup with trial session, premium products, and touch-up kit included.</p>
+                        <div class="salon-stats">
+                            <span><i class="fas fa-star"></i> 5.0 (95)</span>
+                            <span><i class="fas fa-clock"></i> 120 mins</span>
+                        </div>
+                        <div class="salon-actions">
+                            <a class="btn-primary" href="booking.html?service=bridal-makeup">
+                                Book Now
+                                <i class="fas fa-calendar-check"></i>
+                            </a>
+                            <button class="btn-secondary view-details-btn" data-service="bridal-makeup">
+                                Details
+                                <i class="fas fa-info-circle"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="service-item" data-category="bridal" data-aos="fade-up" data-aos-delay="150">
-                    <div class="service-image">
-                        <img src="assets/images/bridal-hair.jpg" alt="Bridal Hair" onerror="this.style.display='none'">
-                        <div class="service-placeholder">
-                            <i class="fas fa-ring"></i>
-                        </div>
-                        <div class="service-overlay">
-                            <button class="book-service-btn" data-service="Bridal Hair">Book Now</button>
-                        </div>
-                    </div>
-                    <div class="service-content">
-                        <div class="service-category">Bridal</div>
-                        <h3>Bridal Hair</h3>
-                        <p>Elegant hairstyling for brides and bridal parties</p>
-                        <div class="service-details">
-                            <div class="service-price">
-                                <span class="price">$120</span>
-                                <span class="duration">75 mins</span>
+                <div class="salon-card service-card" data-category="bridal">
+                    <div class="salon-card-glow"></div>
+                    <div class="salon-card-content">
+                        <div class="service-image-wrapper">
+                            <div class="service-icon-placeholder">
+                                <i class="fas fa-crown"></i>
                             </div>
-                            <div class="service-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <span class="rating-text">(4.9)</span>
+                        </div>
+                        <div class="salon-card__top">
+                            <div>
+                                <h3>Bridal Hair</h3>
+                                <p class="salon-meta">
+                                    <i class="fas fa-tag"></i>
+                                    Bridal Package
+                                </p>
                             </div>
+                            <span class="badge badge--price">$120</span>
+                        </div>
+                        <p class="salon-desc">Expert bridal hair styling with trial session, accessories, and veil attachment service.</p>
+                        <div class="salon-stats">
+                            <span><i class="fas fa-star"></i> 4.9 (88)</span>
+                            <span><i class="fas fa-clock"></i> 90 mins</span>
+                        </div>
+                        <div class="salon-actions">
+                            <a class="btn-primary" href="booking.html?service=bridal-hair">
+                                Book Now
+                                <i class="fas fa-calendar-check"></i>
+                            </a>
+                            <button class="btn-secondary view-details-btn" data-service="bridal-hair">
+                                Details
+                                <i class="fas fa-info-circle"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Spa Services -->
-                <div class="service-item" data-category="spa" data-aos="fade-up" data-aos-delay="100">
-                    <div class="service-image">
-                        <img src="assets/images/massage.jpg" alt="Swedish Massage" onerror="this.style.display='none'">
-                        <div class="service-placeholder">
-                            <i class="fas fa-hands"></i>
-                        </div>
-                        <div class="service-overlay">
-                            <button class="book-service-btn" data-service="Swedish Massage">Book Now</button>
-                        </div>
-                    </div>
-                    <div class="service-content">
-                        <div class="service-category">Spa & Wellness</div>
-                        <h3>Swedish Massage</h3>
-                        <p>Relaxing full-body massage to relieve tension and stress</p>
-                        <div class="service-details">
-                            <div class="service-price">
-                                <span class="price">$80</span>
-                                <span class="duration">60 mins</span>
+                <div class="salon-card service-card" data-category="spa">
+                    <div class="salon-card-glow"></div>
+                    <div class="salon-card-content">
+                        <div class="service-image-wrapper">
+                            <div class="service-icon-placeholder">
+                                <i class="fas fa-hands"></i>
                             </div>
-                            <div class="service-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <span class="rating-text">(4.8)</span>
+                        </div>
+                        <div class="salon-card__top">
+                            <div>
+                                <h3>Swedish Massage</h3>
+                                <p class="salon-meta">
+                                    <i class="fas fa-tag"></i>
+                                    Spa & Wellness
+                                </p>
                             </div>
+                            <span class="badge badge--price">$80</span>
+                        </div>
+                        <p class="salon-desc">Relaxing full-body massage to relieve tension, stress, and promote overall wellness.</p>
+                        <div class="salon-stats">
+                            <span><i class="fas fa-star"></i> 4.8 (156)</span>
+                            <span><i class="fas fa-clock"></i> 60 mins</span>
+                        </div>
+                        <div class="salon-actions">
+                            <a class="btn-primary" href="booking.html?service=massage">
+                                Book Now
+                                <i class="fas fa-calendar-check"></i>
+                            </a>
+                            <button class="btn-secondary view-details-btn" data-service="massage">
+                                Details
+                                <i class="fas fa-info-circle"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="service-item" data-category="spa" data-aos="fade-up" data-aos-delay="150">
-                    <div class="service-image">
-                        <img src="assets/images/manicure.jpg" alt="Manicure & Pedicure" onerror="this.style.display='none'">
-                        <div class="service-placeholder">
-                            <i class="fas fa-hand-sparkles"></i>
-                        </div>
-                        <div class="service-overlay">
-                            <button class="book-service-btn" data-service="Manicure & Pedicure">Book Now</button>
-                        </div>
-                    </div>
-                    <div class="service-content">
-                        <div class="service-category">Spa & Wellness</div>
-                        <h3>Manicure & Pedicure</h3>
-                        <p>Complete nail care services with gel or regular polish</p>
-                        <div class="service-details">
-                            <div class="service-price">
-                                <span class="price">$55</span>
-                                <span class="duration">75 mins</span>
+                <div class="salon-card service-card" data-category="spa">
+                    <div class="salon-card-glow"></div>
+                    <div class="salon-card-content">
+                        <div class="service-image-wrapper">
+                            <div class="service-icon-placeholder">
+                                <i class="fas fa-hand-sparkles"></i>
                             </div>
-                            <div class="service-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                                <span class="rating-text">(4.6)</span>
+                        </div>
+                        <div class="salon-card__top">
+                            <div>
+                                <h3>Manicure & Pedicure</h3>
+                                <p class="salon-meta">
+                                    <i class="fas fa-tag"></i>
+                                    Spa & Wellness
+                                </p>
                             </div>
+                            <span class="badge badge--price">$55</span>
+                        </div>
+                        <p class="salon-desc">Complete nail care services with gel or regular polish and relaxing hand/foot massage.</p>
+                        <div class="salon-stats">
+                            <span><i class="fas fa-star"></i> 4.6 (134)</span>
+                            <span><i class="fas fa-clock"></i> 75 mins</span>
+                        </div>
+                        <div class="salon-actions">
+                            <a class="btn-primary" href="booking.html?service=manicure">
+                                Book Now
+                                <i class="fas fa-calendar-check"></i>
+                            </a>
+                            <button class="btn-secondary view-details-btn" data-service="manicure">
+                                Details
+                                <i class="fas fa-info-circle"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </section>
 
-            <!-- Service Modal -->
-            <div id="serviceModal" class="service-modal">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3 id="modalTitle">Service Details</h3>
-                        <button class="modal-close">&times;</button>
+    <!-- Service Details Modal -->
+    <div id="serviceModal" class="admin-gate" aria-hidden="true">
+        <div class="admin-gate__backdrop"></div>
+        <div class="admin-gate__dialog service-modal-dialog" role="dialog" aria-modal="true">
+            <button class="admin-gate__close modal-close-btn">&times;</button>
+            <div class="service-modal-content">
+                <div class="service-modal-icon">
+                    <i class="fas fa-spa"></i>
+                </div>
+                <h3 id="modalServiceTitle">Service Details</h3>
+                <div class="service-modal-price">
+                    <span id="modalPrice">$0</span>
+                    <span id="modalDuration">0 mins</span>
+                </div>
+                <p id="modalDescription" class="service-modal-description">Service description goes here</p>
+                <div class="service-modal-features">
+                    <h4>What's Included:</h4>
+                    <ul id="modalFeaturesList">
+                        <li>Professional consultation</li>
+                        <li>Premium products</li>
+                        <li>Expert application</li>
+                    </ul>
+                </div>
+                <div class="service-modal-actions">
+                    <button class="btn-secondary modal-close-btn">Close</button>
+                    <a href="booking.html" id="modalBookBtn" class="btn-primary">Book This Service</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Why Choose Us Section -->
+    <section class="how-it-works" style="padding: 80px 0;">
+        <div class="hero-3d-container">
+            <div class="floating-orb orb-2" style="opacity: 0.15;"></div>
+            <div class="floating-orb orb-3" style="animation-delay: 3s; opacity: 0.2;"></div>
+        </div>
+        <div class="container">
+            <div class="section-header">
+                <div class="section-tag">Why Choose Us</div>
+                <h2 class="section-title">Excellence in Every Service</h2>
+                <p class="section-subtitle">Experience the difference of professional care</p>
+            </div>
+            <div class="how-grid">
+                <div class="how-card">
+                    <div class="how-icon">
+                        <i class="fas fa-user-tie"></i>
                     </div>
-                    <div class="modal-body">
-                        <div class="service-detail-image">
-                            <img id="modalImage" src="" alt="" onerror="this.style.display='none'">
-                            <div class="service-detail-placeholder">
-                                <i class="fas fa-image"></i>
-                            </div>
-                        </div>
-                        <div class="service-detail-info">
-                            <div class="service-detail-price">
-                                <span class="price" id="modalPrice">$0</span>
-                                <span class="duration" id="modalDuration">0 mins</span>
-                            </div>
-                            <p id="modalDescription">Service description</p>
-                            <div class="service-features">
-                                <h4>Includes:</h4>
-                                <ul id="modalFeatures">
-                                    <li>Professional consultation</li>
-                                    <li>Premium products</li>
-                                    <li>Expert styling</li>
-                                </ul>
-                            </div>
-                        </div>
+                    <h3>Expert Professionals</h3>
+                    <p>Our team consists of highly trained and certified beauty professionals with years of experience.</p>
+                </div>
+                <div class="how-card">
+                    <div class="how-icon">
+                        <i class="fas fa-star"></i>
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn-secondary" onclick="closeServiceModal()">Close</button>
-                        <a href="booking.html" class="btn-primary">Book This Service</a>
+                    <h3>Premium Products</h3>
+                    <p>We use only the finest, professional-grade products to ensure exceptional results every time.</p>
+                </div>
+                <div class="how-card">
+                    <div class="how-icon">
+                        <i class="fas fa-clock"></i>
                     </div>
+                    <h3>Flexible Scheduling</h3>
+                    <p>Easy online booking with flexible appointment times to fit your busy schedule.</p>
                 </div>
             </div>
         </div>
@@ -385,16 +520,17 @@
 
     <!-- Footer -->
     <footer class="footer">
+        <div class="footer-wave"></div>
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3>JK Salon</h3>
+                    <h3>Kinniya Salon</h3>
                     <p>Your premier destination for beauty and wellness services. We provide exceptional care and professional treatments.</p>
                     <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
                     </div>
                 </div>
                 <div class="footer-section">
@@ -403,7 +539,7 @@
                         <li><a href="index.html">Home</a></li>
                         <li><a href="services.html">Services</a></li>
                         <li><a href="booking.html">Book Appointment</a></li>
-                        <li><a href="gallery.html">Gallery</a></li>
+                        <li><a href="index.html#contact">Contact</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
@@ -417,12 +553,14 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 JK Salon. All rights reserved.</p>
+                <p>&copy; 2024 Kinniya Salon. All rights reserved.</p>
+                <a href="admin.html" class="footer-admin">Owner Login</a>
             </div>
         </div>
     </footer>
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- Three.js for 3D background -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="js/main.js"></script>
     <script src="js/services.js"></script>
 </body>
