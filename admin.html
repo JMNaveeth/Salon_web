@@ -46,235 +46,61 @@
         </div>
     </nav>
 
-    <!-- Shop Owner Header -->
-    <section class="admin-header hero" style="min-height: 60vh; padding-top: 100px;">
-        <div class="hero-3d-container">
-            <div class="floating-orb orb-1"></div>
-            <div class="floating-orb orb-2"></div>
-            <div class="floating-orb orb-3"></div>
-        </div>
-        <div class="container" style="text-align: center; position: relative; z-index: 1;">
-            <div class="admin-header-content" data-aos="fade-up">
-                <div class="hero-badge" style="margin: 0 auto 20px;">Admin Portal</div>
-                <h1 class="hero-title">Shop Owner <span class="highlight">Dashboard</span></h1>
-                <p class="hero-description" style="max-width: 600px; margin: 0 auto;">Manage your services, staff, and bookings in one place.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Marketing sections relocated from user page for owner reference -->
-    <section id="owner-services" class="services-preview" style="background: var(--bg-light); padding: 80px 0;">
-         <div class="hero-3d-container">
-            <div class="floating-orb orb-1" style="transform: scale(0.8);"></div>
-            <div class="floating-orb orb-3" style="animation-delay: 7s; opacity: 0.2;"></div>
-        </div>
+    <!-- Shop Owner Header & Dashboard Wrapper -->
+    <div class="admin-wrapper" style="padding-top: 100px;">
         <div class="container">
-            <div class="section-header" data-aos="fade-up">
-                <h2>Our Premium Services</h2>
-                <p>Discover our range of professional beauty treatments</p>
-            </div>
-            <div class="services-grid">
-                <div class="service-card" data-aos="fade-up" data-aos-delay="100">
-                    <div class="service-icon">
-                        <i class="fas fa-cut"></i>
-                    </div>
-                    <h3>Hair Styling</h3>
-                    <p>Professional haircuts, styling, and treatments</p>
-                    <a href="services.html" class="service-link">View Details</a>
-                </div>
-                <div class="service-card" data-aos="fade-up" data-aos-delay="200">
-                    <div class="service-icon">
-                        <i class="fas fa-spa"></i>
-                    </div>
-                    <h3>Spa Treatments</h3>
-                    <p>Relaxing massages and rejuvenating therapies</p>
-                    <a href="services.html" class="service-link">View Details</a>
-                </div>
-                <div class="service-card" data-aos="fade-up" data-aos-delay="300">
-                    <div class="service-icon">
-                        <i class="fas fa-brush"></i>
-                    </div>
-                    <h3>Beauty Care</h3>
-                    <p>Facial treatments and skincare services</p>
-                    <a href="services.html" class="service-link">View Details</a>
-                </div>
+            <div class="admin-header-content" data-aos="fade-up" style="margin-bottom: 40px; text-align: center;">
+                <h1 class="hero-title" style="font-size: 2.5rem;">Shop Owner <span class="highlight">Dashboard</span></h1>
+                <p class="hero-description">Manage your salon operations efficiently.</p>
             </div>
         </div>
-    </section>
 
-    <section class="why-choose-us" style="position: relative; overflow: hidden; padding: 100px 0;">
-         <div class="hero-3d-container">
-            <div class="floating-orb orb-2" style="bottom: -50px; left: -50px; opacity: 0.3;"></div>
-            <div class="floating-orb orb-1" style="top: -100px; right: -100px; opacity: 0.2;"></div>
-        </div>
-        <div class="container">
-            <div class="why-grid">
-                <div class="why-content" data-aos="fade-right">
-                    <h2>Why Choose Kinniya Salon?</h2>
-                    <div class="why-features">
-                        <div class="feature">
-                            <i class="fas fa-clock"></i>
-                            <div>
-                                <h4>Convenient Booking</h4>
-                                <p>Book appointments online 24/7</p>
-                            </div>
+        <!-- Admin Dashboard Interface -->
+        <section class="admin-section" style="padding-top: 0;">
+            <div class="container">
+                <div class="admin-layout">
+                    <!-- Sidebar -->
+                    <aside class="admin-sidebar" data-aos="fade-right">
+                        <div class="sidebar-profile">
+                             <div class="profile-avatar">
+                                <i class="fas fa-user-shield"></i>
+                             </div>
+                             <div class="profile-info">
+                                <h3>Admin Portal</h3>
+                                <p>Kinniya Salon</p>
+                             </div>
                         </div>
-                        <div class="feature">
-                            <i class="fas fa-user-md"></i>
-                            <div>
-                                <h4>Expert Stylists</h4>
-                                <p>Certified professionals with years of experience</p>
-                            </div>
-                        </div>
-                        <div class="feature">
-                            <i class="fas fa-star"></i>
-                            <div>
-                                <h4>Premium Quality</h4>
-                                <p>High-quality products and services</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="why-image" data-aos="fade-left">
-                    <img src="assets/images/why-choose-us.jpg" alt="Why Choose Kinniya Salon" onerror="this.style.display='none'">
-                    <div class="why-placeholder">
-                        <i class="fas fa-award"></i>
-                        <p>Excellence in Service</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+                        <nav class="sidebar-menu">
+                            <a href="#overview" class="sidebar-link active" data-section="overview">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>Overview</span>
+                            </a>
+                            <a href="#bookings" class="sidebar-link" data-section="bookings">
+                                <i class="fas fa-calendar-check"></i>
+                                <span>Bookings</span>
+                            </a>
+                            <a href="#services" class="sidebar-link" data-section="services">
+                                <i class="fas fa-cut"></i>
+                                <span>Services</span>
+                            </a>
+                            <a href="#staff" class="sidebar-link" data-section="staff">
+                                <i class="fas fa-users"></i>
+                                <span>Staff</span>
+                            </a>
+                            <a href="#analytics" class="sidebar-link" data-section="analytics">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Analytics</span>
+                            </a>
+                            <a href="#settings" class="sidebar-link" data-section="settings">
+                                <i class="fas fa-cog"></i>
+                                <span>Settings</span>
+                            </a>
+                        </nav>
+                    </aside>
 
-    <section id="owner-gallery" class="gallery-preview" style="position: relative; overflow: hidden; padding: 100px 0;">
-         <div class="hero-3d-container">
-            <div class="floating-orb orb-1" style="width: 300px; height: 300px; opacity: 0.2;"></div>
-            <div class="floating-orb orb-3" style="top: 20%; left: 80%; animation-delay: 4s;"></div>
-        </div>
-        <div class="container">
-            <div class="section-header" data-aos="fade-up">
-                <h2>Our Work</h2>
-                <p>Explore our portfolio of stunning transformations</p>
-            </div>
-            <div class="gallery-grid">
-                <div class="gallery-item" data-aos="zoom-in" data-aos-delay="100">
-                    <img src="assets/images/gallery-1.jpg" alt="Kinniya Salon Gallery 1" onerror="this.style.display='none'">
-                    <div class="gallery-placeholder">
-                        <i class="fas fa-image"></i>
-                    </div>
-                </div>
-                <div class="gallery-item" data-aos="zoom-in" data-aos-delay="200">
-                    <img src="assets/images/gallery-2.jpg" alt="Kinniya Salon Gallery 2" onerror="this.style.display='none'">
-                    <div class="gallery-placeholder">
-                        <i class="fas fa-image"></i>
-                    </div>
-                </div>
-                <div class="gallery-item" data-aos="zoom-in" data-aos-delay="300">
-                    <img src="assets/images/gallery-3.jpg" alt="Kinniya Salon Gallery 3" onerror="this.style.display='none'">
-                    <div class="gallery-placeholder">
-                        <i class="fas fa-image"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+                    <!-- Main Content Panel -->
+                    <main class="admin-main">
 
-    <section id="owner-reviews" class="reviews" style="position: relative; overflow: hidden; padding: 100px 0;">
-        <div class="hero-3d-container">
-            <div class="floating-orb orb-2" style="animation-delay: 2s; transform: scale(0.8);"></div>
-            <div class="floating-orb orb-3" style="animation-delay: 7s; opacity: 0.2;"></div>
-        </div>
-        <div class="container">
-            <div class="section-header" data-aos="fade-up">
-                <h2>What Our Clients Say</h2>
-                <p>Read reviews from our satisfied customers</p>
-            </div>
-            <div class="reviews-grid">
-                <div class="review-card" data-aos="fade-up" data-aos-delay="100">
-                    <div class="review-stars">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <p>"Amazing experience! The staff is very professional and the results exceeded my expectations."</p>
-                    <div class="review-author">
-                        <strong>Sarah Johnson</strong>
-                        <span>Hair Styling</span>
-                    </div>
-                </div>
-                <div class="review-card" data-aos="fade-up" data-aos-delay="200">
-                    <div class="review-stars">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <p>"Best salon in town! They made me feel so comfortable and the service was top-notch."</p>
-                    <div class="review-author">
-                        <strong>Mike Chen</strong>
-                        <span>Facial Treatment</span>
-                    </div>
-                </div>
-                <div class="review-card" data-aos="fade-up" data-aos-delay="300">
-                    <div class="review-stars">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <p>"Love the online booking system. So convenient and easy to use. Highly recommend!"</p>
-                    <div class="review-author">
-                        <strong>Emma Davis</strong>
-                        <span>Spa Treatment</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Admin Dashboard -->
-    <section class="admin-section" style="position: relative; overflow: hidden; padding: 60px 0;">
-        <div class="hero-3d-container">
-            <div class="floating-orb orb-1" style="opacity: 0.1;"></div>
-        </div>
-        <div class="container">
-            <div class="admin-layout">
-                <!-- Sidebar -->
-                <div class="admin-sidebar" data-aos="fade-right">
-                    <div class="sidebar-menu">
-                        <a href="#overview" class="sidebar-link active" data-section="overview">
-                            <i class="fas fa-tachometer-alt"></i>
-                            Overview
-                        </a>
-                        <a href="#bookings" class="sidebar-link" data-section="bookings">
-                            <i class="fas fa-calendar-check"></i>
-                            Bookings
-                        </a>
-                        <a href="#services" class="sidebar-link" data-section="services">
-                            <i class="fas fa-concierge-bell"></i>
-                            Services
-                        </a>
-                        <a href="#staff" class="sidebar-link" data-section="staff">
-                            <i class="fas fa-users"></i>
-                            Staff
-                        </a>
-                        <a href="#analytics" class="sidebar-link" data-section="analytics">
-                            <i class="fas fa-chart-bar"></i>
-                            Analytics
-                        </a>
-                        <a href="#settings" class="sidebar-link" data-section="settings">
-                            <i class="fas fa-cogs"></i>
-                            Settings
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Main Content -->
-                <div class="admin-main">
                     <!-- Overview -->
                     <div id="overview-section" class="admin-content active" data-aos="fade-left">
                         <div class="content-header">
