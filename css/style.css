@@ -221,9 +221,10 @@ button:hover ~ .cursor-outline {
 .btn-secondary,
 .btn-ghost {
     display: inline-flex;
+    justify-content: center;
     align-items: center;
     gap: 10px;
-    padding: 14px 32px;
+    padding: 14px 20px;
     border-radius: 50px;
     font-weight: 600;
     font-size: 0.95rem;
@@ -233,6 +234,7 @@ button:hover ~ .cursor-outline {
     overflow: hidden;
     border: none;
     cursor: pointer;
+    text-align: center;
 }
 
 .btn-primary {
@@ -262,9 +264,10 @@ button:hover ~ .cursor-outline {
 }
 
 .btn-secondary {
-    background: transparent;
+    background: white;
     color: var(--primary);
     border: 2px solid var(--primary);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 .btn-secondary:hover {
@@ -632,11 +635,13 @@ button:hover ~ .cursor-outline {
 
 .salon-card {
     position: relative;
-    background: white;
+    background: rgba(255, 255, 255, 0.95);
     border-radius: 20px;
     padding: 40px;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
 }
 
 .salon-card::before {
@@ -773,7 +778,8 @@ button:hover ~ .cursor-outline {
 }
 
 .salon-actions {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 15px;
 }
 
