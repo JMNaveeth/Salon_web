@@ -190,7 +190,7 @@ button:hover ~ .cursor-outline {
 }
 
 .nav-container {
-    max-width: 1200px;
+    max-width: 95%;
     margin: 0 auto;
     padding: 0 30px;
     display: flex;
@@ -206,11 +206,12 @@ button:hover ~ .cursor-outline {
 .nav-logo h2 {
     font-family: 'Playfair Display', serif;
     color: var(--primary);
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: 900;
     letter-spacing: -0.5px;
     position: relative;
     z-index: 2;
+    white-space: nowrap;
 }
 
 .logo-accent {
@@ -234,7 +235,7 @@ button:hover ~ .cursor-outline {
 .nav-menu {
     display: flex;
     align-items: center;
-    gap: 40px;
+    gap: 20px;
 }
 
 .nav-link {

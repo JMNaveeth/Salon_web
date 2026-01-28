@@ -9,18 +9,34 @@
     <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
 </head>
 <body>
+    <!-- 3D Canvas Background -->
+    <canvas id="webgl-canvas"></canvas>
+    
+    <!-- Cursor Follower -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
     <!-- Navigation -->
-    <nav class="navbar">
+    <nav class="navbar" id="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <a href="index.html"><h2>Kinniya Salon</h2></a>
+                <h2>Kinniya Salon</h2>
+                <div class="logo-accent"></div>
             </div>
             <div class="nav-menu">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="services.html" class="nav-link">Services</a>
-                <a href="gallery.html" class="nav-link">Gallery</a>
-                <a href="dashboard.html" class="nav-link">Dashboard</a>
-                <a href="booking.html" class="nav-link btn-primary">Book Now</a>
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#salons" class="nav-link">Salons</a>
+                <a href="#howitworks" class="nav-link">How it works</a>
+                <a href="#slots" class="nav-link">Available today</a>
+                <a href="#contact" class="nav-link">Contact</a>
+                <a href="admin.html" class="btn-ghost">
+                    <i class="fas fa-store"></i>
+                    Shop Owner
+                </a>
+                <a href="booking.html" class="btn-primary">Book Now</a>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
             <div class="hamburger">
                 <span></span>
@@ -31,17 +47,27 @@
     </nav>
 
     <!-- Shop Owner Header -->
-    <section class="admin-header">
-        <div class="container">
+    <section class="admin-header hero" style="min-height: 60vh; padding-top: 100px;">
+        <div class="hero-3d-container">
+            <div class="floating-orb orb-1"></div>
+            <div class="floating-orb orb-2"></div>
+            <div class="floating-orb orb-3"></div>
+        </div>
+        <div class="container" style="text-align: center; position: relative; z-index: 1;">
             <div class="admin-header-content" data-aos="fade-up">
-                <h1><i class="fas fa-store"></i> Shop Owner Portal</h1>
-                <p>Owners and managers can view bookings, manage services, staff, and schedules.</p>
+                <div class="hero-badge" style="margin: 0 auto 20px;">Admin Portal</div>
+                <h1 class="hero-title">Shop Owner <span class="highlight">Dashboard</span></h1>
+                <p class="hero-description" style="max-width: 600px; margin: 0 auto;">Manage your services, staff, and bookings in one place.</p>
             </div>
         </div>
     </section>
 
     <!-- Marketing sections relocated from user page for owner reference -->
-    <section id="owner-services" class="services-preview">
+    <section id="owner-services" class="services-preview" style="background: var(--bg-light); padding: 80px 0;">
+         <div class="hero-3d-container">
+            <div class="floating-orb orb-1" style="transform: scale(0.8);"></div>
+            <div class="floating-orb orb-3" style="animation-delay: 7s; opacity: 0.2;"></div>
+        </div>
         <div class="container">
             <div class="section-header" data-aos="fade-up">
                 <h2>Our Premium Services</h2>
@@ -76,7 +102,11 @@
         </div>
     </section>
 
-    <section class="why-choose-us">
+    <section class="why-choose-us" style="position: relative; overflow: hidden; padding: 100px 0;">
+         <div class="hero-3d-container">
+            <div class="floating-orb orb-2" style="bottom: -50px; left: -50px; opacity: 0.3;"></div>
+            <div class="floating-orb orb-1" style="top: -100px; right: -100px; opacity: 0.2;"></div>
+        </div>
         <div class="container">
             <div class="why-grid">
                 <div class="why-content" data-aos="fade-right">
@@ -116,7 +146,11 @@
         </div>
     </section>
 
-    <section id="owner-gallery" class="gallery-preview">
+    <section id="owner-gallery" class="gallery-preview" style="position: relative; overflow: hidden; padding: 100px 0;">
+         <div class="hero-3d-container">
+            <div class="floating-orb orb-1" style="width: 300px; height: 300px; opacity: 0.2;"></div>
+            <div class="floating-orb orb-3" style="top: 20%; left: 80%; animation-delay: 4s;"></div>
+        </div>
         <div class="container">
             <div class="section-header" data-aos="fade-up">
                 <h2>Our Work</h2>
@@ -145,7 +179,11 @@
         </div>
     </section>
 
-    <section id="owner-reviews" class="reviews">
+    <section id="owner-reviews" class="reviews" style="position: relative; overflow: hidden; padding: 100px 0;">
+        <div class="hero-3d-container">
+            <div class="floating-orb orb-2" style="animation-delay: 2s; transform: scale(0.8);"></div>
+            <div class="floating-orb orb-3" style="animation-delay: 7s; opacity: 0.2;"></div>
+        </div>
         <div class="container">
             <div class="section-header" data-aos="fade-up">
                 <h2>What Our Clients Say</h2>
@@ -199,7 +237,10 @@
     </section>
 
     <!-- Admin Dashboard -->
-    <section class="admin-section">
+    <section class="admin-section" style="position: relative; overflow: hidden; padding: 60px 0;">
+        <div class="hero-3d-container">
+            <div class="floating-orb orb-1" style="opacity: 0.1;"></div>
+        </div>
         <div class="container">
             <div class="admin-layout">
                 <!-- Sidebar -->
