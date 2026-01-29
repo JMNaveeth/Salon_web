@@ -166,8 +166,65 @@ function loadAdminData() {
 }
 
 function initDynamicEvents() {
-    // Additional event handlers can be added here as needed
+    // Service Form Submission
+    const serviceForm = document.getElementById('serviceForm');
+    if (serviceForm) {
+        serviceForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = {
+                name: document.getElementById('serviceName').value,
+                category: document.getElementById('serviceCategory').value,
+                price: document.getElementById('servicePrice').value,
+                duration: document.getElementById('serviceDuration').value,
+                description: document.getElementById('serviceDescription').value
+            };
+            console.log('Service saved:', formData);
+            alert('Service added successfully!');
+            resetServiceForm();
+        });
+    }
+
+    // Staff Form Submission
+    const staffForm = document.getElementById('staffForm');
+    if (staffForm) {
+        staffForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = {
+                firstName: document.getElementById('staffFirstName').value,
+                lastName: document.getElementById('staffLastName').value,
+                email: document.getElementById('staffEmail').value,
+                phone: document.getElementById('staffPhone').value,
+                specialty: document.getElementById('staffSpecialty').value,
+                bio: document.getElementById('staffBio').value
+            };
+            console.log('Staff saved:', formData);
+            alert('Staff member added successfully!');
+            resetStaffForm();
+        });
+    }
+
+    // Settings Form
+    const settingsForm = document.getElementById('settingsForm');
+    if (settingsForm) {
+        settingsForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Settings saved successfully!');
+        });
+    }
 }
+
+// Form Reset Functions
+window.resetServiceForm = function() {
+    document.getElementById('serviceForm')?.reset();
+};
+
+window.resetStaffForm = function() {
+    document.getElementById('staffForm')?.reset();
+};
+
+window.resetSettings = function() {
+    document.getElementById('settingsForm')?.reset();
+};
 
 // Custom Cursor
 function initCursor() {
