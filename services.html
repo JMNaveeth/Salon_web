@@ -45,40 +45,15 @@
         </div>
     </nav>
 
-    <!-- Services Hero Section -->
-    <section class="hero services-hero-section">
-        <div class="hero-container">
-            <div class="hero-content">
-                <div class="hero-badge">Our Services</div>
-                <h1 class="hero-title">
-                    Professional Beauty
-                    <span class="highlight">Treatments</span>
-                </h1>
-                <p class="hero-description">Expert care tailored to enhance your natural beauty. From haircuts to spa treatments, discover our complete range of premium services.</p>
-                <div class="hero-buttons">
-                    <a href="#services-list" class="btn-primary">
-                        <span>View All Services</span>
-                        <i class="fas fa-arrow-down"></i>
-                    </a>
-                    <a href="booking.html" class="btn-secondary">
-                        <span>Book Now</span>
-                        <i class="fas fa-calendar-check"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="hero-image">
-                <div class="hero-visual-container">
-                    <div class="hero-photo">
-                        <img src="https://via.placeholder.com/400x400/D4AF37/FFFFFF?text=Shop+Owner" alt="Shop Owner" class="owner-photo">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Service Categories Section -->
-    <section id="services-list" class="services-main-section">
+    <section id="services-list" class="services-main-section" style="padding-top: 100px;">
         <div class="container">
+            <!-- Page Title -->
+            <div class="services-page-header">
+                <h1>Our Services</h1>
+                <p>Choose from our wide range of professional beauty services</p>
+            </div>
+
             <!-- Filter Navigation -->
             <div class="services-filter-bar">
                 <div class="filter-tabs">
@@ -95,9 +70,30 @@
                         <span>Skin Care</span>
                     </button>
                 </div>
-                <div class="services-search">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="serviceSearch" placeholder="Search services...">
+                <div class="filter-controls">
+                    <div class="services-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="serviceSearch" placeholder="Search services...">
+                    </div>
+                    <div class="price-filter">
+                        <select id="priceFilter">
+                            <option value="all">All Prices</option>
+                            <option value="low">Under $50</option>
+                            <option value="medium">$50 - $80</option>
+                            <option value="high">Above $80</option>
+                        </select>
+                    </div>
+                    <div class="sort-options">
+                        <select id="sortServices">
+                            <option value="default">Sort By</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="duration">Duration</option>
+                            <option value="rating">Rating</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
                 </div>
             </div>
 

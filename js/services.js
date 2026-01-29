@@ -1,10 +1,13 @@
-// Services Page JavaScript - Single Shop Layout
+// Services Page JavaScript - Enhanced with User-Friendly Features
 
 document.addEventListener('DOMContentLoaded', function() {
     initServiceFilters();
     initServiceSearch();
+    initPriceFilter();
+    initSortServices();
     initScrollAnimations();
     initSmoothScroll();
+    initQuickActions();
 });
 
 // Service Category Filtering
@@ -279,3 +282,148 @@ document.head.appendChild(style);
 console.log('Services Page Initialized');
 console.log('Total service items:', document.querySelectorAll('.service-item').length);
 console.log('Service categories:', document.querySelectorAll('.service-category-section').length);
+
+// Price Filter Functionality
+function initPriceFilter() {
+    const priceFilter = document.getElementById('priceFilter');
+    if (!priceFilter) return;
+
+    priceFilter.addEventListener('change', function() {
+        const filterValue = this.value;
+        const serviceItems = document.querySelectorAll('.service-item');
+
+        serviceItems.forEach(item => {
+            const priceElement = item.querySelector('.service-item-price .price');
+            if (!priceElement) return;
+
+            const priceText = priceElement.textContent.replace(/[^0-9]/g, '');
+            const price = parseInt(priceText);
+
+            let shouldShow = true;
+
+            switch(filterValue) {
+                case 'low':
+                    shouldShow = price < 50;
+                    break;
+                case 'medium':
+                    shouldShow = price >= 50 && price <= 80;
+                    break;
+                case 'high':
+                    shouldShow = price > 80;
+                    break;
+                case 'all':
+                default:
+                    shouldShow = true;
+            }
+
+            item.style.display = shouldShow ? 'flex' : 'none';
+        });
+
+        updateVisibleCategories();
+    });
+}
+
+// Sort Services Functionality
+function initSortServices() {
+    const sortSelect = document.getElementById('sortServices');
+    if (!sortSelect) return;
+
+    sortSelect.addEventListener('change', function() {
+        const sortValue = this.value;
+        const categoryGroups = document.querySelectorAll('.service-category-section');
+
+        categoryGroups.forEach(group => {
+            const servicesList = group.querySelector('.services-list');
+            if (!servicesList) return;
+
+            const items = Array.from(servicesList.querySelectorAll('.service-item'));
+
+            items.sort((a, b) => {
+                switch(sortValue) {
+                    case 'price-low':
+                        return getPrice(a) - getPrice(b);
+                    case 'price-high':
+                        return getPrice(b) - getPrice(a);
+                    case 'duration':
+                        return getDuration(a) - getDuration(b);
+                    case 'rating':
+                        return getRating(b) - getRating(a);
+                    default:
+                        return 0;
+                }
+            });
+
+            // Re-append sorted items
+            items.forEach(item => servicesList.appendChild(item));
+        });
+    });
+}
+
+// Helper functions for sorting
+function getPrice(item) {
+    const priceElement = item.querySelector('.service-item-price .price');
+    if (!priceElement) return 0;
+    return parseInt(priceElement.textContent.replace(/[^0-9]/g, ''));
+}
+
+function getDuration(item) {
+    const durationElement = item.querySelector('.duration');
+    if (!durationElement) return 0;
+    return parseInt(durationElement.textContent.replace(/[^0-9]/g, ''));
+}
+
+function getRating(item) {
+    const ratingElement = item.querySelector('.service-rating span');
+    if (!ratingElement) return 0;
+    const ratingText = ratingElement.textContent;
+    const match = ratingText.match(/([0-9.]+)/);
+    return match ? parseFloat(match[1]) : 0;
+}
+
+// Update visible categories after filtering
+function updateVisibleCategories() {
+    const categoryGroups = document.querySelectorAll('.service-category-section');
+    
+    categoryGroups.forEach(group => {
+        const visibleItems = group.querySelectorAll('.service-item[style*="flex"]');
+        group.style.display = visibleItems.length > 0 ? 'block' : 'none';
+    });
+}
+
+// Quick Actions - Add tooltips and keyboard shortcuts
+function initQuickActions() {
+    // Add keyboard shortcut hints
+    document.addEventListener('keydown', function(e) {
+        // Ctrl/Cmd + K to focus search
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            const searchInput = document.getElementById('serviceSearch');
+            if (searchInput) {
+                searchInput.focus();
+            }
+        }
+    });
+
+    // Add click-to-copy for prices
+    const priceElements = document.querySelectorAll('.service-item-price .price');
+    priceElements.forEach(price => {
+        price.style.cursor = 'pointer';
+        price.title = 'Click to see details';
+    });
+
+    // Enhance book buttons with loading state
+    const bookButtons = document.querySelectorAll('.btn-book');
+    bookButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+            this.style.pointerEvents = 'none';
+            
+            // Reset after navigation (this won't execute but shows intent)
+            setTimeout(() => {
+                this.innerHTML = originalText;
+                this.style.pointerEvents = 'auto';
+            }, 1000);
+        });
+    });
+}
