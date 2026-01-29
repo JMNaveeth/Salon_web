@@ -32,10 +32,14 @@ const Storage = {
 function initAdminPanel() {
     const sidebarLinks = document.querySelectorAll('.sidebar-link');
     
+    console.log('Admin Panel Initializing...');
+    console.log('Found sidebar links:', sidebarLinks.length);
+    
     // Initialize - show only the active section
     document.querySelectorAll('.admin-content').forEach(content => {
         if (content.classList.contains('active')) {
             content.style.display = 'block';
+            console.log('Active section:', content.id);
         } else {
             content.style.display = 'none';
         }
@@ -44,6 +48,8 @@ function initAdminPanel() {
     sidebarLinks.forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
+            
+            console.log('Sidebar link clicked:', this.dataset.section);
             
             // Remove active classes from all links
             sidebarLinks.forEach(l => l.classList.remove('active'));
@@ -59,22 +65,33 @@ function initAdminPanel() {
             
             // Show target section
             const targetId = this.dataset.section + '-section';
+            console.log('Looking for section ID:', targetId);
+            
             const targetContent = document.getElementById(targetId);
             
             if(targetContent) {
+                console.log('Section found, displaying:', targetId);
                 targetContent.classList.add('active');
                 targetContent.style.display = 'block';
                 
-                // Scroll to top of content
-                targetContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // Scroll to top of admin main content smoothly
+                const adminMain = document.querySelector('.admin-main');
+                if (adminMain) {
+                    adminMain.scrollTo({ top: 0, behavior: 'smooth' });
+                }
                 
                 // Refresh AOS animations if available
                 if(typeof AOS !== 'undefined') {
-                    AOS.refresh();
+                    setTimeout(() => AOS.refresh(), 100);
                 }
+            } else {
+                console.error('Section not found:', targetId);
+                alert('Section not found: ' + targetId);
             }
         });
     });
+    
+    console.log('Admin Panel Initialized Successfully');
 }
 
 function loadAdminData() {
@@ -166,11 +183,16 @@ function loadAdminData() {
 }
 
 function initDynamicEvents() {
+    console.log('Initializing dynamic events...');
+    
     // Service Form Submission
     const serviceForm = document.getElementById('serviceForm');
     if (serviceForm) {
+        console.log('Service form found and initializing...');
         serviceForm.addEventListener('submit', function(e) {
             e.preventDefault();
+            console.log('Service form submitted');
+            
             const formData = {
                 name: document.getElementById('serviceName').value,
                 category: document.getElementById('serviceCategory').value,
@@ -178,17 +200,35 @@ function initDynamicEvents() {
                 duration: document.getElementById('serviceDuration').value,
                 description: document.getElementById('serviceDescription').value
             };
-            console.log('Service saved:', formData);
-            alert('Service added successfully!');
+            
+            console.log('Service data:', formData);
+            
+            // Validate required fields
+            if (!formData.name || !formData.category || !formData.price || !formData.duration) {
+                alert('Please fill in all required fields!');
+                return;
+            }
+            
+            // Store in localStorage (simple demo)
+            const services = Storage.get('services', []);
+            services.push({ ...formData, id: Date.now() });
+            Storage.set('services', services);
+            
+            alert('✅ Service added successfully!\n\nName: ' + formData.name + '\nPrice: $' + formData.price);
             resetServiceForm();
         });
+    } else {
+        console.warn('Service form not found');
     }
 
     // Staff Form Submission
     const staffForm = document.getElementById('staffForm');
     if (staffForm) {
+        console.log('Staff form found and initializing...');
         staffForm.addEventListener('submit', function(e) {
             e.preventDefault();
+            console.log('Staff form submitted');
+            
             const formData = {
                 firstName: document.getElementById('staffFirstName').value,
                 lastName: document.getElementById('staffLastName').value,
@@ -197,20 +237,53 @@ function initDynamicEvents() {
                 specialty: document.getElementById('staffSpecialty').value,
                 bio: document.getElementById('staffBio').value
             };
-            console.log('Staff saved:', formData);
-            alert('Staff member added successfully!');
+            
+            console.log('Staff data:', formData);
+            
+            // Validate required fields
+            if (!formData.firstName || !formData.lastName || !formData.specialty) {
+                alert('Please fill in all required fields!');
+                return;
+            }
+            
+            // Store in localStorage (simple demo)
+            const staff = Storage.get('staff', []);
+            staff.push({ ...formData, id: Date.now() });
+            Storage.set('staff', staff);
+            
+            alert('✅ Staff member added successfully!\n\nName: ' + formData.firstName + ' ' + formData.lastName + '\nSpecialty: ' + formData.specialty);
             resetStaffForm();
         });
+    } else {
+        console.warn('Staff form not found');
     }
 
     // Settings Form
     const settingsForm = document.getElementById('settingsForm');
     if (settingsForm) {
+        console.log('Settings form found and initializing...');
         settingsForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            alert('Settings saved successfully!');
+            console.log('Settings form submitted');
+            
+            const formData = {
+                businessName: document.getElementById('businessName').value,
+                businessEmail: document.getElementById('businessEmail').value,
+                businessPhone: document.getElementById('businessPhone').value,
+                maxAdvanceBooking: document.getElementById('maxAdvanceBooking').value,
+                cancellationHours: document.getElementById('cancellationHours').value
+            };
+            
+            // Store settings
+            Storage.set('settings', formData);
+            
+            alert('✅ Settings saved successfully!');
         });
+    } else {
+        console.warn('Settings form not found');
     }
+    
+    console.log('Dynamic events initialized');
 }
 
 // Form Reset Functions
