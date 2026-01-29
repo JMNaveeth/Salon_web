@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initAdminPanel();
     loadAdminData();
     initDynamicEvents();
+    initCursor();
 });
 
 // Storage Helper
@@ -176,3 +177,51 @@ window.showAddServiceModal = function() { openModal('serviceModal'); };
 window.showAddStaffModal = function() { openModal('staffModal'); };
 window.closeServiceModal = function() { document.getElementById('serviceModal').classList.remove('show'); };
 window.closeStaffModal = function() { document.getElementById('staffModal').classList.remove('show'); };
+
+// Custom Cursor
+function initCursor() {
+    const cursorDot = document.querySelector('.cursor-dot');
+    const cursorOutline = document.querySelector('.cursor-outline');
+    
+    if (!cursorDot || !cursorOutline) return;
+
+    let mouseX = 0, mouseY = 0;
+    let outlineX = 0, outlineY = 0;
+
+    document.addEventListener('mousemove', function(e) {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        
+        cursorDot.style.left = mouseX + 'px';
+        cursorDot.style.top = mouseY + 'px';
+    });
+
+    function animateOutline() {
+        const distX = mouseX - outlineX;
+        const distY = mouseY - outlineY;
+        
+        outlineX += distX * 0.15;
+        outlineY += distY * 0.15;
+        
+        cursorOutline.style.left = outlineX + 'px';
+        cursorOutline.style.top = outlineY + 'px';
+        
+        requestAnimationFrame(animateOutline);
+    }
+    animateOutline();
+
+    // Add hover effects
+    const hoverElements = document.querySelectorAll('a, button, .sidebar-link, .stat-card, .action-btn, input, select, textarea');
+    
+    hoverElements.forEach(el => {
+        el.addEventListener('mouseenter', function() {
+            cursorDot.style.transform = 'translate(-50%, -50%) scale(1.5)';
+            cursorOutline.style.transform = 'translate(-50%, -50%) scale(1.5)';
+        });
+        
+        el.addEventListener('mouseleave', function() {
+            cursorDot.style.transform = 'translate(-50%, -50%) scale(1)';
+            cursorOutline.style.transform = 'translate(-50%, -50%) scale(1)';
+        });
+    });
+}

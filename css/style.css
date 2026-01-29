@@ -2144,6 +2144,87 @@ body.dark-mode .service-item {
     border-color: rgba(212, 175, 55, 0.1);
 }
 
+/* Dark Mode - Admin Page */
+body.dark-mode .admin-sidebar,
+body.dark-mode .admin-main,
+body.dark-mode .stat-card,
+body.dark-mode .service-card-admin,
+body.dark-mode .staff-card,
+body.dark-mode .analytics-card,
+body.dark-mode .activity-item {
+    background: #2d2d2d;
+    color: #e0e0e0;
+}
+
+body.dark-mode .admin-section {
+    background: #1a1a1a;
+}
+
+body.dark-mode .content-header h2,
+body.dark-mode .stat-number,
+body.dark-mode .analytics-card h4,
+body.dark-mode .staff-card h4,
+body.dark-mode .service-card-header h4,
+body.dark-mode .recent-activity h3,
+body.dark-mode .form-section h3 {
+    color: #ffffff;
+}
+
+body.dark-mode .stat-label,
+body.dark-mode .activity-content p {
+    color: #b0b0b0;
+}
+
+body.dark-mode .sidebar-link {
+    color: #b0b0b0;
+}
+
+body.dark-mode .sidebar-link:hover,
+body.dark-mode .sidebar-link.active {
+    color: var(--primary);
+    background: rgba(212, 175, 55, 0.1);
+}
+
+body.dark-mode .content-header {
+    border-bottom-color: #404040;
+}
+
+body.dark-mode .recent-activity {
+    background: #252525;
+}
+
+body.dark-mode .admin-table tbody tr {
+    background: #2d2d2d;
+    border-bottom-color: #404040;
+}
+
+body.dark-mode .admin-table tbody tr:hover {
+    background: rgba(212, 175, 55, 0.1);
+}
+
+body.dark-mode .admin-table tbody td {
+    color: #e0e0e0;
+}
+
+body.dark-mode .form-group input,
+body.dark-mode .form-group textarea,
+body.dark-mode .form-group select,
+body.dark-mode .header-actions input,
+body.dark-mode .header-actions select {
+    background: #2d2d2d;
+    color: #e0e0e0;
+    border-color: #404040;
+}
+
+body.dark-mode .form-group label {
+    color: #e0e0e0;
+}
+
+body.dark-mode .chart-placeholder {
+    background: #252525;
+    color: #999;
+}
+
 body.dark-mode .service-item:hover {
     border-color: var(--primary);
 }
