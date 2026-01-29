@@ -1761,61 +1761,66 @@ button:hover ~ .cursor-outline {
 .category-header {
     display: flex;
     align-items: center;
-    gap: 25px;
-    margin-bottom: 40px;
-    padding-bottom: 25px;
-    border-bottom: 3px solid var(--primary);
+    gap: 20px;
+    margin-bottom: 35px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid rgba(212, 175, 55, 0.3);
 }
 
 .category-icon {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     background: var(--gradient);
-    border-radius: 20px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.25);
     flex-shrink: 0;
 }
 
 .category-icon i {
-    font-size: 36px;
+    font-size: 32px;
     color: white;
 }
 
 .category-header h2 {
     font-family: 'Playfair Display', serif;
-    font-size: 2.5rem;
-    color: var(--primary);
-    margin: 0 0 8px 0;
+    font-size: 2.2rem;
+    color: var(--text);
+    margin: 0 0 5px 0;
+    font-weight: 700;
 }
 
 .category-header p {
     color: var(--text-light);
-    font-size: 1.1rem;
+    font-size: 1rem;
     margin: 0;
 }
 
 /* Services List */
 .services-list {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 /* Service Item */
 .service-item {
     background: white;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.06);
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
     display: flex;
-    gap: 20px;
+    flex-direction: column;
+    gap: 0;
+    height: 100%;
 }
 
 .service-item::before {
@@ -1823,22 +1828,22 @@ button:hover ~ .cursor-outline {
     position: absolute;
     top: 0;
     left: 0;
-    width: 5px;
-    height: 100%;
+    width: 100%;
+    height: 4px;
     background: var(--gradient);
-    transform: scaleY(0);
-    transition: transform 0.4s ease;
-    transform-origin: bottom;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+    transform-origin: left;
 }
 
 .service-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.2);
     border-color: var(--primary);
 }
 
 .service-item:hover::before {
-    transform: scaleY(1);
+    transform: scaleX(1);
 }
 
 /* Featured Service */
@@ -1863,31 +1868,32 @@ button:hover ~ .cursor-outline {
 
 /* Service Item Icon */
 .service-item-icon {
-    width: 60px;
-    height: 60px;
-    background: rgba(212, 175, 55, 0.1);
-    border-radius: 12px;
+    width: 70px;
+    height: 70px;
+    background: var(--gradient);
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
     transition: all 0.3s ease;
-    border: 1px solid rgba(212, 175, 55, 0.2);
+    border: none;
+    margin-bottom: 20px;
 }
 
 .service-item:hover .service-item-icon {
-    background: rgba(212, 175, 55, 0.15);
-    border-color: var(--primary);
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
 }
 
 .service-item-icon i {
-    font-size: 28px;
-    color: var(--primary);
+    font-size: 36px;
+    color: white;
     transition: all 0.3s ease;
 }
 
 .service-item:hover .service-item-icon i {
-    transform: scale(1.05);
+    transform: scale(1.1);
 }
 
 /* Service Item Content */
@@ -1901,15 +1907,16 @@ button:hover ~ .cursor-outline {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 12px;
+    margin-bottom: 15px;
     gap: 15px;
 }
 
 .service-item-header h3 {
     font-family: 'Playfair Display', serif;
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     color: var(--text);
     margin: 0;
+    line-height: 1.3;
 }
 
 .service-item-price {
@@ -1918,10 +1925,11 @@ button:hover ~ .cursor-outline {
     align-items: flex-end;
     gap: 5px;
     flex-shrink: 0;
+    text-align: right;
 }
 
 .service-item-price .price {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     font-weight: 700;
     color: var(--primary);
     line-height: 1;
@@ -1932,7 +1940,8 @@ button:hover ~ .cursor-outline {
     align-items: center;
     gap: 5px;
     color: var(--text-light);
-    font-size: 0.85rem;
+    font-size: 0.9rem;
+    white-space: nowrap;
 }
 
 .service-item-price .duration i {
@@ -1941,9 +1950,10 @@ button:hover ~ .cursor-outline {
 
 .service-description {
     color: var(--text);
-    line-height: 1.6;
-    margin-bottom: 15px;
+    line-height: 1.7;
+    margin-bottom: 18px;
     font-size: 0.95rem;
+    flex-grow: 1;
 }
 
 /* Service Features */
@@ -1978,25 +1988,28 @@ button:hover ~ .cursor-outline {
     align-items: center;
     margin-top: auto;
     padding-top: 20px;
-    border-top: 1px solid rgba(0, 0, 0, 0.08);
-    gap: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    gap: 15px;
+    flex-wrap: wrap;
 }
 
 .service-rating {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     color: var(--primary);
+    flex-wrap: wrap;
 }
 
 .service-rating i {
-    font-size: 1rem;
+    font-size: 0.95rem;
 }
 
 .service-rating span {
     color: var(--text-light);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     margin-left: 5px;
+    white-space: nowrap;
 }
 
 .btn-book {
@@ -2165,6 +2178,10 @@ body.dark-mode .service-item-footer {
 
     .category-icon i {
         font-size: 28px;
+    }
+
+    .services-list {
+        grid-template-columns: 1fr;
     }
 
     .service-item {
