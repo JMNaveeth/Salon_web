@@ -1,9 +1,21 @@
 // Admin Panel Logic
 document.addEventListener('DOMContentLoaded', function() {
-    initAdminPanel();
-    loadAdminData();
-    initDynamicEvents();
-    initCursor();
+    // Initialize AOS first if available
+    if(typeof AOS !== 'undefined') {
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+    }
+    
+    // Small delay to ensure everything is loaded
+    setTimeout(() => {
+        initAdminPanel();
+        loadAdminData();
+        initDynamicEvents();
+        initCursor();
+    }, 100);
 });
 
 // Storage Helper
@@ -20,31 +32,46 @@ const Storage = {
 function initAdminPanel() {
     const sidebarLinks = document.querySelectorAll('.sidebar-link');
     
-    // Default to first active
-    const activeSection = document.querySelector('.admin-content.active') || document.getElementById('overview-section');
-    if(activeSection) activeSection.style.display = 'block';
+    // Initialize - show only the active section
+    document.querySelectorAll('.admin-content').forEach(content => {
+        if (content.classList.contains('active')) {
+            content.style.display = 'block';
+        } else {
+            content.style.display = 'none';
+        }
+    });
 
     sidebarLinks.forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
             
-            // Remove active classes
+            // Remove active classes from all links
             sidebarLinks.forEach(l => l.classList.remove('active'));
+            
+            // Hide all content sections
             document.querySelectorAll('.admin-content').forEach(c => {
                 c.classList.remove('active');
-                c.style.display = 'none'; // Ensure hidden
+                c.style.display = 'none';
             });
             
-            // Add active to current
+            // Add active to current link
             this.classList.add('active');
+            
+            // Show target section
             const targetId = this.dataset.section + '-section';
             const targetContent = document.getElementById(targetId);
             
             if(targetContent) {
                 targetContent.classList.add('active');
-                targetContent.style.display = 'block'; // Make visible
-                // Refresh AOS if available
-                if(typeof AOS !== 'undefined') AOS.refresh();
+                targetContent.style.display = 'block';
+                
+                // Scroll to top of content
+                targetContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                
+                // Refresh AOS animations if available
+                if(typeof AOS !== 'undefined') {
+                    AOS.refresh();
+                }
             }
         });
     });
