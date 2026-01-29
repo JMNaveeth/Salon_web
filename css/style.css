@@ -622,6 +622,28 @@ button:hover ~ .cursor-outline {
     animation: pulse 3s infinite ease-in-out;
 }
 
+/* Hero Photo for Shop Owner */
+.hero-photo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 5px solid var(--primary);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    background: white;
+}
+
+.hero-photo .owner-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
 @keyframes pulse {
     0%, 100% {
         transform: translate(-50%, -50%) scale(1);
@@ -1613,12 +1635,20 @@ button:hover ~ .cursor-outline {
 
 /* Services Hero */
 .services-hero-section {
-    min-height: 70vh;
-    padding: 120px 0 80px;
+    min-height: 65vh;
+    padding: 100px 0 60px;
+    background: linear-gradient(135deg, var(--bg) 0%, var(--bg-light) 100%);
 }
 
 .services-hero-section .hero-placeholder i {
     font-size: 120px;
+}
+
+.services-hero-section .hero-photo {
+    width: 320px;
+    height: 320px;
+    border: 4px solid var(--primary);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
 /* Services Main Section */
