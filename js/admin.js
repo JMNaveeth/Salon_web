@@ -166,44 +166,8 @@ function loadAdminData() {
 }
 
 function initDynamicEvents() {
-    // Add Service Modal Logic
-    const addServiceBtn = document.querySelector('button[onclick="showAddServiceModal()"]');
-    if(addServiceBtn) {
-        addServiceBtn.onclick = function() {
-            openModal('serviceModal');
-        };
-    }
-
-    // Add Staff Modal Logic
-    const addStaffBtn = document.querySelector('button[onclick="showAddStaffModal()"]');
-    if(addStaffBtn) {
-        addStaffBtn.onclick = function() {
-            openModal('staffModal');
-        };
-    }
-
-    // Close Modal Logic
-    document.querySelectorAll('.modal-close, .btn-secondary').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const modal = this.closest('.admin-modal');
-            if(modal) modal.classList.remove('show');
-        });
-    });
+    // Additional event handlers can be added here as needed
 }
-
-function openModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if(modal) {
-        modal.display = 'flex';
-        modal.classList.add('show');
-    }
-}
-
-// Global functions for inline onclicks
-window.showAddServiceModal = function() { openModal('serviceModal'); };
-window.showAddStaffModal = function() { openModal('staffModal'); };
-window.closeServiceModal = function() { document.getElementById('serviceModal').classList.remove('show'); };
-window.closeStaffModal = function() { document.getElementById('staffModal').classList.remove('show'); };
 
 // Custom Cursor
 function initCursor() {
