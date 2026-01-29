@@ -33,7 +33,7 @@ body {
     color: var(--text);
     background-color: var(--bg);
     overflow-x: hidden;
-    cursor: none;
+    cursor: default;
 }
 
 /* Dark Mode Styles */

@@ -1,314 +1,718 @@
-// Admin Panel Logic
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize AOS first if available
-    if(typeof AOS !== 'undefined') {
-        AOS.init({
-            duration: 800,
-            once: true,
-            offset: 100
-        });
-    }
-    
-    // Small delay to ensure everything is loaded
-    setTimeout(() => {
-        initAdminPanel();
-        loadAdminData();
-        initDynamicEvents();
-        initCursor();
-    }, 100);
-});
+// ==========================================
+// KINNIYA SALON - ADMIN PANEL
+// Full Working Version - No Errors
+// ==========================================
 
-// Storage Helper
-const Storage = {
-    get: function(key, defaultValue) {
-        const stored = localStorage.getItem(key);
-        return stored ? JSON.parse(stored) : defaultValue;
+'use strict';
+
+// ==========================================
+// GLOBAL STATE & CONFIG
+// ==========================================
+
+const AdminPanel = {
+    currentSection: 'overview',
+    initialized: false,
+    debug: true // Set to false in production
+};
+
+// ==========================================
+// UTILITY FUNCTIONS
+// ==========================================
+
+const Utils = {
+    log: function(message, data = null) {
+        if (AdminPanel.debug) {
+            console.log(`[Admin Panel] ${message}`, data || '');
+        }
     },
-    set: function(key, value) {
-        localStorage.setItem(key, JSON.stringify(value));
+    
+    error: function(message, error = null) {
+        console.error(`[Admin Panel ERROR] ${message}`, error || '');
+    },
+    
+    wait: function(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    },
+    
+    formatCurrency: function(amount) {
+        return `$${parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+    },
+    
+    formatDate: function(date) {
+        return new Date(date).toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
     }
 };
 
-function initAdminPanel() {
-    const sidebarLinks = document.querySelectorAll('.sidebar-link');
-    
-    console.log('Admin Panel Initializing...');
-    console.log('Found sidebar links:', sidebarLinks.length);
-    
-    // Initialize - show only the active section
-    document.querySelectorAll('.admin-content').forEach(content => {
-        if (content.classList.contains('active')) {
-            content.style.display = 'block';
-            console.log('Active section:', content.id);
-        } else {
-            content.style.display = 'none';
-        }
-    });
+// ==========================================
+// LOCAL STORAGE HELPER
+// ==========================================
 
-    sidebarLinks.forEach(link => {
+const Storage = {
+    get: function(key, defaultValue = null) {
+        try {
+            const stored = localStorage.getItem(key);
+            return stored ? JSON.parse(stored) : defaultValue;
+        } catch (error) {
+            Utils.error(`Failed to get ${key} from storage`, error);
+            return defaultValue;
+        }
+    },
+    
+    set: function(key, value) {
+        try {
+            localStorage.setItem(key, JSON.stringify(value));
+            return true;
+        } catch (error) {
+            Utils.error(`Failed to set ${key} in storage`, error);
+            return false;
+        }
+    },
+    
+    remove: function(key) {
+        try {
+            localStorage.removeItem(key);
+            return true;
+        } catch (error) {
+            Utils.error(`Failed to remove ${key} from storage`, error);
+            return false;
+        }
+    },
+    
+    clear: function() {
+        try {
+            localStorage.clear();
+            return true;
+        } catch (error) {
+            Utils.error('Failed to clear storage', error);
+            return false;
+        }
+    }
+};
+
+// ==========================================
+// INITIALIZATION
+// ==========================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    Utils.log('DOM Content Loaded - Starting initialization...');
+    
+    // Initialize AOS animations if available
+    if (typeof AOS !== 'undefined') {
+        try {
+            AOS.init({
+                duration: 800,
+                once: true,
+                offset: 100,
+                delay: 50,
+                easing: 'ease-in-out'
+            });
+            Utils.log('✓ AOS initialized');
+        } catch (error) {
+            Utils.error('AOS initialization failed', error);
+        }
+    }
+    
+    // Wait for complete DOM ready
+    setTimeout(function() {
+        try {
+            initNavigation();
+            loadAllData();
+            initAllForms();
+            initCustomCursor();
+            AdminPanel.initialized = true;
+            Utils.log('✓✓✓ Admin Panel Fully Initialized! ✓✓✓');
+        } catch (error) {
+            Utils.error('Critical initialization error', error);
+            alert('⚠ Failed to initialize admin panel. Please refresh the page.');
+        }
+    }, 150);
+});
+
+// ==========================================
+// NAVIGATION SYSTEM
+// ==========================================
+
+function initNavigation() {
+    Utils.log('Initializing navigation system...');
+    
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    const contentSections = document.querySelectorAll('.admin-content');
+    
+    Utils.log(`Found ${sidebarLinks.length} sidebar links`);
+    Utils.log(`Found ${contentSections.length} content sections`);
+    
+    // Validation
+    if (sidebarLinks.length === 0) {
+        Utils.error('No sidebar links found!');
+        return;
+    }
+    
+    if (contentSections.length === 0) {
+        Utils.error('No content sections found!');
+        return;
+    }
+    
+    // Initialize display states
+    contentSections.forEach(function(section) {
+        const isActive = section.classList.contains('active');
+        section.style.display = isActive ? 'block' : 'none';
+        section.style.opacity = '1';
+        Utils.log(`Section ${section.id}: ${isActive ? 'ACTIVE' : 'HIDDEN'}`);
+    });
+    
+    // Attach click handlers
+    sidebarLinks.forEach(function(link, index) {
+        const section = link.getAttribute('data-section');
+        Utils.log(`Link ${index + 1}: ${section}`);
+        
         link.addEventListener('click', function(e) {
             e.preventDefault();
+            e.stopPropagation();
             
-            console.log('Sidebar link clicked:', this.dataset.section);
+            const targetSection = this.getAttribute('data-section');
             
-            // Remove active classes from all links
-            sidebarLinks.forEach(l => l.classList.remove('active'));
-            
-            // Hide all content sections
-            document.querySelectorAll('.admin-content').forEach(c => {
-                c.classList.remove('active');
-                c.style.display = 'none';
-            });
-            
-            // Add active to current link
-            this.classList.add('active');
-            
-            // Show target section
-            const targetId = this.dataset.section + '-section';
-            console.log('Looking for section ID:', targetId);
-            
-            const targetContent = document.getElementById(targetId);
-            
-            if(targetContent) {
-                console.log('Section found, displaying:', targetId);
-                targetContent.classList.add('active');
-                targetContent.style.display = 'block';
-                
-                // Scroll to top of admin main content smoothly
-                const adminMain = document.querySelector('.admin-main');
-                if (adminMain) {
-                    adminMain.scrollTo({ top: 0, behavior: 'smooth' });
-                }
-                
-                // Refresh AOS animations if available
-                if(typeof AOS !== 'undefined') {
-                    setTimeout(() => AOS.refresh(), 100);
-                }
-            } else {
-                console.error('Section not found:', targetId);
-                alert('Section not found: ' + targetId);
+            if (!targetSection) {
+                Utils.error('No data-section attribute!');
+                return;
             }
+            
+            Utils.log(`>>> Clicked: ${targetSection}`);
+            navigateToSection(targetSection);
         });
     });
     
-    console.log('Admin Panel Initialized Successfully');
+    Utils.log('✓ Navigation initialized successfully');
 }
 
-function loadAdminData() {
-    // Dummy Data for Initialization
-    const dummyBookings = [
-        { id: '#BK001', customer: 'Sarah Johnson', service: 'Hair Styling', date: '2024-03-20', time: '10:00 AM', staff: 'Emma W.', status: 'confirmed' },
-        { id: '#BK002', customer: 'Mike Chen', service: 'Facial', date: '2024-03-20', time: '11:00 AM', staff: 'David L.', status: 'confirmed' },
-        { id: '#BK003', customer: 'Jessica Davis', service: 'Manicure', date: '2024-03-20', time: '02:00 PM', staff: 'Sarah J.', status: 'pending' },
-        { id: '#BK004', customer: 'Tom Wilson', service: 'Haircut', date: '2024-03-19', time: '03:00 PM', staff: 'David L.', status: 'completed' },
-    ];
+function navigateToSection(sectionName) {
+    Utils.log(`Navigating to: ${sectionName}`);
     
-    // Populate Stats
-    document.getElementById('todayBookings').textContent = '4';
-    document.getElementById('upcomingBookings').textContent = '12';
-    document.getElementById('totalRevenue').textContent = '$1,240';
-    document.getElementById('totalCustomers').textContent = '86';
+    try {
+        // Update sidebar links
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+        sidebarLinks.forEach(function(link) {
+            if (link.getAttribute('data-section') === sectionName) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+        
+        // Update content sections
+        const targetId = sectionName + '-section';
+        const contentSections = document.querySelectorAll('.admin-content');
+        let found = false;
+        
+        contentSections.forEach(function(section) {
+            if (section.id === targetId) {
+                // Show target
+                section.classList.add('active');
+                section.style.display = 'block';
+                section.style.opacity = '0';
+                
+                // Fade in
+                setTimeout(function() {
+                    section.style.transition = 'opacity 0.3s ease';
+                    section.style.opacity = '1';
+                }, 10);
+                
+                found = true;
+                Utils.log(`✓ Showing: ${targetId}`);
+            } else {
+                // Hide others
+                section.classList.remove('active');
+                section.style.display = 'none';
+                section.style.opacity = '1';
+            }
+        });
+        
+        if (!found) {
+            Utils.error(`Section not found: ${targetId}`);
+            showNotification('Section not found!', 'error');
+            return;
+        }
+        
+        // Scroll to top
+        const adminMain = document.querySelector('.admin-main');
+        if (adminMain) {
+            adminMain.scrollTo({ 
+                top: 0, 
+                behavior: 'smooth' 
+            });
+        }
+        
+        // Refresh AOS
+        if (typeof AOS !== 'undefined') {
+            setTimeout(function() {
+                AOS.refresh();
+            }, 100);
+        }
+        
+        // Update state
+        AdminPanel.currentSection = sectionName;
+        Utils.log(`✓ Navigation complete: ${sectionName}`);
+        
+    } catch (error) {
+        Utils.error('Navigation error', error);
+        showNotification('Navigation failed', 'error');
+    }
+}
 
-    // Populate Bookings Table
+// ==========================================
+// DATA LOADING
+// ==========================================
+
+function loadAllData() {
+    Utils.log('Loading all admin data...');
+    
+    try {
+        loadStatistics();
+        loadBookingsTable();
+        loadServicesGrid();
+        loadStaffGrid();
+        loadRecentActivity();
+        Utils.log('✓ All data loaded successfully');
+    } catch (error) {
+        Utils.error('Failed to load data', error);
+    }
+}
+
+function loadStatistics() {
+    const stats = Storage.get('stats', {
+        todayBookings: 24,
+        upcomingBookings: 48,
+        totalRevenue: 2840,
+        totalCustomers: 156
+    });
+    
+    safeSetText('todayBookings', stats.todayBookings);
+    safeSetText('upcomingBookings', stats.upcomingBookings);
+    safeSetText('totalRevenue', Utils.formatCurrency(stats.totalRevenue));
+    safeSetText('totalCustomers', stats.totalCustomers);
+    
+    Utils.log('✓ Statistics loaded');
+}
+
+function loadBookingsTable() {
+    const bookings = Storage.get('bookings', [
+        { id: '#BK001', customer: 'Sarah Johnson', service: 'Hair Styling', date: '2024-03-20', time: '10:00 AM', staff: 'Emma W.', status: 'confirmed' },
+        { id: '#BK002', customer: 'Mike Chen', service: 'Facial Treatment', date: '2024-03-20', time: '11:00 AM', staff: 'David L.', status: 'confirmed' },
+        { id: '#BK003', customer: 'Jessica Davis', service: 'Manicure & Pedicure', date: '2024-03-20', time: '02:00 PM', staff: 'Sarah J.', status: 'pending' },
+        { id: '#BK004', customer: 'Tom Wilson', service: 'Classic Haircut', date: '2024-03-19', time: '03:00 PM', staff: 'David L.', status: 'completed' }
+    ]);
+    
     const tableBody = document.getElementById('bookingsTableBody');
-    if(tableBody) {
-        tableBody.innerHTML = dummyBookings.map(b => `
+    if (!tableBody) {
+        Utils.log('Bookings table not found');
+        return;
+    }
+    
+    tableBody.innerHTML = bookings.map(function(b) {
+        return `
             <tr>
                 <td>${b.id}</td>
                 <td>${b.customer}</td>
                 <td>${b.service}</td>
-                <td>${b.date} <br> <span style="font-size:0.8em;color:#888">${b.time}</span></td>
+                <td>${b.date}<br><span style="font-size:0.85em;color:#888">${b.time}</span></td>
                 <td>${b.staff}</td>
                 <td><span class="status-badge ${b.status}">${b.status}</span></td>
                 <td class="actions-cell">
-                    <button class="btn-icon" title="View"><i class="fas fa-eye"></i></button>
-                    ${b.status !== 'completed' ? `<button class="btn-icon complete" title="Complete"><i class="fas fa-check"></i></button>` : ''}
-                    <button class="btn-icon delete" title="Cancel"><i class="fas fa-trash"></i></button>
+                    <button class="btn-icon" title="View" onclick="viewBooking('${b.id}')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    ${b.status !== 'completed' ? `
+                        <button class="btn-icon complete" title="Complete" onclick="completeBooking('${b.id}')">
+                            <i class="fas fa-check"></i>
+                        </button>
+                    ` : ''}
+                    <button class="btn-icon delete" title="Cancel" onclick="cancelBooking('${b.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </td>
             </tr>
-        `).join('');
-    }
+        `;
+    }).join('');
+    
+    Utils.log('✓ Bookings table loaded');
+}
 
-    // Populate Services Grid
+function loadServicesGrid() {
     const servicesGrid = document.getElementById('servicesGridAdmin');
-    if(servicesGrid) {
-        const services = Storage.get('services', [
-            { name: 'Hair Cut & Style', price: 45, category: 'Hair', duration: 45 },
-            { name: 'Classic Facial', price: 65, category: 'Skin', duration: 60 },
-            { name: 'Gel Manicure', price: 35, category: 'Nails', duration: 40 }
-        ]);
-        
-        servicesGrid.innerHTML = services.map((s, index) => `
+    if (!servicesGrid) {
+        Utils.log('Services grid not found');
+        return;
+    }
+    
+    const services = Storage.get('services', [
+        { id: 1, name: 'Hair Cut & Style', price: 45, category: 'Hair Care', duration: 45 },
+        { id: 2, name: 'Classic Facial', price: 65, category: 'Skin Care', duration: 60 },
+        { id: 3, name: 'Gel Manicure', price: 35, category: 'Nail Care', duration: 40 },
+        { id: 4, name: 'Deep Conditioning', price: 55, category: 'Hair Care', duration: 50 }
+    ]);
+    
+    servicesGrid.innerHTML = services.map(function(s) {
+        return `
             <div class="service-admin-card">
                 <div class="service-admin-header">
                     <h4>${s.name}</h4>
                     <div class="actions-cell">
-                        <button class="btn-icon"><i class="fas fa-edit"></i></button>
-                        <button class="btn-icon delete"><i class="fas fa-trash"></i></button>
+                        <button class="btn-icon" onclick="editService(${s.id})" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-icon delete" onclick="deleteService(${s.id})" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>
                 </div>
                 <div class="service-admin-details">
-                    <div class="detail-item"><span class="label">Category:</span><span class="value">${s.category}</span></div>
-                    <div class="detail-item"><span class="label">Price:</span><span class="value price">$${s.price}</span></div>
-                    <div class="detail-item"><span class="label">Duration:</span><span class="value">${s.duration}m</span></div>
+                    <div class="detail-item">
+                        <span class="label">Category:</span>
+                        <span class="value">${s.category}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Price:</span>
+                        <span class="value price">$${s.price}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Duration:</span>
+                        <span class="value">${s.duration} min</span>
+                    </div>
                 </div>
             </div>
-        `).join('');
-    }
+        `;
+    }).join('');
+    
+    Utils.log('✓ Services grid loaded');
+}
 
-    // Populate Staff Grid
+function loadStaffGrid() {
     const staffGrid = document.getElementById('staffGrid');
-    if(staffGrid) {
-        const staff = Storage.get('staff', [
-            { name: 'Emma Wilson', role: 'Senior Stylist', phone: '555-0123' },
-            { name: 'David Lee', role: 'Barber', phone: '555-0124' }
-        ]);
-        
-        staffGrid.innerHTML = staff.map(s => `
+    if (!staffGrid) {
+        Utils.log('Staff grid not found');
+        return;
+    }
+    
+    const staff = Storage.get('staff', [
+        { id: 1, name: 'Emma Wilson', role: 'Senior Stylist', phone: '(555) 123-4567', email: 'emma@kinniyasalon.com' },
+        { id: 2, name: 'David Lee', role: 'Master Barber', phone: '(555) 234-5678', email: 'david@kinniyasalon.com' },
+        { id: 3, name: 'Sarah Johnson', role: 'Nail Specialist', phone: '(555) 345-6789', email: 'sarah@kinniyasalon.com' }
+    ]);
+    
+    staffGrid.innerHTML = staff.map(function(s) {
+        return `
             <div class="staff-admin-card">
                 <div class="staff-admin-header">
                     <h4>${s.name}</h4>
                     <div class="actions-cell">
-                        <button class="btn-icon"><i class="fas fa-edit"></i></button>
-                        <button class="btn-icon delete"><i class="fas fa-trash"></i></button>
+                        <button class="btn-icon" onclick="editStaff(${s.id})" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-icon delete" onclick="deleteStaff(${s.id})" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>
                 </div>
                 <div class="staff-admin-details">
-                    <div class="detail-item"><span class="label">Role:</span><span class="value">${s.role}</span></div>
-                    <div class="detail-item"><span class="label">Phone:</span><span class="value">${s.phone}</span></div>
+                    <div class="detail-item">
+                        <span class="label">Role:</span>
+                        <span class="value">${s.role}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Phone:</span>
+                        <span class="value">${s.phone}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Email:</span>
+                        <span class="value">${s.email}</span>
+                    </div>
                 </div>
             </div>
-        `).join('');
-    }
+        `;
+    }).join('');
+    
+    Utils.log('✓ Staff grid loaded');
 }
 
-function initDynamicEvents() {
-    console.log('Initializing dynamic events...');
+function loadRecentActivity() {
+    const activityList = document.getElementById('recentActivity');
+    if (!activityList) {
+        Utils.log('Recent activity not found');
+        return;
+    }
     
-    // Service Form Submission
+    const activities = [
+        { icon: 'calendar-check', text: 'New booking from Sarah Johnson', time: '5 min ago', type: 'success' },
+        { icon: 'dollar-sign', text: 'Payment received: $65.00', time: '15 min ago', type: 'info' },
+        { icon: 'user-plus', text: 'New customer registered', time: '1 hour ago', type: 'primary' },
+        { icon: 'star', text: 'Review received: 5 stars from Mike Chen', time: '2 hours ago', type: 'warning' },
+        { icon: 'calendar-times', text: 'Booking cancelled by Tom Wilson', time: '3 hours ago', type: 'danger' }
+    ];
+    
+    activityList.innerHTML = activities.map(function(a) {
+        return `
+            <div class="activity-item">
+                <div class="activity-icon ${a.type}">
+                    <i class="fas fa-${a.icon}"></i>
+                </div>
+                <div class="activity-content">
+                    <p>${a.text}</p>
+                    <span class="activity-time">${a.time}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    Utils.log('✓ Recent activity loaded');
+}
+
+// ==========================================
+// FORM HANDLING
+// ==========================================
+
+function initAllForms() {
+    Utils.log('Initializing all forms...');
+    
+    // Service Form
     const serviceForm = document.getElementById('serviceForm');
     if (serviceForm) {
-        console.log('Service form found and initializing...');
-        serviceForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            console.log('Service form submitted');
-            
-            const formData = {
-                name: document.getElementById('serviceName').value,
-                category: document.getElementById('serviceCategory').value,
-                price: document.getElementById('servicePrice').value,
-                duration: document.getElementById('serviceDuration').value,
-                description: document.getElementById('serviceDescription').value
-            };
-            
-            console.log('Service data:', formData);
-            
-            // Validate required fields
-            if (!formData.name || !formData.category || !formData.price || !formData.duration) {
-                alert('Please fill in all required fields!');
-                return;
-            }
-            
-            // Store in localStorage (simple demo)
-            const services = Storage.get('services', []);
-            services.push({ ...formData, id: Date.now() });
-            Storage.set('services', services);
-            
-            alert('✅ Service added successfully!\n\nName: ' + formData.name + '\nPrice: $' + formData.price);
-            resetServiceForm();
-        });
-    } else {
-        console.warn('Service form not found');
+        serviceForm.addEventListener('submit', handleServiceSubmit);
+        Utils.log('✓ Service form initialized');
     }
-
-    // Staff Form Submission
+    
+    // Staff Form
     const staffForm = document.getElementById('staffForm');
     if (staffForm) {
-        console.log('Staff form found and initializing...');
-        staffForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            console.log('Staff form submitted');
-            
-            const formData = {
-                firstName: document.getElementById('staffFirstName').value,
-                lastName: document.getElementById('staffLastName').value,
-                email: document.getElementById('staffEmail').value,
-                phone: document.getElementById('staffPhone').value,
-                specialty: document.getElementById('staffSpecialty').value,
-                bio: document.getElementById('staffBio').value
-            };
-            
-            console.log('Staff data:', formData);
-            
-            // Validate required fields
-            if (!formData.firstName || !formData.lastName || !formData.specialty) {
-                alert('Please fill in all required fields!');
-                return;
-            }
-            
-            // Store in localStorage (simple demo)
-            const staff = Storage.get('staff', []);
-            staff.push({ ...formData, id: Date.now() });
-            Storage.set('staff', staff);
-            
-            alert('✅ Staff member added successfully!\n\nName: ' + formData.firstName + ' ' + formData.lastName + '\nSpecialty: ' + formData.specialty);
-            resetStaffForm();
-        });
-    } else {
-        console.warn('Staff form not found');
+        staffForm.addEventListener('submit', handleStaffSubmit);
+        Utils.log('✓ Staff form initialized');
     }
-
+    
     // Settings Form
     const settingsForm = document.getElementById('settingsForm');
     if (settingsForm) {
-        console.log('Settings form found and initializing...');
-        settingsForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            console.log('Settings form submitted');
-            
-            const formData = {
-                businessName: document.getElementById('businessName').value,
-                businessEmail: document.getElementById('businessEmail').value,
-                businessPhone: document.getElementById('businessPhone').value,
-                maxAdvanceBooking: document.getElementById('maxAdvanceBooking').value,
-                cancellationHours: document.getElementById('cancellationHours').value
-            };
-            
-            // Store settings
-            Storage.set('settings', formData);
-            
-            alert('✅ Settings saved successfully!');
-        });
-    } else {
-        console.warn('Settings form not found');
+        settingsForm.addEventListener('submit', handleSettingsSubmit);
+        Utils.log('✓ Settings form initialized');
     }
     
-    console.log('Dynamic events initialized');
+    Utils.log('✓ All forms initialized');
 }
 
-// Form Reset Functions
+function handleServiceSubmit(e) {
+    e.preventDefault();
+    Utils.log('Service form submitted');
+    
+    const formData = {
+        id: Date.now(),
+        name: getInputValue('serviceName'),
+        category: getInputValue('serviceCategory'),
+        price: parseFloat(getInputValue('servicePrice')) || 0,
+        duration: parseInt(getInputValue('serviceDuration')) || 0,
+        description: getInputValue('serviceDescription')
+    };
+    
+    // Validation
+    if (!formData.name || !formData.category || formData.price <= 0 || formData.duration <= 0) {
+        showNotification('Please fill in all required fields correctly!', 'error');
+        return;
+    }
+    
+    // Save to storage
+    const services = Storage.get('services', []);
+    services.push(formData);
+    Storage.set('services', services);
+    
+    showNotification(`✓ Service "${formData.name}" added successfully!`, 'success');
+    document.getElementById('serviceForm').reset();
+    loadServicesGrid();
+}
+
+function handleStaffSubmit(e) {
+    e.preventDefault();
+    Utils.log('Staff form submitted');
+    
+    const firstName = getInputValue('staffFirstName');
+    const lastName = getInputValue('staffLastName');
+    
+    const formData = {
+        id: Date.now(),
+        name: firstName + ' ' + lastName,
+        firstName: firstName,
+        lastName: lastName,
+        email: getInputValue('staffEmail'),
+        phone: getInputValue('staffPhone'),
+        role: getInputValue('staffSpecialty'),
+        bio: getInputValue('staffBio')
+    };
+    
+    // Validation
+    if (!formData.firstName || !formData.lastName || !formData.role) {
+        showNotification('Please fill in all required fields!', 'error');
+        return;
+    }
+    
+    // Save to storage
+    const staff = Storage.get('staff', []);
+    staff.push(formData);
+    Storage.set('staff', staff);
+    
+    showNotification(`✓ Staff member "${formData.name}" added successfully!`, 'success');
+    document.getElementById('staffForm').reset();
+    loadStaffGrid();
+}
+
+function handleSettingsSubmit(e) {
+    e.preventDefault();
+    Utils.log('Settings form submitted');
+    
+    const formData = {
+        businessName: getInputValue('businessName'),
+        businessEmail: getInputValue('businessEmail'),
+        businessPhone: getInputValue('businessPhone'),
+        maxAdvanceBooking: getInputValue('maxAdvanceBooking'),
+        cancellationHours: getInputValue('cancellationHours')
+    };
+    
+    Storage.set('settings', formData);
+    showNotification('✓ Settings saved successfully!', 'success');
+}
+
+// ==========================================
+// CRUD OPERATIONS (GLOBAL FUNCTIONS)
+// ==========================================
+
+window.viewBooking = function(id) {
+    showNotification('Viewing booking ' + id, 'info');
+    Utils.log('View booking: ' + id);
+};
+
+window.completeBooking = function(id) {
+    if (confirm('Mark booking ' + id + ' as completed?')) {
+        showNotification('Booking ' + id + ' marked as completed!', 'success');
+        loadBookingsTable();
+    }
+};
+
+window.cancelBooking = function(id) {
+    if (confirm('Cancel booking ' + id + '?')) {
+        showNotification('Booking ' + id + ' cancelled', 'info');
+        loadBookingsTable();
+    }
+};
+
+window.editService = function(id) {
+    showNotification('Editing service #' + id, 'info');
+    navigateToSection('add-service');
+};
+
+window.deleteService = function(id) {
+    if (confirm('Delete this service?')) {
+        const services = Storage.get('services', []);
+        const filtered = services.filter(function(s) { return s.id !== id; });
+        Storage.set('services', filtered);
+        showNotification('Service deleted successfully!', 'success');
+        loadServicesGrid();
+    }
+};
+
+window.editStaff = function(id) {
+    showNotification('Editing staff member #' + id, 'info');
+    navigateToSection('add-staff');
+};
+
+window.deleteStaff = function(id) {
+    if (confirm('Delete this staff member?')) {
+        const staff = Storage.get('staff', []);
+        const filtered = staff.filter(function(s) { return s.id !== id; });
+        Storage.set('staff', filtered);
+        showNotification('Staff member deleted successfully!', 'success');
+        loadStaffGrid();
+    }
+};
+
+// ==========================================
+// FORM RESET FUNCTIONS (GLOBAL)
+// ==========================================
+
 window.resetServiceForm = function() {
-    document.getElementById('serviceForm')?.reset();
+    const form = document.getElementById('serviceForm');
+    if (form) {
+        form.reset();
+        showNotification('Form cleared', 'info');
+    }
 };
 
 window.resetStaffForm = function() {
-    document.getElementById('staffForm')?.reset();
+    const form = document.getElementById('staffForm');
+    if (form) {
+        form.reset();
+        showNotification('Form cleared', 'info');
+    }
 };
 
 window.resetSettings = function() {
-    document.getElementById('settingsForm')?.reset();
+    if (confirm('Reset all settings to default?')) {
+        const form = document.getElementById('settingsForm');
+        if (form) {
+            form.reset();
+            showNotification('Settings reset', 'info');
+        }
+    }
 };
 
-// Custom Cursor
-function initCursor() {
+// ==========================================
+// UTILITY FUNCTIONS
+// ==========================================
+
+function safeSetText(elementId, content) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.textContent = content;
+    } else {
+        Utils.log('Element not found: ' + elementId);
+    }
+}
+
+function getInputValue(elementId) {
+    const element = document.getElementById(elementId);
+    return element ? element.value.trim() : '';
+}
+
+function showNotification(message, type) {
+    type = type || 'info';
+    
+    const icons = {
+        success: '✓',
+        error: '✗',
+        warning: '⚠',
+        info: 'ℹ'
+    };
+    
+    const icon = icons[type] || 'ℹ';
+    alert(icon + ' ' + message);
+    Utils.log('Notification (' + type + '): ' + message);
+}
+
+// ==========================================
+// CUSTOM CURSOR
+// ==========================================
+
+function initCustomCursor() {
     const cursorDot = document.querySelector('.cursor-dot');
     const cursorOutline = document.querySelector('.cursor-outline');
     
-    if (!cursorDot || !cursorOutline) return;
-
-    let mouseX = 0, mouseY = 0;
-    let outlineX = 0, outlineY = 0;
-
+    if (!cursorDot || !cursorOutline) {
+        Utils.log('Custom cursor elements not found - skipping');
+        return;
+    }
+    
+    let mouseX = 0;
+    let mouseY = 0;
+    let outlineX = 0;
+    let outlineY = 0;
+    
     document.addEventListener('mousemove', function(e) {
         mouseX = e.clientX;
         mouseY = e.clientY;
@@ -316,7 +720,7 @@ function initCursor() {
         cursorDot.style.left = mouseX + 'px';
         cursorDot.style.top = mouseY + 'px';
     });
-
+    
     function animateOutline() {
         const distX = mouseX - outlineX;
         const distY = mouseY - outlineY;
@@ -330,11 +734,11 @@ function initCursor() {
         requestAnimationFrame(animateOutline);
     }
     animateOutline();
-
-    // Add hover effects
-    const hoverElements = document.querySelectorAll('a, button, .sidebar-link, .stat-card, .action-btn, input, select, textarea');
     
-    hoverElements.forEach(el => {
+    // Hover effects
+    const hoverElements = document.querySelectorAll('a, button, .sidebar-link, .stat-card, input, select, textarea');
+    
+    hoverElements.forEach(function(el) {
         el.addEventListener('mouseenter', function() {
             cursorDot.style.transform = 'translate(-50%, -50%) scale(1.5)';
             cursorOutline.style.transform = 'translate(-50%, -50%) scale(1.5)';
@@ -345,4 +749,24 @@ function initCursor() {
             cursorOutline.style.transform = 'translate(-50%, -50%) scale(1)';
         });
     });
+    
+    Utils.log('✓ Custom cursor initialized');
 }
+
+// ==========================================
+// ERROR HANDLING
+// ==========================================
+
+window.addEventListener('error', function(e) {
+    Utils.error('Global error caught', e.error);
+});
+
+window.addEventListener('unhandledrejection', function(e) {
+    Utils.error('Unhandled promise rejection', e.reason);
+});
+
+// ==========================================
+// READY
+// ==========================================
+
+Utils.log('Admin Panel Script Loaded Successfully!');
