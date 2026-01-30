@@ -457,12 +457,12 @@ function loadServicesGrid() {
         return;
     }
     
-    const services = Storage.get('services', [
-        { id: 1, name: 'Hair Cut & Style', price: 45, category: 'Hair Care', duration: 45 },
-        { id: 2, name: 'Classic Facial', price: 65, category: 'Skin Care', duration: 60 },
-        { id: 3, name: 'Gel Manicure', price: 35, category: 'Nail Care', duration: 40 },
-        { id: 4, name: 'Deep Conditioning', price: 55, category: 'Hair Care', duration: 50 }
-    ]);
+    const services = Storage.get('services', []);
+    
+    if (services.length === 0) {
+        servicesGrid.innerHTML = '<p style="color: #999; padding: 20px; text-align: center;">No services added yet. Add your first service above!</p>';
+        return;
+    }
     
     servicesGrid.innerHTML = services.map(function(s) {
         return `
@@ -491,6 +491,10 @@ function loadServicesGrid() {
                         <span class="label">Duration:</span>
                         <span class="value">${s.duration} min</span>
                     </div>
+                    ${s.description ? `<div class="detail-item" style="grid-column: 1/-1;">
+                        <span class="label">Description:</span>
+                        <span class="value">${s.description}</span>
+                    </div>` : ''}
                 </div>
             </div>
         `;
@@ -506,11 +510,12 @@ function loadStaffGrid() {
         return;
     }
     
-    const staff = Storage.get('staff', [
-        { id: 1, name: 'Emma Wilson', role: 'Senior Stylist', phone: '(555) 123-4567', email: 'emma@kinniyasalon.com' },
-        { id: 2, name: 'David Lee', role: 'Master Barber', phone: '(555) 234-5678', email: 'david@kinniyasalon.com' },
-        { id: 3, name: 'Sarah Johnson', role: 'Nail Specialist', phone: '(555) 345-6789', email: 'sarah@kinniyasalon.com' }
-    ]);
+    const staff = Storage.get('staff', []);
+    
+    if (staff.length === 0) {
+        staffGrid.innerHTML = '<p style="color: #999; padding: 20px; text-align: center;">No staff members added yet. Add your first staff member above!</p>';
+        return;
+    }
     
     staffGrid.innerHTML = staff.map(function(s) {
         return `
@@ -531,14 +536,18 @@ function loadStaffGrid() {
                         <span class="label">Role:</span>
                         <span class="value">${s.role}</span>
                     </div>
-                    <div class="detail-item">
+                    ${s.phone ? `<div class="detail-item">
                         <span class="label">Phone:</span>
                         <span class="value">${s.phone}</span>
-                    </div>
-                    <div class="detail-item">
+                    </div>` : ''}
+                    ${s.email ? `<div class="detail-item">
                         <span class="label">Email:</span>
                         <span class="value">${s.email}</span>
-                    </div>
+                    </div>` : ''}
+                    ${s.bio ? `<div class="detail-item" style="grid-column: 1/-1;">
+                        <span class="label">Bio:</span>
+                        <span class="value">${s.bio}</span>
+                    </div>` : ''}
                 </div>
             </div>
         `;
