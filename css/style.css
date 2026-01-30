@@ -3592,3 +3592,200 @@ body.dark-mode .service-item-footer {
         grid-template-columns: 1fr;
     }
 }
+
+/* ===================================
+   ADMIN - ADDITIONAL STYLES
+   =================================== */
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 2px solid #f0f0f0;
+}
+
+.form-actions button {
+    flex: 1;
+    max-width: 200px;
+}
+
+/* Button Icons and Actions */
+.btn-icon {
+    padding: 8px 12px;
+    border: none;
+    background: #f8f9fa;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0 4px;
+}
+
+.btn-icon:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn-icon.complete {
+    background: #d4edda;
+    color: #155724;
+}
+
+.btn-icon.complete:hover {
+    background: #c3e6cb;
+    box-shadow: 0 4px 12px rgba(21, 87, 36, 0.2);
+}
+
+.btn-icon.delete {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.btn-icon.delete:hover {
+    background: #f5c6cb;
+    box-shadow: 0 4px 12px rgba(114, 28, 36, 0.2);
+}
+
+.actions-cell {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+/* Service Admin Cards */
+.service-admin-card,
+.staff-admin-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.service-admin-card:hover,
+.staff-admin-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.15);
+}
+
+.service-admin-header,
+.staff-admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.service-admin-header h4,
+.staff-admin-header h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    color: #1a1a1a;
+    margin: 0;
+    font-weight: 700;
+}
+
+.service-admin-details,
+.staff-admin-details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.detail-item .label {
+    color: #666;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.detail-item .value {
+    color: #1a1a1a;
+    font-weight: 600;
+}
+
+.detail-item .value.price {
+    color: var(--primary);
+    font-size: 1.1rem;
+}
+
+/* Activity Icon Colors */
+.activity-icon.success {
+    background: rgba(40, 167, 69, 0.1);
+}
+
+.activity-icon.success i {
+    color: #28a745;
+}
+
+.activity-icon.info {
+    background: rgba(23, 162, 184, 0.1);
+}
+
+.activity-icon.info i {
+    color: #17a2b8;
+}
+
+.activity-icon.primary {
+    background: rgba(0, 123, 255, 0.1);
+}
+
+.activity-icon.primary i {
+    color: #007bff;
+}
+
+.activity-icon.warning {
+    background: rgba(255, 193, 7, 0.1);
+}
+
+.activity-icon.warning i {
+    color: #ffc107;
+}
+
+.activity-icon.danger {
+    background: rgba(220, 53, 69, 0.1);
+}
+
+.activity-icon.danger i {
+    color: #dc3545;
+}
+
+/* Analytics Grid */
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+}
+
+.analytics-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.analytics-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: #1a1a1a;
+    margin: 0 0 20px 0;
+    font-weight: 700;
+}
+
+/* Status Badge Pending */
+.status-badge.pending {
+    background: #fff3cd;
+    color: #856404;
+}
