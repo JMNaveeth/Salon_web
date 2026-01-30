@@ -143,13 +143,13 @@
                     <!-- Add Service -->
                     <div id="add-service-section" class="admin-content">
                         <div class="content-header">
-                            <h2>Add New Service</h2>
+                            <h2>Manage Services</h2>
                         </div>
 
                         <div class="settings-form">
+                            <h3>Add New Service</h3>
                             <form id="serviceForm">
                                 <div class="form-section">
-                                    <h3>Service Details</h3>
                                     <div class="form-group">
                                         <label for="serviceName">Service Name *</label>
                                         <input type="text" id="serviceName" name="name" required placeholder="e.g., Hair Styling">
@@ -161,6 +161,8 @@
                                             <option value="hair">Hair Care</option>
                                             <option value="skin">Skin Care</option>
                                             <option value="facial">Facial Treatments</option>
+                                            <option value="nails">Nail Care</option>
+                                            <option value="massage">Massage & Spa</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
@@ -182,19 +184,25 @@
                                     <button type="button" class="btn-secondary" onclick="resetServiceForm()">Clear Form</button>
                                 </div>
                             </form>
+
+                            <!-- Services List -->
+                            <div style="margin-top: 40px;">
+                                <h3>Current Services</h3>
+                                <div id="servicesGridAdmin" class="admin-grid"></div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Add Staff -->
                     <div id="add-staff-section" class="admin-content">
                         <div class="content-header">
-                            <h2>Add New Staff Member</h2>
+                            <h2>Manage Staff</h2>
                         </div>
 
                         <div class="settings-form">
+                            <h3>Add New Staff Member</h3>
                             <form id="staffForm">
                                 <div class="form-section">
-                                    <h3>Personal Information</h3>
                                     <div class="form-group">
                                         <label for="staffFirstName">First Name *</label>
                                         <input type="text" id="staffFirstName" name="firstName" required placeholder="John">
@@ -219,6 +227,8 @@
                                             <option value="Color Expert">Color Expert</option>
                                             <option value="Skin Care Specialist">Skin Care Specialist</option>
                                             <option value="Facial Expert">Facial Expert</option>
+                                            <option value="Nail Specialist">Nail Specialist</option>
+                                            <option value="Massage Therapist">Massage Therapist</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
@@ -232,6 +242,12 @@
                                     <button type="button" class="btn-secondary" onclick="resetStaffForm()">Clear Form</button>
                                 </div>
                             </form>
+
+                            <!-- Staff List -->
+                            <div style="margin-top: 40px;">
+                                <h3>Current Staff</h3>
+                                <div id="staffGrid" class="admin-grid"></div>
+                            </div>
                         </div>
                     </div>
 
@@ -255,6 +271,9 @@
                                             <option value="">Select category</option>
                                             <option value="hair">Hair Styling</option>
                                             <option value="facial">Facial & Skin Care</option>
+                                            <option value="nails">Nail Art</option>
+                                            <option value="makeup">Makeup</option>
+                                            <option value="bridal">Bridal</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
@@ -326,11 +345,11 @@
                                     <h3>Business Information</h3>
                                     <div class="form-group">
                                         <label for="businessName">Business Name</label>
-                                        <input type="text" id="businessName" name="businessName" value="JK Salon">
+                                        <input type="text" id="businessName" name="businessName" value="Kinniya Salon">
                                     </div>
                                     <div class="form-group">
                                         <label for="businessEmail">Contact Email</label>
-                                        <input type="email" id="businessEmail" name="businessEmail" value="info@jksalon.com">
+                                        <input type="email" id="businessEmail" name="businessEmail" value="info@kinniyasalon.com">
                                     </div>
                                     <div class="form-group">
                                         <label for="businessPhone">Phone Number</label>
@@ -367,7 +386,7 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3>JK Salon</h3>
+                    <h3>Kinniya Salon</h3>
                     <p>Your premier destination for beauty and wellness services. We provide exceptional care and professional treatments.</p>
                     <div class="social-links">
                         <a href="#"><i class="fab fa-facebook-f"></i></a>
@@ -396,7 +415,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 JK Salon. All rights reserved.</p>
+                <p>&copy; 2024 Kinniya Salon. All rights reserved.</p>
             </div>
         </div>
     </footer>
