@@ -329,28 +329,86 @@ function loadAllData() {
 }
 
 function loadStatistics() {
-    const stats = Storage.get('stats', {
-        todayBookings: 24,
-        upcomingBookings: 48,
-        totalRevenue: 2840,
-        totalCustomers: 156
-    });
+    // Calculate real statistics from actual data
+    const bookings = Storage.get('bookings', []);
+    const customers = Storage.get('customers', []);
     
-    safeSetText('todayBookings', stats.todayBookings);
-    safeSetText('upcomingBookings', stats.upcomingBookings);
-    safeSetText('totalRevenue', Utils.formatCurrency(stats.totalRevenue));
-    safeSetText('totalCustomers', stats.totalCustomers);
+    const today = new Date().toDateString();
     
-    Utils.log('✓ Statistics loaded');
+    // Count today's bookings
+    const todayBookings = bookings.filter(b => {
+        const bookingDate = new Date(b.date).toDateString();
+        return bookingDate === today;
+    }).length;
+    
+    // Count upcoming bookings (future dates)
+    const upcomingBookings = bookings.filter(b => {
+        const bookingDate = new Date(b.date);
+        return bookingDate > new Date() && b.status !== 'cancelled' && b.status !== 'completed';
+    }).length;
+    
+    // Calculate total revenue from completed bookings
+    const totalRevenue = bookings
+        .filter(b => b.status === 'completed')
+        .reduce((sum, b) => sum + (parseFloat(b.price) || 0), 0);
+    
+    // Count unique customers
+    const totalCustomers = customers.length || bookings.length;
+    
+    // Update the UI
+    safeSetText('todayBookings', todayBookings);
+    safeSetText('upcomingBookings', upcomingBookings);
+    safeSetText('totalRevenue', Utils.formatCurrency(totalRevenue));
+    safeSetText('totalCustomers', totalCustomers);
+    
+    Utils.log('✓ Statistics loaded (Real data)');
 }
 
 function loadBookingsTable() {
-    const bookings = Storage.get('bookings', [
-        { id: '#BK001', customer: 'Sarah Johnson', service: 'Hair Styling', date: '2024-03-20', time: '10:00 AM', staff: 'Emma W.', status: 'confirmed' },
-        { id: '#BK002', customer: 'Mike Chen', service: 'Facial Treatment', date: '2024-03-20', time: '11:00 AM', staff: 'David L.', status: 'confirmed' },
-        { id: '#BK003', customer: 'Jessica Davis', service: 'Manicure & Pedicure', date: '2024-03-20', time: '02:00 PM', staff: 'Sarah J.', status: 'pending' },
-        { id: '#BK004', customer: 'Tom Wilson', service: 'Classic Haircut', date: '2024-03-19', time: '03:00 PM', staff: 'David L.', status: 'completed' }
-    ]);
+    const bookings = Storage.get('bookings', []);
+    
+    // If no bookings exist, create some sample data
+    if (bookings.length === 0) {
+        const sampleBookings = [
+            { 
+                id: '#BK001', 
+                customer: 'Sarah Johnson', 
+                service: 'Hair Styling', 
+                date: new Date().toISOString().split('T')[0], 
+                time: '10:00 AM', 
+                staff: 'Emma W.', 
+                status: 'confirmed',
+                price: 45
+            },
+            { 
+                id: '#BK002', 
+                customer: 'Mike Chen', 
+                service: 'Facial Treatment', 
+                date: new Date(Date.now() + 86400000).toISOString().split('T')[0], 
+                time: '11:00 AM', 
+                staff: 'David L.', 
+                status: 'confirmed',
+                price: 65
+            },
+            { 
+                id: '#BK003', 
+                customer: 'Jessica Davis', 
+                service: 'Manicure & Pedicure', 
+                date: new Date(Date.now() + 172800000).toISOString().split('T')[0], 
+                time: '02:00 PM', 
+                staff: 'Sarah J.', 
+                status: 'pending',
+                price: 35
+            }
+        ];
+        Storage.set('bookings', sampleBookings);
+        Storage.set('customers', [
+            { name: 'Sarah Johnson', email: 'sarah@example.com', totalBookings: 1 },
+            { name: 'Mike Chen', email: 'mike@example.com', totalBookings: 1 },
+            { name: 'Jessica Davis', email: 'jessica@example.com', totalBookings: 1 }
+        ]);
+        return loadBookingsTable(); // Reload with sample data
+    }
     
     const tableBody = document.getElementById('bookingsTableBody');
     if (!tableBody) {
@@ -358,7 +416,10 @@ function loadBookingsTable() {
         return;
     }
     
-    tableBody.innerHTML = bookings.map(function(b) {
+    // Sort bookings by date (most recent first)
+    const sortedBookings = bookings.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    tableBody.innerHTML = sortedBookings.map(function(b) {
         return `
             <tr>
                 <td>${b.id}</td>
@@ -371,20 +432,22 @@ function loadBookingsTable() {
                     <button class="btn-icon" title="View" onclick="viewBooking('${b.id}')">
                         <i class="fas fa-eye"></i>
                     </button>
-                    ${b.status !== 'completed' ? `
+                    ${b.status !== 'completed' && b.status !== 'cancelled' ? `
                         <button class="btn-icon complete" title="Complete" onclick="completeBooking('${b.id}')">
                             <i class="fas fa-check"></i>
                         </button>
                     ` : ''}
-                    <button class="btn-icon delete" title="Cancel" onclick="cancelBooking('${b.id}')">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                    ${b.status !== 'cancelled' && b.status !== 'completed' ? `
+                        <button class="btn-icon delete" title="Cancel" onclick="cancelBooking('${b.id}')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    ` : ''}
                 </td>
             </tr>
         `;
     }).join('');
     
-    Utils.log('✓ Bookings table loaded');
+    Utils.log('✓ Bookings table loaded with real data');
 }
 
 function loadServicesGrid() {
@@ -491,15 +554,23 @@ function loadRecentActivity() {
         return;
     }
     
-    const activities = [
-        { icon: 'calendar-check', text: 'New booking from Sarah Johnson', time: '5 min ago', type: 'success' },
-        { icon: 'dollar-sign', text: 'Payment received: $65.00', time: '15 min ago', type: 'info' },
-        { icon: 'user-plus', text: 'New customer registered', time: '1 hour ago', type: 'primary' },
-        { icon: 'star', text: 'Review received: 5 stars from Mike Chen', time: '2 hours ago', type: 'warning' },
-        { icon: 'calendar-times', text: 'Booking cancelled by Tom Wilson', time: '3 hours ago', type: 'danger' }
-    ];
+    // Get real activities from localStorage
+    let activities = Storage.get('recentActivities', []);
+    
+    // If no activities, create some initial ones
+    if (activities.length === 0) {
+        activities = [
+            { icon: 'calendar-check', text: 'New booking from Sarah Johnson', time: new Date().toISOString(), type: 'success' },
+            { icon: 'user-plus', text: 'New customer registered', time: new Date(Date.now() - 3600000).toISOString(), type: 'primary' }
+        ];
+        Storage.set('recentActivities', activities);
+    }
+    
+    // Sort by time (most recent first) and limit to 10
+    activities = activities.sort((a, b) => new Date(b.time) - new Date(a.time)).slice(0, 10);
     
     activityList.innerHTML = activities.map(function(a) {
+        const timeAgo = getTimeAgo(new Date(a.time));
         return `
             <div class="activity-item">
                 <div class="activity-icon ${a.type}">
@@ -507,13 +578,43 @@ function loadRecentActivity() {
                 </div>
                 <div class="activity-content">
                     <p>${a.text}</p>
-                    <span class="activity-time">${a.time}</span>
+                    <span class="activity-time">${timeAgo}</span>
                 </div>
             </div>
         `;
     }).join('');
     
-    Utils.log('✓ Recent activity loaded');
+    Utils.log('✓ Recent activity loaded with real data');
+}
+
+// Add activity helper function
+function addActivity(icon, text, type) {
+    const activities = Storage.get('recentActivities', []);
+    activities.unshift({
+        icon: icon,
+        text: text,
+        time: new Date().toISOString(),
+        type: type
+    });
+    
+    // Keep only last 50 activities
+    if (activities.length > 50) {
+        activities.pop();
+    }
+    
+    Storage.set('recentActivities', activities);
+    loadRecentActivity();
+}
+
+// Time ago helper
+function getTimeAgo(date) {
+    const seconds = Math.floor((new Date() - date) / 1000);
+    
+    if (seconds < 60) return 'Just now';
+    if (seconds < 3600) return Math.floor(seconds / 60) + ' min ago';
+    if (seconds < 86400) return Math.floor(seconds / 3600) + ' hour' + (Math.floor(seconds / 3600) > 1 ? 's' : '') + ' ago';
+    if (seconds < 604800) return Math.floor(seconds / 86400) + ' day' + (Math.floor(seconds / 86400) > 1 ? 's' : '') + ' ago';
+    return Math.floor(seconds / 604800) + ' week' + (Math.floor(seconds / 604800) > 1 ? 's' : '') + ' ago';
 }
 
 // ==========================================
@@ -575,6 +676,9 @@ function handleServiceSubmit(e) {
     services.push(formData);
     Storage.set('services', services);
     
+    // Add activity
+    addActivity('plus-circle', `New service added: ${formData.name} - $${formData.price}`, 'success');
+    
     showNotification(`✓ Service "${formData.name}" added successfully!`, 'success');
     document.getElementById('serviceForm').reset();
     loadServicesGrid();
@@ -609,6 +713,9 @@ function handleStaffSubmit(e) {
     staff.push(formData);
     Storage.set('staff', staff);
     
+    // Add activity
+    addActivity('user-plus', `New staff member added: ${formData.name} - ${formData.role}`, 'primary');
+    
     showNotification(`✓ Staff member "${formData.name}" added successfully!`, 'success');
     document.getElementById('staffForm').reset();
     loadStaffGrid();
@@ -635,21 +742,63 @@ function handleSettingsSubmit(e) {
 // ==========================================
 
 window.viewBooking = function(id) {
-    showNotification('Viewing booking ' + id, 'info');
-    Utils.log('View booking: ' + id);
+    const bookings = Storage.get('bookings', []);
+    const booking = bookings.find(b => b.id === id);
+    
+    if (booking) {
+        const details = `
+Booking Details:
+━━━━━━━━━━━━━━━━━━
+ID: ${booking.id}
+Customer: ${booking.customer}
+Service: ${booking.service}
+Date: ${booking.date}
+Time: ${booking.time}
+Staff: ${booking.staff}
+Price: $${booking.price}
+Status: ${booking.status.toUpperCase()}
+        `;
+        alert(details);
+        Utils.log('View booking: ' + id);
+    }
 };
 
 window.completeBooking = function(id) {
     if (confirm('Mark booking ' + id + ' as completed?')) {
-        showNotification('Booking ' + id + ' marked as completed!', 'success');
-        loadBookingsTable();
+        const bookings = Storage.get('bookings', []);
+        const booking = bookings.find(b => b.id === id);
+        
+        if (booking) {
+            booking.status = 'completed';
+            Storage.set('bookings', bookings);
+            
+            // Add activity
+            addActivity('check-circle', `Booking ${id} completed for ${booking.customer}`, 'success');
+            addActivity('dollar-sign', `Payment received: $${booking.price}`, 'info');
+            
+            showNotification('Booking ' + id + ' marked as completed!', 'success');
+            loadBookingsTable();
+            loadStatistics(); // Update stats
+        }
     }
 };
 
 window.cancelBooking = function(id) {
     if (confirm('Cancel booking ' + id + '?')) {
-        showNotification('Booking ' + id + ' cancelled', 'info');
-        loadBookingsTable();
+        const bookings = Storage.get('bookings', []);
+        const booking = bookings.find(b => b.id === id);
+        
+        if (booking) {
+            booking.status = 'cancelled';
+            Storage.set('bookings', bookings);
+            
+            // Add activity
+            addActivity('calendar-times', `Booking ${id} cancelled - ${booking.customer}`, 'danger');
+            
+            showNotification('Booking ' + id + ' cancelled', 'info');
+            loadBookingsTable();
+            loadStatistics(); // Update stats
+        }
     }
 };
 
@@ -880,6 +1029,9 @@ function initPhotoForm() {
             customerPhotos.push(photoData);
             Storage.set('customerPhotos', customerPhotos);
             
+            // Add activity
+            addActivity('camera', `New customer photo uploaded: ${title}`, 'success');
+            
             showNotification('Photo uploaded successfully! It will now appear in the gallery.', 'success');
             form.reset();
             if (photoPreview) {
@@ -932,6 +1084,61 @@ window.deletePhoto = function(photoId) {
     
     showNotification('Photo deleted successfully', 'success');
     loadUploadedPhotos();
+};
+
+// ==========================================
+// TEST DATA GENERATION
+// ==========================================
+
+window.createTestBooking = function() {
+    const customers = ['John Smith', 'Emily Davis', 'Michael Brown', 'Sarah Wilson', 'David Garcia'];
+    const services = ['Hair Styling', 'Facial Treatment', 'Manicure', 'Pedicure', 'Hair Coloring', 'Deep Conditioning'];
+    const staff = ['Emma W.', 'David L.', 'Sarah J.', 'Michael R.', 'Lisa K.'];
+    const prices = [45, 65, 35, 40, 85, 55];
+    const times = ['09:00 AM', '10:00 AM', '11:00 AM', '02:00 PM', '03:00 PM', '04:00 PM'];
+    
+    const randomCustomer = customers[Math.floor(Math.random() * customers.length)];
+    const randomService = services[Math.floor(Math.random() * services.length)];
+    const randomStaff = staff[Math.floor(Math.random() * staff.length)];
+    const randomPrice = prices[Math.floor(Math.random() * prices.length)];
+    const randomTime = times[Math.floor(Math.random() * times.length)];
+    
+    // Random date within next 7 days
+    const randomDays = Math.floor(Math.random() * 7);
+    const bookingDate = new Date(Date.now() + (randomDays * 86400000));
+    
+    const bookings = Storage.get('bookings', []);
+    const newBooking = {
+        id: '#BK' + String(bookings.length + 1).padStart(3, '0'),
+        customer: randomCustomer,
+        service: randomService,
+        date: bookingDate.toISOString().split('T')[0],
+        time: randomTime,
+        staff: randomStaff,
+        status: 'confirmed',
+        price: randomPrice
+    };
+    
+    bookings.push(newBooking);
+    Storage.set('bookings', bookings);
+    
+    // Add customer if doesn't exist
+    let customers_db = Storage.get('customers', []);
+    if (!customers_db.find(c => c.name === randomCustomer)) {
+        customers_db.push({
+            name: randomCustomer,
+            email: randomCustomer.toLowerCase().replace(' ', '.') + '@example.com',
+            totalBookings: 1
+        });
+        Storage.set('customers', customers_db);
+    }
+    
+    // Add activity
+    addActivity('calendar-check', `New booking created: ${randomCustomer} - ${randomService}`, 'success');
+    
+    showNotification(`✓ Test booking created for ${randomCustomer}!`, 'success');
+    loadBookingsTable();
+    loadStatistics();
 };
 
 // ==========================================
