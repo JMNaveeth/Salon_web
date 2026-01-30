@@ -119,18 +119,42 @@ document.addEventListener('DOMContentLoaded', function() {
     // Wait for complete DOM ready
     setTimeout(function() {
         try {
+            Utils.log('=== STARTING INITIALIZATION ===');
             initNavigation();
             loadAllData();
             initAllForms();
             initCustomCursor();
             AdminPanel.initialized = true;
             Utils.log('✓✓✓ Admin Panel Fully Initialized! ✓✓✓');
+            
+            // Force a test click to verify
+            Utils.log('Admin panel is ready. Click any sidebar button to navigate.');
         } catch (error) {
             Utils.error('Critical initialization error', error);
             alert('⚠ Failed to initialize admin panel. Please refresh the page.');
         }
     }, 150);
 });
+
+// Backup initialization in case DOMContentLoaded already fired
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    Utils.log('DOM already loaded, initializing immediately...');
+    setTimeout(function() {
+        if (!AdminPanel.initialized) {
+            try {
+                Utils.log('=== BACKUP INITIALIZATION ===');
+                initNavigation();
+                loadAllData();
+                initAllForms();
+                initCustomCursor();
+                AdminPanel.initialized = true;
+                Utils.log('✓✓✓ Admin Panel Initialized via Backup! ✓✓✓');
+            } catch (error) {
+                Utils.error('Backup initialization error', error);
+            }
+        }
+    }, 200);
+}
 
 // ==========================================
 // NAVIGATION SYSTEM
@@ -167,7 +191,10 @@ function initNavigation() {
     // Attach click handlers
     sidebarLinks.forEach(function(link, index) {
         const section = link.getAttribute('data-section');
-        Utils.log(`Link ${index + 1}: ${section}`);
+        Utils.log(`Attaching handler to Link ${index + 1}: ${section}`);
+        
+        // Remove any existing listeners
+        link.onclick = null;
         
         link.addEventListener('click', function(e) {
             e.preventDefault();
@@ -177,16 +204,36 @@ function initNavigation() {
             
             if (!targetSection) {
                 Utils.error('No data-section attribute!');
-                return;
+                return false;
             }
             
-            Utils.log(`>>> Clicked: ${targetSection}`);
+            Utils.log(`>>> CLICKED: ${targetSection}`);
             navigateToSection(targetSection);
-        });
+            return false;
+        }, { passive: false });
+        
+        Utils.log(`✓ Handler attached to: ${section}`);
     });
     
     Utils.log('✓ Navigation initialized successfully');
 }
+
+// Global function for manual testing
+window.testNavigation = function(section) {
+    Utils.log(`Manual test navigation to: ${section}`);
+    navigateToSection(section);
+};
+
+// Global function to check status
+window.checkAdminStatus = function() {
+    console.log('=== ADMIN PANEL STATUS ===');
+    console.log('Initialized:', AdminPanel.initialized);
+    console.log('Current Section:', AdminPanel.currentSection);
+    console.log('Sidebar Links:', document.querySelectorAll('.sidebar-link').length);
+    console.log('Content Sections:', document.querySelectorAll('.admin-content').length);
+    console.log('Active Section:', document.querySelector('.admin-content.active')?.id || 'NONE');
+    return AdminPanel;
+};
 
 function navigateToSection(sectionName) {
     Utils.log(`Navigating to: ${sectionName}`);
@@ -497,6 +544,10 @@ function initAllForms() {
         Utils.log('✓ Settings form initialized');
     }
     
+    // Photo Form
+    initPhotoForm();
+    loadUploadedPhotos();
+    
     Utils.log('✓ All forms initialized');
 }
 
@@ -752,6 +803,136 @@ function initCustomCursor() {
     
     Utils.log('✓ Custom cursor initialized');
 }
+
+// ==========================================
+// CUSTOMER PHOTO MANAGEMENT
+// ==========================================
+
+// Reset photo form
+window.resetPhotoForm = function() {
+    const form = document.getElementById('photoForm');
+    if (form) {
+        form.reset();
+        const preview = document.getElementById('photoPreview');
+        if (preview) {
+            preview.style.display = 'none';
+        }
+    }
+};
+
+// Initialize photo upload form
+function initPhotoForm() {
+    const form = document.getElementById('photoForm');
+    const photoFile = document.getElementById('photoFile');
+    const previewImage = document.getElementById('previewImage');
+    const photoPreview = document.getElementById('photoPreview');
+    
+    if (!form) {
+        Utils.log('Photo form not found');
+        return;
+    }
+    
+    // Preview uploaded image
+    if (photoFile) {
+        photoFile.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    if (previewImage && photoPreview) {
+                        previewImage.src = event.target.result;
+                        photoPreview.style.display = 'block';
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    
+    // Handle form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const title = getInputValue('photoTitle');
+        const category = getInputValue('photoCategory');
+        const description = getInputValue('photoDescription');
+        const photoFile = document.getElementById('photoFile');
+        
+        if (!title || !category || !photoFile || !photoFile.files[0]) {
+            showNotification('Please fill all required fields', 'error');
+            return;
+        }
+        
+        // Read the image file
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const photoData = {
+                id: 'photo_' + Date.now(),
+                title: title,
+                category: category,
+                description: description,
+                imageData: event.target.result,
+                dateAdded: new Date().toISOString()
+            };
+            
+            // Save to localStorage
+            let customerPhotos = Storage.get('customerPhotos', []);
+            customerPhotos.push(photoData);
+            Storage.set('customerPhotos', customerPhotos);
+            
+            showNotification('Photo uploaded successfully! It will now appear in the gallery.', 'success');
+            form.reset();
+            if (photoPreview) {
+                photoPreview.style.display = 'none';
+            }
+            
+            // Refresh the photos list
+            loadUploadedPhotos();
+        };
+        
+        reader.readAsDataURL(photoFile.files[0]);
+    });
+    
+    Utils.log('✓ Photo form initialized');
+}
+
+// Load and display uploaded photos in admin panel
+function loadUploadedPhotos() {
+    const photosList = document.getElementById('photosList');
+    if (!photosList) return;
+    
+    const customerPhotos = Storage.get('customerPhotos', []);
+    
+    if (customerPhotos.length === 0) {
+        photosList.innerHTML = '<p style="color: #999; padding: 20px; text-align: center;">No photos uploaded yet</p>';
+        return;
+    }
+    
+    photosList.innerHTML = customerPhotos.map(photo => `
+        <div class="stat-card" style="position: relative; overflow: hidden;">
+            <img src="${photo.imageData}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px 8px 0 0; margin: -20px -20px 10px -20px;" />
+            <h4 style="margin-top: 10px; font-size: 14px;">${photo.title}</h4>
+            <p style="font-size: 12px; color: #666; margin: 5px 0;">Category: ${photo.category}</p>
+            <button onclick="deletePhoto('${photo.id}')" class="btn-secondary" style="width: 100%; margin-top: 10px; padding: 8px; font-size: 12px;">
+                <i class="fas fa-trash"></i> Delete
+            </button>
+        </div>
+    `).join('');
+}
+
+// Delete a photo
+window.deletePhoto = function(photoId) {
+    if (!confirm('Are you sure you want to delete this photo?')) {
+        return;
+    }
+    
+    let customerPhotos = Storage.get('customerPhotos', []);
+    customerPhotos = customerPhotos.filter(photo => photo.id !== photoId);
+    Storage.set('customerPhotos', customerPhotos);
+    
+    showNotification('Photo deleted successfully', 'success');
+    loadUploadedPhotos();
+};
 
 // ==========================================
 // ERROR HANDLING

@@ -67,6 +67,10 @@
                             <i class="fas fa-user-plus"></i>
                             Add Staff
                         </a>
+                        <a href="#add-photo" class="sidebar-link" data-section="add-photo">
+                            <i class="fas fa-camera"></i>
+                            Add Customer Photo
+                        </a>
                         <a href="#settings" class="sidebar-link" data-section="settings">
                             <i class="fas fa-cogs"></i>
                             Settings
@@ -225,6 +229,54 @@
                                     <button type="button" class="btn-secondary" onclick="resetStaffForm()">Clear Form</button>
                                 </div>
                             </form>
+                        </div>
+                    </div>
+
+                    <!-- Add Customer Photo -->
+                    <div id="add-photo-section" class="admin-content">
+                        <div class="content-header">
+                            <h2>Add Customer Photo</h2>
+                        </div>
+
+                        <div class="settings-form">
+                            <form id="photoForm">
+                                <div class="form-section">
+                                    <h3>Photo Details</h3>
+                                    <div class="form-group">
+                                        <label for="photoTitle">Title *</label>
+                                        <input type="text" id="photoTitle" name="title" required placeholder="e.g., Hair Transformation">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="photoCategory">Category *</label>
+                                        <select id="photoCategory" name="category" required>
+                                            <option value="">Select category</option>
+                                            <option value="hair">Hair Styling</option>
+                                            <option value="facial">Facial & Skin Care</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="photoDescription">Description</label>
+                                        <textarea id="photoDescription" name="description" rows="3" placeholder="Describe the service..." maxlength="200"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="photoFile">Upload Photo *</label>
+                                        <input type="file" id="photoFile" name="photo" accept="image/*" required>
+                                        <div id="photoPreview" style="margin-top: 15px; display: none;">
+                                            <img id="previewImage" style="max-width: 300px; max-height: 300px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn-primary">Upload Photo</button>
+                                    <button type="button" class="btn-secondary" onclick="resetPhotoForm()">Clear Form</button>
+                                </div>
+                            </form>
+
+                            <div id="uploadedPhotos" style="margin-top: 30px;">
+                                <h3>Uploaded Photos</h3>
+                                <div id="photosList" class="stats-grid"></div>
+                            </div>
                         </div>
                     </div>
 

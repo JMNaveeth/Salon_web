@@ -1,11 +1,49 @@
 // Gallery Filtering and Animations
 document.addEventListener('DOMContentLoaded', function() {
+    loadCustomerPhotos(); // Load customer photos first
     initGalleryFilter();
     initGalleryAnimations();
     initCursor();
     animateStats();
     initParallax();
 });
+
+// Load customer photos from localStorage
+function loadCustomerPhotos() {
+    const galleryGrid = document.getElementById('galleryGrid');
+    if (!galleryGrid) return;
+    
+    try {
+        const customerPhotos = JSON.parse(localStorage.getItem('customerPhotos')) || [];
+        
+        if (customerPhotos.length > 0) {
+            console.log('Loading customer photos:', customerPhotos.length);
+            
+            customerPhotos.forEach(photo => {
+                const galleryItem = document.createElement('div');
+                galleryItem.className = `gallery-item ${photo.category}`;
+                galleryItem.innerHTML = `
+                    <div class="gallery-card">
+                        <img src="${photo.imageData}" alt="${photo.title}" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;" />
+                        <div class="gallery-overlay">
+                            <div class="gallery-info">
+                                <h4>${photo.title}</h4>
+                                <p>${photo.description || 'Customer photo'}</p>
+                                <a href="booking.html" class="gallery-btn">
+                                    <i class="fas fa-calendar"></i> Book Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                galleryGrid.appendChild(galleryItem);
+            });
+        }
+    } catch (error) {
+        console.error('Error loading customer photos:', error);
+    }
+}
 
 // Initialize Gallery Filter
 function initGalleryFilter() {
