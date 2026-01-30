@@ -7,8 +7,182 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+    <style>
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            animation: slideIn 0.3s ease;
+            border-left: 4px solid var(--primary);
+        }
+        .toast.success { border-left-color: #28a745; }
+        .toast.error { border-left-color: #dc3545; }
+        .toast.warning { border-left-color: #ffc107; }
+        .toast.info { border-left-color: #17a2b8; }
+        .toast i { font-size: 1.5rem; }
+        .toast.success i { color: #28a745; }
+        .toast.error i { color: #dc3545; }
+        .toast.warning i { color: #ffc107; }
+        .toast.info i { color: #17a2b8; }
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(400px); opacity: 0; }
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .modal-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: #1a1a1a;
+            margin: 0;
+        }
+        .modal-close {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: #f8f9fa;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .modal-close:hover {
+            background: #dc3545;
+            color: white;
+            transform: rotate(90deg);
+        }
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .quick-action-btn {
+            padding: 15px;
+            border: 2px dashed var(--primary);
+            background: rgba(212, 175, 55, 0.05);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .quick-action-btn:hover {
+            background: rgba(212, 175, 55, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
+        }
+        .quick-action-btn i {
+            font-size: 2rem;
+            color: var(--primary);
+            display: block;
+            margin-bottom: 8px;
+        }
+        .image-preview {
+            margin-top: 15px;
+            display: none;
+        }
+        .image-preview img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .search-filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 12px 45px 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        .search-box input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+        .search-box i {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+    </style>
 </head>
 <body>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
     <!-- Cursor Follower -->
     <div class="cursor-dot"></div>
     <div class="cursor-outline"></div>
@@ -84,9 +258,30 @@
                     <div id="overview-section" class="admin-content active" data-aos="fade-left">
                         <div class="content-header">
                             <h2>Dashboard Overview</h2>
-                            <button class="btn-primary" onclick="createTestBooking()" style="padding: 10px 20px;">
-                                <i class="fas fa-plus"></i> Add Test Booking
-                            </button>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="quick-actions">
+                            <div class="quick-action-btn" onclick="openModal('serviceModal')">
+                                <i class="fas fa-plus-circle"></i>
+                                <div><strong>Add Service</strong></div>
+                                <small style="color: #666;">New service</small>
+                            </div>
+                            <div class="quick-action-btn" onclick="openModal('staffModal')">
+                                <i class="fas fa-user-plus"></i>
+                                <div><strong>Add Staff</strong></div>
+                                <small style="color: #666;">New member</small>
+                            </div>
+                            <div class="quick-action-btn" onclick="openModal('photoModal')">
+                                <i class="fas fa-camera"></i>
+                                <div><strong>Add Photo</strong></div>
+                                <small style="color: #666;">Customer work</small>
+                            </div>
+                            <div class="quick-action-btn" onclick="createTestBooking()">
+                                <i class="fas fa-calendar-check"></i>
+                                <div><strong>New Booking</strong></div>
+                                <small style="color: #666;">Test booking</small>
+                            </div>
                         </div>
 
                         <!-- Stats Cards -->
@@ -134,6 +329,14 @@
                             <h3>Recent Activity</h3>
                             <div class="activity-list" id="recentActivity">
                                 <!-- Activity items will be loaded here -->
+                            </div>
+                        </div>
+
+                        <!-- Recent Uploads -->
+                        <div class="recent-activity" style="margin-top: 40px;">
+                            <h3>Recent Customer Photos <span style="font-size: 0.9rem; color: #666;">(Latest 6)</span></h3>
+                            <div id="recentUploads" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 20px;">
+                                <!-- Recent photos will be loaded here -->
                             </div>
                         </div>
                     </div>
@@ -419,6 +622,164 @@
             </div>
         </div>
     </footer>
+
+    <!-- Add Service Modal -->
+    <div id="serviceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-plus-circle"></i> Add New Service</h2>
+                <button class="modal-close" onclick="closeModal('serviceModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="modalServiceForm" onsubmit="handleModalServiceSubmit(event)">
+                <div class="form-group">
+                    <label for="modalServiceCategory">Category *</label>
+                    <select id="modalServiceCategory" required>
+                        <option value="">Select category</option>
+                        <option value="hair">Hair Care</option>
+                        <option value="skin">Skin Care</option>
+                        <option value="facial">Facial Treatments</option>
+                        <option value="nails">Nail Care</option>
+                        <option value="massage">Massage</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="modalServiceName">Service Name *</label>
+                    <input type="text" id="modalServiceName" required placeholder="e.g., Hair Styling">
+                </div>
+                <div class="form-group">
+                    <label for="modalServiceDescription">Description</label>
+                    <textarea id="modalServiceDescription" rows="3" placeholder="Describe the service..."></textarea>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label for="modalServiceAmount">Amount ($) *</label>
+                        <input type="number" id="modalServiceAmount" required min="0" step="0.01" placeholder="50.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="modalServiceTime">Time (minutes) *</label>
+                        <input type="number" id="modalServiceTime" required min="15" step="15" placeholder="60">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-check"></i> Add Service
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="closeModal('serviceModal')">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Staff Modal -->
+    <div id="staffModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-plus"></i> Add New Staff</h2>
+                <button class="modal-close" onclick="closeModal('staffModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="modalStaffForm" onsubmit="handleModalStaffSubmit(event)">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label for="modalStaffFirstName">First Name *</label>
+                        <input type="text" id="modalStaffFirstName" required placeholder="John">
+                    </div>
+                    <div class="form-group">
+                        <label for="modalStaffLastName">Last Name *</label>
+                        <input type="text" id="modalStaffLastName" required placeholder="Doe">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="modalStaffSpecialty">Specialty *</label>
+                    <select id="modalStaffSpecialty" required>
+                        <option value="">Select specialty</option>
+                        <option value="Hair Specialist">Hair Specialist</option>
+                        <option value="Color Expert">Color Expert</option>
+                        <option value="Skin Care Specialist">Skin Care Specialist</option>
+                        <option value="Facial Expert">Facial Expert</option>
+                        <option value="Nail Technician">Nail Technician</option>
+                        <option value="Massage Therapist">Massage Therapist</option>
+                    </select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label for="modalStaffPhone">Phone</label>
+                        <input type="tel" id="modalStaffPhone" placeholder="+1 (555) 123-4567">
+                    </div>
+                    <div class="form-group">
+                        <label for="modalStaffEmail">Email</label>
+                        <input type="email" id="modalStaffEmail" placeholder="john.doe@example.com">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="modalStaffBio">Bio</label>
+                    <textarea id="modalStaffBio" rows="3" placeholder="Brief description about the staff member..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-check"></i> Add Staff
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="closeModal('staffModal')">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Customer Photo Modal -->
+    <div id="photoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-camera"></i> Add Customer Photo</h2>
+                <button class="modal-close" onclick="closeModal('photoModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="modalPhotoForm" onsubmit="handleModalPhotoSubmit(event)">
+                <div class="form-group">
+                    <label for="modalCustomerName">Customer Name *</label>
+                    <input type="text" id="modalCustomerName" required placeholder="Enter customer name">
+                </div>
+                <div class="form-group">
+                    <label for="modalPhotoTitle">Photo Title *</label>
+                    <input type="text" id="modalPhotoTitle" required placeholder="e.g., Hair Transformation">
+                </div>
+                <div class="form-group">
+                    <label for="modalPhotoCategory">Category *</label>
+                    <select id="modalPhotoCategory" required>
+                        <option value="">Select category</option>
+                        <option value="hair">Hair Styling</option>
+                        <option value="facial">Facial & Skin Care</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="modalPhotoDescription">Description</label>
+                    <textarea id="modalPhotoDescription" rows="2" placeholder="Describe the service provided..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="modalPhotoFile">Upload Photo *</label>
+                    <input type="file" id="modalPhotoFile" accept="image/*" required onchange="previewModalImage(event)">
+                </div>
+                <div class="image-preview" id="modalImagePreview">
+                    <img id="modalPreviewImg" alt="Preview">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-upload"></i> Upload Photo
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="closeModal('photoModal')">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="js/main.js"></script>

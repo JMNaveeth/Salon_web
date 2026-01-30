@@ -322,6 +322,7 @@ function loadAllData() {
         loadServicesGrid();
         loadStaffGrid();
         loadRecentActivity();
+        loadUploadedPhotos();
         Utils.log('✓ All data loaded successfully');
     } catch (error) {
         Utils.error('Failed to load data', error);
@@ -892,16 +893,40 @@ function getInputValue(elementId) {
 function showNotification(message, type) {
     type = type || 'info';
     
+    // Create toast container if it doesn't exist
+    let toastContainer = document.getElementById('toastContainer');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = 'toastContainer';
+        toastContainer.className = 'toast-container';
+        document.body.appendChild(toastContainer);
+    }
+    
     const icons = {
-        success: '✓',
-        error: '✗',
-        warning: '⚠',
-        info: 'ℹ'
+        success: 'fa-check-circle',
+        error: 'fa-times-circle',
+        warning: 'fa-exclamation-triangle',
+        info: 'fa-info-circle'
     };
     
-    const icon = icons[type] || 'ℹ';
-    alert(icon + ' ' + message);
-    Utils.log('Notification (' + type + '): ' + message);
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+        <i class="fas ${icons[type]}"></i>
+        <span>${message}</span>
+    `;
+    
+    toastContainer.appendChild(toast);
+    
+    // Auto remove after 4 seconds
+    setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+            toastContainer.removeChild(toast);
+        }, 300);
+    }, 4000);
+    
+    Utils.log('Toast (' + type + '): ' + message);
 }
 
 // ==========================================
@@ -1060,25 +1085,47 @@ function initPhotoForm() {
 // Load and display uploaded photos in admin panel
 function loadUploadedPhotos() {
     const photosList = document.getElementById('photosList');
-    if (!photosList) return;
+    const recentUploads = document.getElementById('recentUploads');
     
     const customerPhotos = Storage.get('customerPhotos', []);
     
-    if (customerPhotos.length === 0) {
-        photosList.innerHTML = '<p style="color: #999; padding: 20px; text-align: center;">No photos uploaded yet</p>';
-        return;
+    // Load full photo list in customer photos section
+    if (photosList) {
+        if (customerPhotos.length === 0) {
+            photosList.innerHTML = '<p style="color: #999; padding: 20px; text-align: center;">No photos uploaded yet</p>';
+        } else {
+            photosList.innerHTML = customerPhotos.map(photo => `
+                <div class="stat-card" style="position: relative; overflow: hidden;">
+                    <img src="${photo.imageData}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px 8px 0 0; margin: -20px -20px 10px -20px;" />
+                    <h4 style="margin-top: 10px; font-size: 14px;">${photo.title}</h4>
+                    <p style="font-size: 12px; color: #666; margin: 5px 0;">Category: ${photo.category}</p>
+                    <button onclick="deletePhoto('${photo.id}')" class="btn-secondary" style="width: 100%; margin-top: 10px; padding: 8px; font-size: 12px;">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            `).join('');
+        }
     }
     
-    photosList.innerHTML = customerPhotos.map(photo => `
-        <div class="stat-card" style="position: relative; overflow: hidden;">
-            <img src="${photo.imageData}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px 8px 0 0; margin: -20px -20px 10px -20px;" />
-            <h4 style="margin-top: 10px; font-size: 14px;">${photo.title}</h4>
-            <p style="font-size: 12px; color: #666; margin: 5px 0;">Category: ${photo.category}</p>
-            <button onclick="deletePhoto('${photo.id}')" class="btn-secondary" style="width: 100%; margin-top: 10px; padding: 8px; font-size: 12px;">
-                <i class="fas fa-trash"></i> Delete
-            </button>
-        </div>
-    `).join('');
+    // Load recent 6 photos in dashboard
+    if (recentUploads) {
+        if (customerPhotos.length === 0) {
+            recentUploads.innerHTML = '<p style="color: #999; padding: 20px; text-align: center; grid-column: 1/-1;">No photos uploaded yet. Click "Add Photo" above to upload customer work!</p>';
+        } else {
+            const recent = customerPhotos.slice(-6).reverse(); // Get last 6, newest first
+            recentUploads.innerHTML = recent.map(photo => `
+                <div style="position: relative; overflow: hidden; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.3s; cursor: pointer;" 
+                     onmouseover="this.style.transform='scale(1.05)'" 
+                     onmouseout="this.style.transform='scale(1)'">
+                    <img src="${photo.imageData}" style="width: 100%; height: 150px; object-fit: cover; display: block;" />
+                    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.8)); padding: 10px 8px 8px; color: white;">
+                        <div style="font-size: 12px; font-weight: 600; margin-bottom: 2px;">${photo.title}</div>
+                        <div style="font-size: 10px; opacity: 0.9;">${photo.customerName}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
 }
 
 // Delete a photo
@@ -1148,6 +1195,236 @@ window.createTestBooking = function() {
     showNotification(`✓ Test booking created for ${randomCustomer}!`, 'success');
     loadBookingsTable();
     loadStatistics();
+};
+
+// ==========================================
+// MODAL FUNCTIONS
+// ==========================================
+
+window.openModal = function(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+};
+
+window.closeModal = function(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+        
+        // Reset form
+        const form = modal.querySelector('form');
+        if (form) {
+            form.reset();
+            const preview = modal.querySelector('.image-preview');
+            if (preview) {
+                preview.style.display = 'none';
+            }
+        }
+    }
+};
+
+// Close modal when clicking outside
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('modal')) {
+        e.target.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+});
+
+// ==========================================
+// MODAL FORM HANDLERS
+// ==========================================
+
+window.handleModalServiceSubmit = function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        id: Date.now(),
+        name: document.getElementById('modalServiceName').value.trim(),
+        category: document.getElementById('modalServiceCategory').value,
+        price: parseFloat(document.getElementById('modalServiceAmount').value) || 0,
+        duration: parseInt(document.getElementById('modalServiceTime').value) || 0,
+        description: document.getElementById('modalServiceDescription').value.trim()
+    };
+    
+    // Validation
+    if (!formData.name || !formData.category || formData.price <= 0 || formData.duration <= 0) {
+        showNotification('Please fill in all required fields correctly!', 'error');
+        return;
+    }
+    
+    // Save to storage
+    const services = Storage.get('services', []);
+    services.push(formData);
+    Storage.set('services', services);
+    
+    // Add activity
+    addActivity('plus-circle', `New service added: ${formData.name} - $${formData.price}`, 'success');
+    
+    showNotification(`✓ Service "${formData.name}" added successfully!`, 'success');
+    closeModal('serviceModal');
+    loadServicesGrid();
+};
+
+window.handleModalStaffSubmit = function(e) {
+    e.preventDefault();
+    
+    const firstName = document.getElementById('modalStaffFirstName').value.trim();
+    const lastName = document.getElementById('modalStaffLastName').value.trim();
+    
+    const formData = {
+        id: Date.now(),
+        name: firstName + ' ' + lastName,
+        firstName: firstName,
+        lastName: lastName,
+        email: document.getElementById('modalStaffEmail').value.trim(),
+        phone: document.getElementById('modalStaffPhone').value.trim(),
+        role: document.getElementById('modalStaffSpecialty').value,
+        bio: document.getElementById('modalStaffBio').value.trim()
+    };
+    
+    // Validation
+    if (!formData.firstName || !formData.lastName || !formData.role) {
+        showNotification('Please fill in all required fields!', 'error');
+        return;
+    }
+    
+    // Save to storage
+    const staff = Storage.get('staff', []);
+    staff.push(formData);
+    Storage.set('staff', staff);
+    
+    // Add activity
+    addActivity('user-plus', `New staff member added: ${formData.name} - ${formData.role}`, 'primary');
+    
+    showNotification(`✓ Staff member "${formData.name}" added successfully!`, 'success');
+    closeModal('staffModal');
+    loadStaffGrid();
+};
+
+window.handleModalPhotoSubmit = function(e) {
+    e.preventDefault();
+    
+    const customerName = document.getElementById('modalCustomerName').value.trim();
+    const title = document.getElementById('modalPhotoTitle').value.trim();
+    const category = document.getElementById('modalPhotoCategory').value;
+    const description = document.getElementById('modalPhotoDescription').value.trim();
+    const photoFile = document.getElementById('modalPhotoFile');
+    
+    if (!customerName || !title || !category || !photoFile || !photoFile.files[0]) {
+        showNotification('Please fill all required fields', 'error');
+        return;
+    }
+    
+    // Read the image file
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        const photoData = {
+            id: 'photo_' + Date.now(),
+            customerName: customerName,
+            title: title,
+            category: category,
+            description: description,
+            imageData: event.target.result,
+            dateAdded: new Date().toISOString()
+        };
+        
+        // Save to localStorage
+        let customerPhotos = Storage.get('customerPhotos', []);
+        customerPhotos.push(photoData);
+        Storage.set('customerPhotos', customerPhotos);
+        
+        // Add activity
+        addActivity('camera', `New customer photo uploaded: ${title} (${customerName})`, 'success');
+        
+        showNotification(`✓ Photo uploaded successfully! Visible in gallery.`, 'success');
+        closeModal('photoModal');
+        loadUploadedPhotos();
+    };
+    
+    reader.readAsDataURL(photoFile.files[0]);
+};
+
+window.previewModalImage = function(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('modalImagePreview');
+            const img = document.getElementById('modalPreviewImg');
+            if (preview && img) {
+                img.src = e.target.result;
+                preview.style.display = 'block';
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+};
+
+// ==========================================
+// DATA EXPORT/IMPORT
+// ==========================================
+
+window.exportData = function() {
+    const data = {
+        bookings: Storage.get('bookings', []),
+        services: Storage.get('services', []),
+        staff: Storage.get('staff', []),
+        customers: Storage.get('customers', []),
+        settings: Storage.get('settings', {}),
+        activities: Storage.get('recentActivities', []),
+        exportDate: new Date().toISOString()
+    };
+    
+    const dataStr = JSON.stringify(data, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `kinniya-salon-backup-${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    
+    showNotification('Data exported successfully!', 'success');
+};
+
+window.importData = function() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            try {
+                const data = JSON.parse(event.target.result);
+                
+                if (confirm('This will replace all current data. Continue?')) {
+                    if (data.bookings) Storage.set('bookings', data.bookings);
+                    if (data.services) Storage.set('services', data.services);
+                    if (data.staff) Storage.set('staff', data.staff);
+                    if (data.customers) Storage.set('customers', data.customers);
+                    if (data.settings) Storage.set('settings', data.settings);
+                    if (data.activities) Storage.set('recentActivities', data.activities);
+                    
+                    showNotification('Data imported successfully!', 'success');
+                    loadAllData();
+                }
+            } catch (error) {
+                showNotification('Invalid file format!', 'error');
+            }
+        };
+        reader.readAsText(file);
+    };
+    
+    input.click();
 };
 
 // ==========================================
