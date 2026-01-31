@@ -29,9 +29,9 @@ function loadCustomerPhotos() {
                             <div class="gallery-info">
                                 <h4>${photo.title}</h4>
                                 <p>${photo.description || 'Customer photo'}</p>
-                                <a href="booking.html" class="gallery-btn">
-                                    <i class="fas fa-calendar"></i> Book Now
-                                </a>
+                                <div class="customer-work-badge">
+                                    <i class="fas fa-star"></i> Customer Work
+                                </div>
                             </div>
                         </div>
                     </div>
