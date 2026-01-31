@@ -1777,6 +1777,10 @@ body.dark-mode .footer-wave {
 .service-category-section {
     margin-bottom: 80px;
     animation: fadeInUp 0.6s ease;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 20px;
 }
 
 .service-category-section:last-child {
@@ -1786,6 +1790,7 @@ body.dark-mode .footer-wave {
 .category-header {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 20px;
     margin-bottom: 35px;
     padding-bottom: 20px;
@@ -1828,8 +1833,10 @@ body.dark-mode .footer-wave {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
-    max-width: 1300px;
+    max-width: 1200px;
     margin: 0 auto;
+    padding: 0 20px;
+    justify-items: center;
 }
 
 /* Service Item */
