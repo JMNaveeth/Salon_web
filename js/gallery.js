@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadCustomerPhotos(); // Load customer photos first
     initGalleryFilter();
     initGalleryAnimations();
-    initCursor();
+    // initCursor(); // DISABLED - using normal cursor
     animateStats();
     initParallax();
 });

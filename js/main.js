@@ -69,8 +69,10 @@ function initThemeToggle() {
     }
 }
 
-// Custom Cursor Logic
+// Custom Cursor Logic - DISABLED
 function initCustomCursor() {
+    // Custom cursor disabled - using normal cursor
+    return;
     const cursorDot = document.querySelector('.cursor-dot');
     const cursorOutline = document.querySelector('.cursor-outline');
 
