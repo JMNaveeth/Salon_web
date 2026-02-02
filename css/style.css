@@ -1,5 +1,19 @@
 /* ===================================
-   KINNIYA SALON - ENHANCED 3D WEBSITE
+   KINNIYA SALON - MAIN STYLESHEET
+   
+   TABLE OF CONTENTS:
+   1. BASE & RESET STYLES
+   2. GLOBAL COMPONENTS (Navigation, Buttons, Footer)
+   3. HOME PAGE STYLES
+   4. SERVICES PAGE STYLES
+   5. GALLERY PAGE STYLES
+   6. BOOKING PAGE STYLES
+   7. ADMIN PANEL STYLES
+   8. RESPONSIVE & MEDIA QUERIES
+   =================================== */
+
+/* ===================================
+   1. BASE & RESET STYLES
    =================================== */
 
 /* Reset and Base Styles */
@@ -256,8 +270,10 @@ body.dark-mode .footer-wave {
 }
 
 /* ===================================
-   BUTTONS
+   2. GLOBAL COMPONENTS
    =================================== */
+
+/* Buttons */
 .btn-primary,
 .btn-secondary,
 .btn-ghost {
