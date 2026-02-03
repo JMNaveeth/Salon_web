@@ -4,33 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Kinniya Salon</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
 </head>
 <body>
-    <!-- Cursor Follower -->
-    <div class="cursor-dot"></div>
-    <div class="cursor-outline"></div>
-
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
                 <a href="index.html"><h2>Kinniya Salon</h2></a>
-            </div>
-            <div class="nav-menu">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="services.html" class="nav-link">Services</a>
-                <a href="gallery.html" class="nav-link">Gallery</a>
-                <a href="dashboard.html" class="nav-link">Dashboard</a>
-                <a href="booking.html" class="nav-link btn-primary">Book Now</a>
-            </div>
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
             </div>
         </div>
     </nav>
@@ -38,7 +20,7 @@
     <!-- Admin Header -->
     <section class="admin-header">
         <div class="container">
-            <div class="admin-header-content" data-aos="fade-up">
+            <div class="admin-header-content">
                 <h1><i class="fas fa-cog"></i> Admin Panel</h1>
                 <p>Manage bookings, services, and salon operations</p>
             </div>
@@ -50,7 +32,7 @@
         <div class="container">
             <div class="admin-layout">
                 <!-- Sidebar -->
-                <div class="admin-sidebar" data-aos="fade-right">
+                <div class="admin-sidebar">
                     <div class="sidebar-menu">
                         <a href="#overview" class="sidebar-link active" data-section="overview">
                             <i class="fas fa-tachometer-alt"></i>
@@ -60,21 +42,17 @@
                             <i class="fas fa-chart-bar"></i>
                             Analytics
                         </a>
-                        <a href="javascript:void(0)" class="sidebar-link" onclick="openServiceModal()">
+                        <a href="javascript:void(0)" class="sidebar-link" id="btnAddService">
                             <i class="fas fa-plus-circle"></i>
                             Add Service
                         </a>
-                        <a href="javascript:void(0)" class="sidebar-link" onclick="openStaffModal()">
+                        <a href="javascript:void(0)" class="sidebar-link" id="btnAddStaff">
                             <i class="fas fa-user-plus"></i>
                             Add Staff
                         </a>
-                        <a href="javascript:void(0)" class="sidebar-link" onclick="openPhotoModal()">
+                        <a href="javascript:void(0)" class="sidebar-link" id="btnAddPhoto">
                             <i class="fas fa-camera"></i>
                             Add Customer Photo
-                        </a>
-                        <a href="#settings" class="sidebar-link" data-section="settings">
-                            <i class="fas fa-cogs"></i>
-                            Settings
                         </a>
                     </div>
                 </div>
@@ -82,14 +60,14 @@
                 <!-- Main Content -->
                 <div class="admin-main">
                     <!-- Overview -->
-                    <div id="overview-section" class="admin-content active" data-aos="fade-left">
+                    <div id="overview-section" class="admin-content active">
                         <div class="content-header">
                             <h2>Dashboard Overview</h2>
                         </div>
 
                         <!-- Stats Cards -->
                         <div class="stats-grid">
-                            <div class="stat-card" data-aos="zoom-in" data-aos-delay="100">
+                            <div class="stat-card">
                                 <div class="stat-icon">
                                     <i class="fas fa-calendar-day"></i>
                                 </div>
@@ -98,7 +76,7 @@
                                     <div class="stat-label">Today's Bookings</div>
                                 </div>
                             </div>
-                            <div class="stat-card" data-aos="zoom-in" data-aos-delay="200">
+                            <div class="stat-card">
                                 <div class="stat-icon">
                                     <i class="fas fa-clock"></i>
                                 </div>
@@ -107,7 +85,7 @@
                                     <div class="stat-label">Upcoming</div>
                                 </div>
                             </div>
-                            <div class="stat-card" data-aos="zoom-in" data-aos-delay="300">
+                            <div class="stat-card">
                                 <div class="stat-icon">
                                     <i class="fas fa-dollar-sign"></i>
                                 </div>
@@ -116,7 +94,7 @@
                                     <div class="stat-label">Revenue</div>
                                 </div>
                             </div>
-                            <div class="stat-card" data-aos="zoom-in" data-aos-delay="400">
+                            <div class="stat-card">
                                 <div class="stat-icon">
                                     <i class="fas fa-users"></i>
                                 </div>
@@ -131,273 +109,22 @@
                         <div class="recent-activity">
                             <h3>Recent Activity</h3>
                             <div class="activity-list" id="recentActivity">
-                                <!-- Activity items will be loaded here -->
+                                <p style="color: #999; text-align: center; padding: 20px;">No recent activity</p>
                             </div>
                         </div>
                     </div>
 
-
-
-                    <!-- Add Service -->
-                    <div id="add-service-section" class="admin-content">
-                        <div class="content-header">
-                            <h2>Add New Service</h2>
-                        </div>
-
-                        <div class="settings-form">
-                            <form id="serviceForm">
-                                <div class="form-section">
-                                    <h3>Service Details</h3>
-                                    <div class="form-group">
-                                        <label for="serviceName">Service Name *</label>
-                                        <input type="text" id="serviceName" name="name" required placeholder="e.g., Hair Styling">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="serviceCategory">Category *</label>
-                                        <select id="serviceCategory" name="category" required>
-                                            <option value="">Select category</option>
-                                            <option value="hair">Hair Care</option>
-                                            <option value="skin">Skin Care</option>
-                                            <option value="facial">Facial Treatments</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="servicePrice">Price ($) *</label>
-                                        <input type="number" id="servicePrice" name="price" step="0.01" required placeholder="50.00">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="serviceDuration">Duration (minutes) *</label>
-                                        <input type="number" id="serviceDuration" name="duration" required placeholder="60">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="serviceDescription">Description</label>
-                                        <textarea id="serviceDescription" name="description" rows="4" placeholder="Describe the service..."></textarea>
-                                    </div>
-                                </div>
-
-                                <div class="form-actions">
-                                    <button type="submit" class="btn-primary">Save Service</button>
-                                    <button type="button" class="btn-secondary" onclick="resetServiceForm()">Clear Form</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-
-                    <!-- Add Staff -->
-                    <div id="add-staff-section" class="admin-content">
-                        <div class="content-header">
-                            <h2>Add New Staff Member</h2>
-                        </div>
-
-                        <div class="settings-form">
-                            <form id="staffForm">
-                                <div class="form-section">
-                                    <h3>Personal Information</h3>
-                                    <div class="form-group">
-                                        <label for="staffFirstName">First Name *</label>
-                                        <input type="text" id="staffFirstName" name="firstName" required placeholder="John">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="staffLastName">Last Name *</label>
-                                        <input type="text" id="staffLastName" name="lastName" required placeholder="Doe">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="staffEmail">Email</label>
-                                        <input type="email" id="staffEmail" name="email" placeholder="john.doe@example.com">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="staffPhone">Phone</label>
-                                        <input type="tel" id="staffPhone" name="phone" placeholder="+1 (555) 123-4567">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="staffSpecialty">Specialty *</label>
-                                        <select id="staffSpecialty" name="specialty" required>
-                                            <option value="">Select specialty</option>
-                                            <option value="Hair Specialist">Hair Specialist</option>
-                                            <option value="Color Expert">Color Expert</option>
-                                            <option value="Skin Care Specialist">Skin Care Specialist</option>
-                                            <option value="Facial Expert">Facial Expert</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="staffBio">Bio</label>
-                                        <textarea id="staffBio" name="bio" rows="4" placeholder="Brief description about the staff member..."></textarea>
-                                    </div>
-                                </div>
-
-                                <div class="form-actions">
-                                    <button type="submit" class="btn-primary">Save Staff Member</button>
-                                    <button type="button" class="btn-secondary" onclick="resetStaffForm()">Clear Form</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-
-                    <!-- Add Customer Photo -->
-                    <div id="add-photo-section" class="admin-content">
-                        <div class="content-header">
-                            <h2>Add Customer Photo</h2>
-                        </div>
-
-                        <div class="settings-form">
-                            <form id="photoForm">
-                                <div class="form-section">
-                                    <h3>Photo Details</h3>
-                                    <div class="form-group">
-                                        <label for="photoTitle">Title *</label>
-                                        <input type="text" id="photoTitle" name="title" required placeholder="e.g., Hair Transformation">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="photoCategory">Category *</label>
-                                        <select id="photoCategory" name="category" required>
-                                            <option value="">Select category</option>
-                                            <option value="hair">Hair Styling</option>
-                                            <option value="facial">Facial & Skin Care</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="photoDescription">Description</label>
-                                        <textarea id="photoDescription" name="description" rows="3" placeholder="Describe the service..." maxlength="200"></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="photoFile">Upload Photo *</label>
-                                        <input type="file" id="photoFile" name="photo" accept="image/*" required>
-                                        <div id="photoPreview" style="margin-top: 15px; display: none;">
-                                            <img id="previewImage" style="max-width: 300px; max-height: 300px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-actions">
-                                    <button type="submit" class="btn-primary">Upload Photo</button>
-                                    <button type="button" class="btn-secondary" onclick="resetPhotoForm()">Clear Form</button>
-                                </div>
-                            </form>
-
-                            <div id="uploadedPhotos" style="margin-top: 30px;">
-                                <h3>Uploaded Photos</h3>
-                                <div id="photosList" class="stats-grid"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Analytics -->
+                    <!-- Analytics Section -->
                     <div id="analytics-section" class="admin-content">
                         <div class="content-header">
                             <h2>Analytics</h2>
                         </div>
-
-                        <div class="analytics-grid">
-                            <div class="analytics-card">
-                                <h4>Popular Services</h4>
-                                <div class="chart-placeholder">
-                                    <i class="fas fa-chart-pie"></i>
-                                    <p>Service popularity chart would go here</p>
-                                </div>
-                            </div>
-                            <div class="analytics-card">
-                                <h4>Revenue Trends</h4>
-                                <div class="chart-placeholder">
-                                    <i class="fas fa-chart-line"></i>
-                                    <p>Revenue trends chart would go here</p>
-                                </div>
-                            </div>
-                            <div class="analytics-card">
-                                <h4>Peak Hours</h4>
-                                <div class="chart-placeholder">
-                                    <i class="fas fa-chart-bar"></i>
-                                    <p>Peak booking hours chart would go here</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Settings -->
-                    <div id="settings-section" class="admin-content">
-                        <div class="content-header">
-                            <h2>Settings</h2>
-                        </div>
-
-                        <div class="settings-form">
-                            <form id="settingsForm">
-                                <div class="form-section">
-                                    <h3>Business Information</h3>
-                                    <div class="form-group">
-                                        <label for="businessName">Business Name</label>
-                                        <input type="text" id="businessName" name="businessName" value="JK Salon">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="businessEmail">Contact Email</label>
-                                        <input type="email" id="businessEmail" name="businessEmail" value="info@jksalon.com">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="businessPhone">Phone Number</label>
-                                        <input type="tel" id="businessPhone" name="businessPhone" value="+1 (555) 123-4567">
-                                    </div>
-                                </div>
-
-                                <div class="form-section">
-                                    <h3>Booking Settings</h3>
-                                    <div class="form-group">
-                                        <label for="maxAdvanceBooking">Maximum Advance Booking (days)</label>
-                                        <input type="number" id="maxAdvanceBooking" name="maxAdvanceBooking" value="30">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="cancellationHours">Cancellation Notice (hours)</label>
-                                        <input type="number" id="cancellationHours" name="cancellationHours" value="24">
-                                    </div>
-                                </div>
-
-                                <div class="form-actions">
-                                    <button type="submit" class="btn-primary">Save Settings</button>
-                                    <button type="button" class="btn-secondary" onclick="resetSettings()">Reset</button>
-                                </div>
-                            </form>
-                        </div>
+                        <p style="color: #999;">Analytics data will be displayed here.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>JK Salon</h3>
-                    <p>Your premier destination for beauty and wellness services. We provide exceptional care and professional treatments.</p>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-                <div class="footer-section">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="index.html">Home</a></li>
-                        <li><a href="services.html">Services</a></li>
-                        <li><a href="booking.html">Book Appointment</a></li>
-                        <li><a href="gallery.html">Gallery</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Services</h4>
-                    <ul>
-                        <li>Hair Styling</li>
-                        <li>Spa Treatments</li>
-                        <li>Beauty Care</li>
-                        <li>Bridal Packages</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 JK Salon. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
 
     <!-- Add Service Modal -->
     <div id="addServiceModal" class="admin-modal">
@@ -535,8 +262,42 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/admin.js"></script>
+    <script src="admin.js"></script>
+    <script>
+        // Attach event listeners after DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, attaching button listeners...');
+            
+            // Add Service button
+            const btnAddService = document.getElementById('btnAddService');
+            if (btnAddService) {
+                btnAddService.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('Add Service clicked');
+                    openServiceModal();
+                });
+            }
+            
+            // Add Staff button
+            const btnAddStaff = document.getElementById('btnAddStaff');
+            if (btnAddStaff) {
+                btnAddStaff.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('Add Staff clicked');
+                    openStaffModal();
+                });
+            }
+            
+            // Add Photo button
+            const btnAddPhoto = document.getElementById('btnAddPhoto');
+            if (btnAddPhoto) {
+                btnAddPhoto.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('Add Photo clicked');
+                    openPhotoModal();
+                });
+            }
+        });
+    </script>
 </body>
 </html>
