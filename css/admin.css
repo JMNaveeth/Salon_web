@@ -938,7 +938,7 @@
     border-radius: 20px;
     border: 2px solid var(--primary);
     box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3);
-    max-width: 750px;
+    max-width: 600px;
     max-height: 90vh;
     width: 95%;
     animation: slideUp 0.4s ease;
