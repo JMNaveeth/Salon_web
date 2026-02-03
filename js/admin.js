@@ -1167,3 +1167,334 @@ window.addEventListener('unhandledrejection', function(e) {
 // ==========================================
 
 Utils.log('Admin Panel Script Loaded Successfully!');
+
+// ==========================================
+// MODAL FUNCTIONS
+// ==========================================
+
+// Service Modal
+window.openServiceModal = function() {
+    const modal = document.getElementById('addServiceModal');
+    if (modal) {
+        modal.classList.add('active');
+        document.getElementById('serviceModalForm')?.reset();
+    }
+};
+
+window.closeServiceModal = function() {
+    const modal = document.getElementById('addServiceModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.getElementById('serviceModalForm')?.reset();
+    }
+};
+
+window.saveService = function() {
+    const form = document.getElementById('serviceModalForm');
+    if (!form) return;
+    
+    const formData = new FormData(form);
+    const serviceName = formData.get('serviceName')?.trim();
+    const category = formData.get('category')?.trim();
+    const price = formData.get('price')?.trim();
+    const duration = formData.get('duration')?.trim();
+    const description = formData.get('description')?.trim();
+    
+    // Validation
+    if (!serviceName || !category || !price || !duration) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+    }
+    
+    if (isNaN(price) || parseFloat(price) <= 0) {
+        showToast('Please enter a valid price', 'error');
+        return;
+    }
+    
+    if (isNaN(duration) || parseInt(duration) <= 0) {
+        showToast('Please enter a valid duration', 'error');
+        return;
+    }
+    
+    // Get existing services
+    const services = Storage.get('services', []);
+    
+    // Create new service
+    const newService = {
+        id: Date.now(),
+        name: serviceName,
+        category: category,
+        price: parseFloat(price),
+        duration: parseInt(duration),
+        description: description || '',
+        createdAt: new Date().toISOString()
+    };
+    
+    // Add to storage
+    services.push(newService);
+    Storage.set('services', services);
+    
+    // Add activity
+    addActivity('plus-circle', `New service added: ${serviceName}`, 'success');
+    
+    // Show success message
+    showToast(`Service "${serviceName}" added successfully!`, 'success');
+    
+    // Close modal
+    closeServiceModal();
+    
+    // Reload tables if needed
+    if (typeof loadServicesTable === 'function') {
+        loadServicesTable();
+    }
+};
+
+// Staff Modal
+window.openStaffModal = function() {
+    const modal = document.getElementById('addStaffModal');
+    if (modal) {
+        modal.classList.add('active');
+        document.getElementById('staffModalForm')?.reset();
+    }
+};
+
+window.closeStaffModal = function() {
+    const modal = document.getElementById('addStaffModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.getElementById('staffModalForm')?.reset();
+    }
+};
+
+window.saveStaff = function() {
+    const form = document.getElementById('staffModalForm');
+    if (!form) return;
+    
+    const formData = new FormData(form);
+    const firstName = formData.get('firstName')?.trim();
+    const lastName = formData.get('lastName')?.trim();
+    const specialty = formData.get('specialty')?.trim();
+    const email = formData.get('email')?.trim();
+    const phone = formData.get('phone')?.trim();
+    const bio = formData.get('bio')?.trim();
+    
+    // Validation
+    if (!firstName || !lastName || !specialty || !email || !phone) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+    }
+    
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showToast('Please enter a valid email address', 'error');
+        return;
+    }
+    
+    // Get existing staff
+    const staff = Storage.get('staff', []);
+    
+    // Create new staff member
+    const newStaff = {
+        id: Date.now(),
+        firstName: firstName,
+        lastName: lastName,
+        name: `{firstName} ${lastName}`,
+        specialty: specialty,
+        email: email,
+        phone: phone,
+        bio: bio || '',
+        createdAt: new Date().toISOString()
+    };
+    
+    // Add to storage
+    staff.push(newStaff);
+    Storage.set('staff', staff);
+    
+    // Add activity
+    addActivity('user-plus', `New staff member added: ${firstName} ${lastName}`, 'success');
+    
+    // Show success message
+    showToast(`Staff member "${firstName} ${lastName}" added successfully!`, 'success');
+    
+    // Close modal
+    closeStaffModal();
+    
+    // Reload tables if needed
+    if (typeof loadStaffTable === 'function') {
+        loadStaffTable();
+    }
+};
+
+// Photo Modal
+window.openPhotoModal = function() {
+    const modal = document.getElementById('addPhotoModal');
+    if (modal) {
+        modal.classList.add('active');
+        document.getElementById('photoModalForm')?.reset();
+        const preview = document.getElementById('photoPreview');
+        if (preview) {
+            preview.innerHTML = '<span style="color: #666; font-style: italic;">No image selected</span>';
+            preview.classList.add('empty');
+        }
+    }
+};
+
+window.closePhotoModal = function() {
+    const modal = document.getElementById('addPhotoModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.getElementById('photoModalForm')?.reset();
+    }
+};
+
+window.previewPhoto = function(event) {
+    const file = event.target.files[0];
+    const preview = document.getElementById('photoPreview');
+    
+    if (!preview) return;
+    
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            preview.innerHTML = `<img id="previewImage" src="${e.target.result}" alt="Preview">`;
+            preview.classList.remove('empty');
+        };
+        
+        reader.readAsDataURL(file);
+    } else {
+        preview.innerHTML = '<span style="color: #666; font-style: italic;">Invalid file type</span>';
+        preview.classList.add('empty');
+    }
+};
+
+window.savePhoto = function() {
+    const form = document.getElementById('photoModalForm');
+    if (!form) return;
+    
+    const formData = new FormData(form);
+    const title = formData.get('photoTitle')?.trim();
+    const category = formData.get('photoCategory')?.trim();
+    const description = formData.get('photoDescription')?.trim();
+    const fileInput = document.getElementById('photoFile');
+    
+    // Validation
+    if (!title || !category || !fileInput || !fileInput.files[0]) {
+        showToast('Please fill in all required fields and select an image', 'error');
+        return;
+    }
+    
+    const file = fileInput.files[0];
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+        showToast('Please select a valid image file', 'error');
+        return;
+    }
+    
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+        showToast('Image size should be less than 5MB', 'error');
+        return;
+    }
+    
+    // Read file as base64
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        // Get existing photos
+        const photos = Storage.get('customerPhotos', []);
+        
+        // Create new photo
+        const newPhoto = {
+            id: Date.now(),
+            title: title,
+            category: category,
+            description: description || '',
+            image: e.target.result, // Base64 string
+            createdAt: new Date().toISOString()
+        };
+        
+        // Add to storage
+        photos.push(newPhoto);
+        Storage.set('customerPhotos', photos);
+        
+        // Add activity
+        addActivity('camera', `New customer photo added: ${title}`, 'success');
+        
+        // Show success message
+        showToast(`Photo "${title}" added successfully!`, 'success');
+        
+        // Close modal
+        closePhotoModal();
+        
+        // Reload gallery if needed
+        if (typeof loadPhotosGallery === 'function') {
+            loadPhotosGallery();
+        }
+    };
+    
+    reader.onerror = function() {
+        showToast('Error reading image file', 'error');
+    };
+    
+    reader.readAsDataURL(file);
+};
+
+// Toast Notification Function
+function showToast(message, type = 'success') {
+    // Remove existing toasts
+    const existingToast = document.querySelector('.toast');
+    if (existingToast) {
+        existingToast.remove();
+    }
+    
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+    
+    toast.innerHTML = `
+        <i class="fas ${icon}"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// Close modal on background click
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('admin-modal')) {
+        if (e.target.id === 'addServiceModal') {
+            closeServiceModal();
+        } else if (e.target.id === 'addStaffModal') {
+            closeStaffModal();
+        } else if (e.target.id === 'addPhotoModal') {
+            closePhotoModal();
+        }
+    }
+});
+
+// Close modal on Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const activeModal = document.querySelector('.admin-modal.active');
+        if (activeModal) {
+            if (activeModal.id === 'addServiceModal') {
+                closeServiceModal();
+            } else if (activeModal.id === 'addStaffModal') {
+                closeStaffModal();
+            } else if (activeModal.id === 'addPhotoModal') {
+                closePhotoModal();
+            }
+        }
+    }
+});
