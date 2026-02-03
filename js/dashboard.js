@@ -118,6 +118,7 @@ function loadDashboardData() {
 
     // Load sections
     loadOverviewSection(bookings, upcomingBookings, pastBookings);
+    loadAnalytics(bookings);
     loadBookingHistory(pastBookings);
     loadProfileData(userProfile);
 }
@@ -224,6 +225,158 @@ function createActivityItem(booking) {
     `;
     
     return item;
+}
+
+// Load Analytics
+function loadAnalytics(bookings) {
+    const categoryContainer = document.getElementById('categorySpendingChart');
+    const monthlyContainer = document.getElementById('monthlySpendingChart');
+    const emptyState = document.getElementById('analyticsEmpty');
+    
+    // Filter only completed bookings
+    const completedBookings = bookings.filter(b => b.status === 'completed');
+    
+    if (completedBookings.length === 0) {
+        if (emptyState) emptyState.style.display = 'block';
+        if (categoryContainer) categoryContainer.style.display = 'none';
+        if (monthlyContainer) monthlyContainer.parentElement.style.display = 'none';
+        return;
+    }
+    
+    if (emptyState) emptyState.style.display = 'none';
+    if (categoryContainer) categoryContainer.style.display = 'grid';
+    if (monthlyContainer) monthlyContainer.parentElement.style.display = 'block';
+    
+    // Calculate category spending
+    const categorySpending = {};
+    completedBookings.forEach(booking => {
+        const service = booking.service.toLowerCase();
+        let category = 'Other';
+        
+        if (service.includes('hair') || service.includes('cut') || service.includes('style')) {
+            category = 'Hair';
+        } else if (service.includes('skin') || service.includes('facial') || service.includes('face')) {
+            category = 'Skin Care';
+        } else if (service.includes('nail') || service.includes('manicure') || service.includes('pedicure')) {
+            category = 'Nails';
+        } else if (service.includes('massage') || service.includes('spa')) {
+            category = 'Massage & Spa';
+        } else if (service.includes('makeup') || service.includes('bridal')) {
+            category = 'Makeup';
+        }
+        
+        if (!categorySpending[category]) {
+            categorySpending[category] = { count: 0, amount: 0 };
+        }
+        categorySpending[category].count++;
+        categorySpending[category].amount += parseFloat(booking.price) || 0;
+    });
+    
+    // Display category spending
+    if (categoryContainer) {
+        categoryContainer.innerHTML = '';
+        
+        const categoryIcons = {
+            'Hair': { icon: 'fa-cut', color: '#FF6B6B' },
+            'Skin Care': { icon: 'fa-spa', color: '#4ECDC4' },
+            'Nails': { icon: 'fa-hand-sparkles', color: '#FFE66D' },
+            'Massage & Spa': { icon: 'fa-hands', color: '#95E1D3' },
+            'Makeup': { icon: 'fa-palette', color: '#F38181' },
+            'Other': { icon: 'fa-star', color: '#D4AF37' }
+        };
+        
+        Object.keys(categorySpending).forEach(category => {
+            const data = categorySpending[category];
+            const iconData = categoryIcons[category] || categoryIcons['Other'];
+            
+            const card = document.createElement('div');
+            card.className = 'category-card';
+            card.innerHTML = `
+                <div class=\"category-icon\" style=\"background: ${iconData.color}20; color: ${iconData.color};\">
+                    <i class=\"fas ${iconData.icon}\"></i>
+                </div>
+                <div class=\"category-info\">
+                    <div class=\"category-name\">${category}</div>
+                    <div class=\"category-stats\">
+                        <span class=\"category-count\">${data.count} booking${data.count > 1 ? 's' : ''}</span>
+                        <span class=\"category-amount\">$${data.amount.toFixed(0)}</span>
+                    </div>
+                </div>
+            `;
+            categoryContainer.appendChild(card);
+        });
+    }
+    
+    // Calculate monthly spending
+    const monthlySpending = {};
+    completedBookings.forEach(booking => {
+        const date = new Date(booking.date);
+        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        const monthName = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        
+        if (!monthlySpending[monthKey]) {
+            monthlySpending[monthKey] = { name: monthName, total: 0, categories: {} };
+        }
+        
+        const service = booking.service.toLowerCase();
+        let category = 'Other';
+        
+        if (service.includes('hair') || service.includes('cut') || service.includes('style')) {
+            category = 'Hair';
+        } else if (service.includes('skin') || service.includes('facial') || service.includes('face')) {
+            category = 'Skin Care';
+        } else if (service.includes('nail') || service.includes('manicure') || service.includes('pedicure')) {
+            category = 'Nails';
+        } else if (service.includes('massage') || service.includes('spa')) {
+            category = 'Massage & Spa';
+        } else if (service.includes('makeup') || service.includes('bridal')) {
+            category = 'Makeup';
+        }
+        
+        const amount = parseFloat(booking.price) || 0;
+        monthlySpending[monthKey].total += amount;
+        
+        if (!monthlySpending[monthKey].categories[category]) {
+            monthlySpending[monthKey].categories[category] = 0;
+        }
+        monthlySpending[monthKey].categories[category] += amount;
+    });
+    
+    // Display monthly spending (sorted by date, most recent first)
+    if (monthlyContainer) {
+        monthlyContainer.innerHTML = '';
+        
+        const sortedMonths = Object.keys(monthlySpending).sort().reverse();
+        
+        sortedMonths.forEach(monthKey => {
+            const data = monthlySpending[monthKey];
+            
+            const monthCard = document.createElement('div');
+            monthCard.className = 'month-card';
+            
+            let breakdownHTML = '';
+            Object.keys(data.categories).forEach(category => {
+                breakdownHTML += `
+                    <div class=\"breakdown-item\">
+                        <span class=\"breakdown-category\">${category}</span>
+                        <span class=\"breakdown-amount\">$${data.categories[category].toFixed(0)}</span>
+                    </div>
+                `;
+            });
+            
+            monthCard.innerHTML = `
+                <div class=\"month-header\">
+                    <span class=\"month-name\">${data.name}</span>
+                    <span class=\"month-total\">$${data.total.toFixed(0)}</span>
+                </div>
+                <div class=\"month-breakdown\">
+                    ${breakdownHTML}
+                </div>
+            `;
+            
+            monthlyContainer.appendChild(monthCard);
+        });
+    }
 }
 
 // Load booking history
