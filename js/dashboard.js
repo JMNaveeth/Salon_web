@@ -1,10 +1,38 @@
 // Dashboard JavaScript functionality
 
+// Real-time update interval
+let dashboardUpdateInterval;
+
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize dashboard
     initDashboard();
     loadDashboardData();
     initProfileForm();
+    
+    // Start real-time updates (refresh every 5 seconds)
+    startRealTimeUpdates();
+});
+
+// Start real-time updates
+function startRealTimeUpdates() {
+    // Update dashboard every 5 seconds
+    dashboardUpdateInterval = setInterval(() => {
+        loadDashboardData();
+    }, 5000);
+}
+
+// Stop real-time updates (call when leaving dashboard)
+function stopRealTimeUpdates() {
+    if (dashboardUpdateInterval) {
+        clearInterval(dashboardUpdateInterval);
+    }
+}
+
+// Listen for storage changes from other tabs/windows
+window.addEventListener('storage', function(e) {
+    if (e.key === 'bookings' || e.key === 'userProfile') {
+        loadDashboardData();
+    }
 });
 
 // Initialize dashboard navigation
@@ -83,11 +111,12 @@ function updateDashboardStats(allBookings, upcomingBookings, pastBookings) {
     const completedBookingsEl = document.getElementById('completedBookings');
     const upcomingCountEl = document.getElementById('upcomingCount');
 
-    const completedCount = pastBookings.filter(booking => booking.status === 'completed').length;
+    const completedCount = allBookings.filter(booking => booking.status === 'completed').length;
+    const pendingCount = allBookings.filter(booking => booking.status === 'pending').length;
 
     if (totalBookingsEl) totalBookingsEl.textContent = allBookings.length;
     if (completedBookingsEl) completedBookingsEl.textContent = completedCount;
-    if (upcomingCountEl) upcomingCountEl.textContent = upcomingBookings.length;
+    if (upcomingCountEl) upcomingCountEl.textContent = upcomingBookings.length + pendingCount;
 }
 
 // Load upcoming appointments
@@ -185,7 +214,8 @@ function createAppointmentCard(booking, type) {
 
     // Status styling
     const statusClass = booking.status === 'completed' ? 'completed' :
-                       booking.status === 'cancelled' ? 'cancelled' : 'confirmed';
+                       booking.status === 'cancelled' ? 'cancelled' :
+                       booking.status === 'pending' ? 'pending' : 'confirmed';
 
     card.innerHTML = `
         <div class="appointment-header">
@@ -218,9 +248,17 @@ function createAppointmentCard(booking, type) {
             <button class="btn-secondary view-details" data-booking-id="${booking.id}">
                 <i class="fas fa-eye"></i> View Details
             </button>
-            ${type === 'upcoming' && booking.status !== 'cancelled' ?
-                `<button class="btn-outline cancel-booking" data-booking-id="${booking.id}">
+            ${booking.status === 'pending' ?
+                `<button class="btn-approve approve-booking" data-booking-id="${booking.id}">
+                    <i class="fas fa-check"></i> Approve
+                </button>` : ''}
+            ${type === 'upcoming' && booking.status !== 'cancelled' && booking.status !== 'pending' ?
+                `<button class="btn-cancel cancel-booking" data-booking-id="${booking.id}">
                     <i class="fas fa-times"></i> Cancel
+                </button>` : ''}
+            ${booking.status === 'pending' ?
+                `<button class="btn-cancel cancel-booking" data-booking-id="${booking.id}">
+                    <i class="fas fa-times"></i> Reject
                 </button>` : ''}
         </div>
     `;
@@ -228,13 +266,27 @@ function createAppointmentCard(booking, type) {
     // Add event listeners
     const viewBtn = card.querySelector('.view-details');
     const cancelBtn = card.querySelector('.cancel-booking');
+    const approveBtn = card.querySelector('.approve-booking');
 
     if (viewBtn) {
-        viewBtn.addEventListener('click', () => showAppointmentModal(booking));
+        viewBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            showAppointmentModal(booking);
+        });
     }
 
     if (cancelBtn) {
-        cancelBtn.addEventListener('click', () => cancelAppointment(booking.id));
+        cancelBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            cancelAppointment(booking.id);
+        });
+    }
+
+    if (approveBtn) {
+        approveBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            approveAppointment(booking.id);
+        });
     }
 
     return card;
@@ -287,8 +339,15 @@ function showAppointmentModal(booking) {
     // Modal actions
     modalActions.innerHTML = `
         <button class="btn-secondary" onclick="closeAppointmentModal()">Close</button>
+        ${booking.status === 'pending' ?
+            `<button class="btn-approve" onclick="approveAppointment('${booking.id}')">
+                <i class="fas fa-check"></i> Approve
+            </button>
+            <button class="btn-cancel" onclick="cancelAppointment('${booking.id}')">
+                <i class="fas fa-times"></i> Reject
+            </button>` : ''}
         ${booking.status === 'confirmed' ?
-            `<button class="btn-outline" onclick="cancelAppointment('${booking.id}')">
+            `<button class="btn-cancel" onclick="cancelAppointment('${booking.id}')">
                 <i class="fas fa-times"></i> Cancel Appointment
             </button>` : ''}
     `;
@@ -306,19 +365,49 @@ function closeAppointmentModal() {
 
 // Cancel appointment
 function cancelAppointment(bookingId) {
-    if (confirm('Are you sure you want to cancel this appointment? This action cannot be undone.')) {
-        const bookings = Storage.get('bookings', []);
+    const bookings = Storage.get('bookings', []);
+    const booking = bookings.find(b => b.id === bookingId);
+    const actionText = booking && booking.status === 'pending' ? 'reject' : 'cancel';
+    
+    if (confirm(`Are you sure you want to ${actionText} this appointment? This action cannot be undone.`)) {
         const bookingIndex = bookings.findIndex(booking => booking.id === bookingId);
 
         if (bookingIndex !== -1) {
             bookings[bookingIndex].status = 'cancelled';
+            bookings[bookingIndex].updatedAt = new Date().toISOString();
             Storage.set('bookings', bookings);
+
+            // Trigger real-time update
+            window.dispatchEvent(new Event('storage'));
 
             // Refresh dashboard
             loadDashboardData();
             closeAppointmentModal();
 
-            showMessage('Appointment cancelled successfully', 'success');
+            showMessage(`Appointment ${actionText}led successfully`, 'success');
+        }
+    }
+}
+
+// Approve appointment
+function approveAppointment(bookingId) {
+    if (confirm('Approve this appointment?')) {
+        const bookings = Storage.get('bookings', []);
+        const bookingIndex = bookings.findIndex(booking => booking.id === bookingId);
+
+        if (bookingIndex !== -1) {
+            bookings[bookingIndex].status = 'confirmed';
+            bookings[bookingIndex].updatedAt = new Date().toISOString();
+            Storage.set('bookings', bookings);
+
+            // Trigger real-time update
+            window.dispatchEvent(new Event('storage'));
+
+            // Refresh dashboard
+            loadDashboardData();
+            closeAppointmentModal();
+
+            showMessage('Appointment approved successfully', 'success');
         }
     }
 }

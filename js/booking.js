@@ -426,7 +426,7 @@ function submitBooking(formData) {
         email: formData.get('email'),
         phone: formData.get('phone'),
         notes: formData.get('notes'),
-        status: 'confirmed',
+        status: 'pending', // Changed from 'confirmed' to 'pending'
         createdAt: new Date().toISOString(),
         price: extractPriceFromService(formData.get('service'))
     };
@@ -435,6 +435,9 @@ function submitBooking(formData) {
     const bookings = Storage.get('bookings', []);
     bookings.push(booking);
     Storage.set('bookings', bookings);
+
+    // Trigger storage event for real-time updates
+    window.dispatchEvent(new Event('storage'));
 
     // Show confirmation modal
     showConfirmationModal(booking);
