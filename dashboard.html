@@ -55,12 +55,16 @@
           <div class="dashboard-sidebar" data-aos="fade-right">
             <div class="sidebar-menu">
               <a
-                href="#upcoming"
+                href="#overview"
                 class="sidebar-link active"
-                data-section="upcoming"
+                data-section="overview"
               >
-                <i class="fas fa-calendar-alt"></i>
-                Upcoming Appointments
+                <i class="fas fa-home"></i>
+                Dashboard Home
+              </a>
+              <a href="#booking" class="sidebar-link" data-section="booking">
+                <i class="fas fa-calendar-plus"></i>
+                Book Appointment
               </a>
               <a href="#history" class="sidebar-link" data-section="history">
                 <i class="fas fa-history"></i>
@@ -82,40 +86,126 @@
                 <div class="stat-label">Completed</div>
               </div>
               <div class="stat-item">
-                <div class="stat-number" id="upcomingCount">0</div>
-                <div class="stat-label">Upcoming</div>
+                <div class="stat-number" id="pendingCount">0</div>
+                <div class="stat-label">Pending</div>
               </div>
             </div>
           </div>
 
           <!-- Main Content -->
           <div class="dashboard-main">
-            <!-- Upcoming Appointments -->
+            <!-- Dashboard Overview -->
             <div
-              id="upcoming-section"
+              id="overview-section"
               class="dashboard-content active"
               data-aos="fade-left"
             >
               <div class="content-header">
-                <h2>Upcoming Appointments</h2>
-                <a href="booking.html" class="btn-primary"
-                  >Book New Appointment</a
-                >
+                <h2>Welcome to Your Dashboard</h2>
               </div>
 
-              <div class="appointments-list" id="upcomingAppointments">
-                <!-- Appointments will be loaded here -->
+              <!-- Dashboard Stats Grid -->
+              <div class="dashboard-stats-grid">
+                <div class="stat-card">
+                  <div class="stat-icon" style="background: rgba(76, 175, 80, 0.1);">
+                    <i class="fas fa-check-circle" style="color: #4CAF50;"></i>
+                  </div>
+                  <div class="stat-info">
+                    <div class="stat-value" id="overviewCompleted">0</div>
+                    <div class="stat-title">Completed</div>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-icon" style="background: rgba(255, 193, 7, 0.1);">
+                    <i class="fas fa-clock" style="color: #FFC107;"></i>
+                  </div>
+                  <div class="stat-info">
+                    <div class="stat-value" id="overviewPending">0</div>
+                    <div class="stat-title">Pending</div>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-icon" style="background: rgba(33, 150, 243, 0.1);">
+                    <i class="fas fa-calendar-check" style="color: #2196F3;"></i>
+                  </div>
+                  <div class="stat-info">
+                    <div class="stat-value" id="overviewUpcoming">0</div>
+                    <div class="stat-title">Upcoming</div>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-icon" style="background: rgba(212, 175, 55, 0.1);">
+                    <i class="fas fa-dollar-sign" style="color: #D4AF37;"></i>
+                  </div>
+                  <div class="stat-info">
+                    <div class="stat-value">$<span id="totalSpent">0</span></div>
+                    <div class="stat-title">Total Spent</div>
+                  </div>
+                </div>
               </div>
 
-              <div class="empty-state" id="upcomingEmpty" style="display: none">
+              <!-- Quick Actions -->
+              <div class="quick-actions">
+                <h3>Quick Actions</h3>
+                <div class="actions-grid">
+                  <a href="booking.html" class="action-card">
+                    <div class="action-icon">
+                      <i class="fas fa-calendar-plus"></i>
+                    </div>
+                    <h4>Book Appointment</h4>
+                    <p>Schedule a new service</p>
+                  </a>
+                  <a href="services.html" class="action-card">
+                    <div class="action-icon">
+                      <i class="fas fa-cut"></i>
+                    </div>
+                    <h4>View Services</h4>
+                    <p>Browse our services</p>
+                  </a>
+                  <a href="#history" class="action-card" data-section="history">
+                    <div class="action-icon">
+                      <i class="fas fa-history"></i>
+                    </div>
+                    <h4>Booking History</h4>
+                    <p>View past bookings</p>
+                  </a>
+                  <a href="#profile" class="action-card" data-section="profile">
+                    <div class="action-icon">
+                      <i class="fas fa-user-edit"></i>
+                    </div>
+                    <h4>Edit Profile</h4>
+                    <p>Update your info</p>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Recent Activity -->
+              <div class="recent-activity">
+                <h3>Recent Activity</h3>
+                <div id="recentActivityList">
+                  <!-- Recent bookings will be loaded here -->
+                </div>
+                <div class="empty-state" id="noActivityEmpty" style="display: none">
+                  <p>No recent activity</p>
+                  <a href="booking.html" class="btn-primary">Make Your First Booking</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Book Appointment Section -->
+            <div id="booking-section" class="dashboard-content">
+              <div class="content-header">
+                <h2>Book New Appointment</h2>
+              </div>
+              <div class="booking-redirect">
                 <div class="empty-icon">
                   <i class="fas fa-calendar-plus"></i>
                 </div>
-                <h3>No Upcoming Appointments</h3>
-                <p>You don't have any upcoming appointments scheduled.</p>
-                <a href="booking.html" class="btn-primary"
-                  >Book Your First Appointment</a
-                >
+                <h3>Ready to Book?</h3>
+                <p>Click below to schedule your next appointment with us.</p>
+                <a href="booking.html" class="btn-primary" style="display: inline-flex; align-items: center; gap: 10px;">
+                  <i class="fas fa-calendar-check"></i> Go to Booking Page
+                </a>
               </div>
             </div>
 

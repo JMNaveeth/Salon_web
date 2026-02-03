@@ -38,6 +38,7 @@ window.addEventListener('storage', function(e) {
 // Initialize dashboard navigation
 function initDashboard() {
     const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    const actionLinks = document.querySelectorAll('.action-card[data-section]');
 
     sidebarLinks.forEach(link => {
         link.addEventListener('click', function(e) {
@@ -51,6 +52,22 @@ function initDashboard() {
             // Show corresponding section
             const sectionId = this.getAttribute('data-section') + '-section';
             showDashboardSection(sectionId);
+        });
+    });
+
+    // Quick action navigation
+    actionLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const section = this.getAttribute('data-section');
+            
+            // Update sidebar active state
+            sidebarLinks.forEach(l => l.classList.remove('active'));
+            const targetLink = document.querySelector(`.sidebar-link[data-section="${section}"]`);
+            if (targetLink) targetLink.classList.add('active');
+            
+            // Show section
+            showDashboardSection(section + '-section');
         });
     });
 }
@@ -100,7 +117,7 @@ function loadDashboardData() {
     updateDashboardStats(bookings, upcomingBookings, pastBookings);
 
     // Load sections
-    loadUpcomingAppointments(upcomingBookings);
+    loadOverviewSection(bookings, upcomingBookings, pastBookings);
     loadBookingHistory(pastBookings);
     loadProfileData(userProfile);
 }
@@ -109,38 +126,104 @@ function loadDashboardData() {
 function updateDashboardStats(allBookings, upcomingBookings, pastBookings) {
     const totalBookingsEl = document.getElementById('totalBookings');
     const completedBookingsEl = document.getElementById('completedBookings');
-    const upcomingCountEl = document.getElementById('upcomingCount');
+    const pendingCountEl = document.getElementById('pendingCount');
 
     const completedCount = allBookings.filter(booking => booking.status === 'completed').length;
     const pendingCount = allBookings.filter(booking => booking.status === 'pending').length;
 
     if (totalBookingsEl) totalBookingsEl.textContent = allBookings.length;
     if (completedBookingsEl) completedBookingsEl.textContent = completedCount;
-    if (upcomingCountEl) upcomingCountEl.textContent = upcomingBookings.length + pendingCount;
+    if (pendingCountEl) pendingCountEl.textContent = pendingCount;
 }
 
-// Load upcoming appointments
-function loadUpcomingAppointments(bookings) {
-    const container = document.getElementById('upcomingAppointments');
-    const emptyState = document.getElementById('upcomingEmpty');
+// Load overview section
+function loadOverviewSection(allBookings, upcomingBookings, pastBookings) {
+    // Update overview stats
+    const completedCount = allBookings.filter(b => b.status === 'completed').length;
+    const pendingCount = allBookings.filter(b => b.status === 'pending').length;
+    const upcomingCount = upcomingBookings.length;
+    
+    // Calculate total spent
+    const totalSpent = allBookings
+        .filter(b => b.status === 'completed')
+        .reduce((sum, b) => sum + (parseFloat(b.price) || 0), 0);
+    
+    const overviewCompletedEl = document.getElementById('overviewCompleted');
+    const overviewPendingEl = document.getElementById('overviewPending');
+    const overviewUpcomingEl = document.getElementById('overviewUpcoming');
+    const totalSpentEl = document.getElementById('totalSpent');
+    
+    if (overviewCompletedEl) overviewCompletedEl.textContent = completedCount;
+    if (overviewPendingEl) overviewPendingEl.textContent = pendingCount;
+    if (overviewUpcomingEl) overviewUpcomingEl.textContent = upcomingCount;
+    if (totalSpentEl) totalSpentEl.textContent = totalSpent.toFixed(0);
+    
+    // Load recent activity
+    loadRecentActivity(allBookings);
+}
 
+// Load recent activity
+function loadRecentActivity(bookings) {
+    const container = document.getElementById('recentActivityList');
+    const emptyState = document.getElementById('noActivityEmpty');
+    
     if (!container) return;
-
+    
     container.innerHTML = '';
-
+    
     if (bookings.length === 0) {
         if (emptyState) emptyState.style.display = 'block';
-        if (container) container.style.display = 'none';
         return;
     }
-
+    
     if (emptyState) emptyState.style.display = 'none';
-    if (container) container.style.display = 'block';
-
-    bookings.forEach(booking => {
-        const appointmentCard = createAppointmentCard(booking, 'upcoming');
-        container.appendChild(appointmentCard);
+    
+    // Sort by date and show last 3
+    const recentBookings = bookings
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 3);
+    
+    recentBookings.forEach(booking => {
+        const activityItem = createActivityItem(booking);
+        container.appendChild(activityItem);
     });
+}
+
+// Create activity item
+function createActivityItem(booking) {
+    const item = document.createElement('div');
+    item.className = 'activity-item';
+    
+    const statusColors = {
+        'completed': { bg: 'rgba(76, 175, 80, 0.2)', color: '#4CAF50', icon: 'fa-check-circle' },
+        'pending': { bg: 'rgba(255, 193, 7, 0.2)', color: '#FFC107', icon: 'fa-clock' },
+        'confirmed': { bg: 'rgba(33, 150, 243, 0.2)', color: '#2196F3', icon: 'fa-calendar-check' },
+        'cancelled': { bg: 'rgba(244, 67, 54, 0.2)', color: '#F44336', icon: 'fa-times-circle' }
+    };
+    
+    const status = statusColors[booking.status] || statusColors['pending'];
+    
+    const dateObj = new Date(booking.date);
+    const formattedDate = dateObj.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+    });
+    
+    item.innerHTML = `
+        <div class="activity-icon" style="background: ${status.bg}; color: ${status.color};">
+            <i class="fas ${status.icon}"></i>
+        </div>
+        <div class="activity-details">
+            <h4>${booking.service.split(' - ')[0]}</h4>
+            <p>${booking.status.charAt(0).toUpperCase() + booking.status.slice(1)} • $${booking.price || '0'}</p>
+        </div>
+        <div class="activity-date">
+            ${formattedDate}
+        </div>
+    `;
+    
+    return item;
 }
 
 // Load booking history
