@@ -67,6 +67,8 @@ function initNavigation() {
 }
 
 function initModalButtons() {
+    console.log('Initializing modal buttons...');
+    
     // Add Service Modal
     const btnAddService = document.getElementById('btnAddService');
     const serviceModal = document.getElementById('addServiceModal');
@@ -74,21 +76,28 @@ function initModalButtons() {
     const cancelService = document.getElementById('cancelService');
     const saveServiceBtn = document.getElementById('saveServiceBtn');
     
-    if (btnAddService) {
+    console.log('Service button found:', !!btnAddService);
+    console.log('Service modal found:', !!serviceModal);
+    
+    if (btnAddService && serviceModal) {
         btnAddService.addEventListener('click', function() {
             console.log('Opening Service Modal');
             serviceModal.classList.add('active');
-            document.getElementById('serviceModalForm').reset();
+            const form = document.getElementById('serviceModalForm');
+            if (form) form.reset();
         });
+        console.log('Service button event listener attached');
+    } else {
+        console.error('Service button or modal not found!');
     }
     
-    if (closeService) {
+    if (closeService && serviceModal) {
         closeService.addEventListener('click', function() {
             serviceModal.classList.remove('active');
         });
     }
     
-    if (cancelService) {
+    if (cancelService && serviceModal) {
         cancelService.addEventListener('click', function() {
             serviceModal.classList.remove('active');
         });
