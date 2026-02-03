@@ -132,7 +132,6 @@ function createServiceElement(service) {
             </div>
             <p class="service-description">${service.description || 'Professional service'}</p>
             <div class="service-item-footer">
-                <span class="added-badge"><i class="fas fa-plus-circle"></i> Custom Service</span>
                 <button class="btn-book-service" onclick="bookService('${service.name}', ${service.price})">
                     Book Now
                     <i class="fas fa-arrow-right"></i>
