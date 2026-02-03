@@ -32,8 +32,18 @@ window.addEventListener('load', function() {
 // Load services from localStorage and display them
 function loadDynamicServices() {
     const services = Storage.get('services', []);
+    const servicesContainer = document.getElementById('servicesContainer');
+    const noServicesMessage = document.getElementById('noServicesMessage');
     
-    if (services.length === 0) return; // No custom services added yet
+    // Show/hide "no services" message
+    if (services.length === 0) {
+        if (servicesContainer) servicesContainer.style.display = 'none';
+        if (noServicesMessage) noServicesMessage.style.display = 'block';
+        return;
+    }
+    
+    if (servicesContainer) servicesContainer.style.display = 'block';
+    if (noServicesMessage) noServicesMessage.style.display = 'none';
     
     // Group services by category
     const servicesByCategory = {};
@@ -45,31 +55,32 @@ function loadDynamicServices() {
         servicesByCategory[category].push(service);
     });
     
+    // Clear existing services
+    if (servicesContainer) {
+        servicesContainer.innerHTML = '';
+    }
+    
     // Add services to their respective categories
     Object.keys(servicesByCategory).forEach(category => {
-        let categorySection = document.querySelector(`.service-category-section[data-category="${category}"]`);
-        
-        // If category doesn't exist, create it
-        if (!categorySection) {
-            categorySection = createCategorySection(category);
-        }
-        
+        const categorySection = createCategorySection(category);
         const servicesList = categorySection.querySelector('.services-list');
+        
         if (servicesList) {
             // Add each service to the category
             servicesByCategory[category].forEach(service => {
-                // Check if service already exists (avoid duplicates)
-                const existingService = servicesList.querySelector(`[data-service-id="${service.id}"]`);
-                if (!existingService) {
-                    const serviceElement = createServiceElement(service);
-                    servicesList.appendChild(serviceElement);
-                }
+                const serviceElement = createServiceElement(service);
+                servicesList.appendChild(serviceElement);
             });
+        }
+        
+        // Add category section to container
+        if (servicesContainer) {
+            servicesContainer.appendChild(categorySection);
         }
     });
 }
 
-// Create a new category section if it doesn't exist
+// Create a new category section
 function createCategorySection(category) {
     const categoryIcons = {
         'hair': 'fa-cut',
@@ -99,12 +110,6 @@ function createCategorySection(category) {
         </div>
         <div class="services-list"></div>
     `;
-    
-    // Add to the page before the footer
-    const mainSection = document.querySelector('.services-main-section .container');
-    if (mainSection) {
-        mainSection.appendChild(section);
-    }
     
     return section;
 }
