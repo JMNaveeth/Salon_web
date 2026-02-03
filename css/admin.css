@@ -938,12 +938,12 @@
     border-radius: 20px;
     border: 2px solid var(--primary);
     box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3);
-    max-width: 500px;
-    max-height: 500px;
-    height: 100%;
-    width: 100%;
+    max-width: 750px;
+    max-height: 90vh;
+    width: 95%;
     animation: slideUp 0.4s ease;
     position: relative;
+    overflow-y: auto;
 }
 
 .modal-header {
@@ -984,6 +984,8 @@
 
 .modal-body {
     padding: 2rem;
+    max-height: calc(90vh - 200px);
+    overflow-y: auto;
 }
 
 .modal-body form {
@@ -1034,6 +1036,10 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
+}
+
+.form-row .form-group {
+    margin: 0;
 }
 
 .modal-footer {
