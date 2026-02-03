@@ -1,282 +1,332 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Dashboard - JK Salon</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/dashboard.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
-</head>
-<body>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+  </head>
+  <body>
     <!-- Navigation -->
     <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <a href="index.html"><h2>JK Salon</h2></a>
-            </div>
-            <div class="nav-menu">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="services.html" class="nav-link">Services</a>
+      <div class="nav-container">
+        <div class="nav-logo">
+          <a href="index.html"><h2>JK Salon</h2></a>
+        </div>
+        <div class="nav-menu">
+          <!-- <a href="services.html" class="nav-link">Services</a>
                 <a href="gallery.html" class="nav-link">Gallery</a>
                 <a href="index.html#reviews" class="nav-link">Reviews</a>
-                <a href="index.html#contact" class="nav-link">Contact</a>
-                <a href="booking.html" class="nav-link btn-primary">Book Now</a>
-            </div>
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+                <a href="index.html#contact" class="nav-link">Contact</a> -->
+          <a href="booking.html" class="nav-link btn-primary">Book Now</a>
+          <a href="index.html" class="nav-link"
+            ><i class="fas fa-home"></i> Home</a
+          >
         </div>
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
     </nav>
 
     <!-- Dashboard Hero -->
     <section class="dashboard-hero">
-        <div class="container">
-            <div class="dashboard-hero-content" data-aos="fade-up">
-                <h1>My Dashboard</h1>
-                <p>Manage your appointments and booking history</p>
-            </div>
+      <div class="container">
+        <div class="dashboard-hero-content" data-aos="fade-up">
+          <h1>My Dashboard</h1>
+          <p>Manage your appointments and booking history</p>
         </div>
+      </div>
     </section>
 
     <!-- Dashboard Content -->
     <section class="dashboard-section">
-        <div class="container">
-            <div class="dashboard-layout">
-                <!-- Sidebar -->
-                <div class="dashboard-sidebar" data-aos="fade-right">
-                    <div class="sidebar-menu">
-                        <a href="#upcoming" class="sidebar-link active" data-section="upcoming">
-                            <i class="fas fa-calendar-alt"></i>
-                            Upcoming Appointments
-                        </a>
-                        <a href="#history" class="sidebar-link" data-section="history">
-                            <i class="fas fa-history"></i>
-                            Booking History
-                        </a>
-                        <a href="#profile" class="sidebar-link" data-section="profile">
-                            <i class="fas fa-user"></i>
-                            Profile Settings
-                        </a>
-                    </div>
-
-                    <div class="sidebar-stats">
-                        <div class="stat-item">
-                            <div class="stat-number" id="totalBookings">0</div>
-                            <div class="stat-label">Total Bookings</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number" id="completedBookings">0</div>
-                            <div class="stat-label">Completed</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number" id="upcomingCount">0</div>
-                            <div class="stat-label">Upcoming</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Main Content -->
-                <div class="dashboard-main">
-                    <!-- Upcoming Appointments -->
-                    <div id="upcoming-section" class="dashboard-content active" data-aos="fade-left">
-                        <div class="content-header">
-                            <h2>Upcoming Appointments</h2>
-                            <a href="booking.html" class="btn-primary">Book New Appointment</a>
-                        </div>
-
-                        <div class="appointments-list" id="upcomingAppointments">
-                            <!-- Appointments will be loaded here -->
-                        </div>
-
-                        <div class="empty-state" id="upcomingEmpty" style="display: none;">
-                            <div class="empty-icon">
-                                <i class="fas fa-calendar-plus"></i>
-                            </div>
-                            <h3>No Upcoming Appointments</h3>
-                            <p>You don't have any upcoming appointments scheduled.</p>
-                            <a href="booking.html" class="btn-primary">Book Your First Appointment</a>
-                        </div>
-                    </div>
-
-                    <!-- Booking History -->
-                    <div id="history-section" class="dashboard-content">
-                        <div class="content-header">
-                            <h2>Booking History</h2>
-                            <div class="filter-tabs">
-                                <button class="tab-btn active" data-filter="all">All</button>
-                                <button class="tab-btn" data-filter="pending">Pending</button>
-                                <button class="tab-btn" data-filter="completed">Completed</button>
-                                <button class="tab-btn" data-filter="cancelled">Cancelled</button>
-                            </div>
-                        </div>
-
-                        <div class="appointments-list" id="historyAppointments">
-                            <!-- History will be loaded here -->
-                        </div>
-
-                        <div class="empty-state" id="historyEmpty" style="display: none;">
-                            <div class="empty-icon">
-                                <i class="fas fa-history"></i>
-                            </div>
-                            <h3>No Booking History</h3>
-                            <p>Your completed and past appointments will appear here.</p>
-                        </div>
-                    </div>
-
-                    <!-- Profile Settings -->
-                    <div id="profile-section" class="dashboard-content">
-                        <div class="content-header">
-                            <h2>Profile Settings</h2>
-                        </div>
-
-                        <div class="profile-form">
-                            <form id="profileForm">
-                                <div class="form-section">
-                                    <h3>Personal Information</h3>
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label for="profileFirstName">First Name</label>
-                                            <input type="text" id="profileFirstName" name="firstName">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="profileLastName">Last Name</label>
-                                            <input type="text" id="profileLastName" name="lastName">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="profileEmail">Email Address</label>
-                                        <input type="email" id="profileEmail" name="email">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="profilePhone">Phone Number</label>
-                                        <input type="tel" id="profilePhone" name="phone">
-                                    </div>
-                                </div>
-
-                                <div class="form-section">
-                                    <h3>Preferences</h3>
-                                    <div class="form-group">
-                                        <label for="preferredStaff">Preferred Staff</label>
-                                        <select id="preferredStaff" name="preferredStaff">
-                                            <option value="">No preference</option>
-                                            <option value="Sarah Johnson">Sarah Johnson (Hair Specialist)</option>
-                                            <option value="Mike Chen">Mike Chen (Color Expert)</option>
-                                            <option value="Emma Davis">Emma Davis (Spa Therapist)</option>
-                                            <option value="Lisa Wong">Lisa Wong (Bridal Specialist)</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="notificationPreference">Email Notifications</label>
-                                        <select id="notificationPreference" name="notifications">
-                                            <option value="all">All notifications</option>
-                                            <option value="important">Important only</option>
-                                            <option value="none">No notifications</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="form-actions">
-                                    <button type="submit" class="btn-primary">Save Changes</button>
-                                    <button type="button" class="btn-secondary" onclick="resetProfileForm()">Reset</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+      <div class="container">
+        <div class="dashboard-layout">
+          <!-- Sidebar -->
+          <div class="dashboard-sidebar" data-aos="fade-right">
+            <div class="sidebar-menu">
+              <a
+                href="#upcoming"
+                class="sidebar-link active"
+                data-section="upcoming"
+              >
+                <i class="fas fa-calendar-alt"></i>
+                Upcoming Appointments
+              </a>
+              <a href="#history" class="sidebar-link" data-section="history">
+                <i class="fas fa-history"></i>
+                Booking History
+              </a>
+              <a href="#profile" class="sidebar-link" data-section="profile">
+                <i class="fas fa-user"></i>
+                Profile Settings
+              </a>
             </div>
+
+            <div class="sidebar-stats">
+              <div class="stat-item">
+                <div class="stat-number" id="totalBookings">0</div>
+                <div class="stat-label">Total Bookings</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number" id="completedBookings">0</div>
+                <div class="stat-label">Completed</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number" id="upcomingCount">0</div>
+                <div class="stat-label">Upcoming</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Content -->
+          <div class="dashboard-main">
+            <!-- Upcoming Appointments -->
+            <div
+              id="upcoming-section"
+              class="dashboard-content active"
+              data-aos="fade-left"
+            >
+              <div class="content-header">
+                <h2>Upcoming Appointments</h2>
+                <a href="booking.html" class="btn-primary"
+                  >Book New Appointment</a
+                >
+              </div>
+
+              <div class="appointments-list" id="upcomingAppointments">
+                <!-- Appointments will be loaded here -->
+              </div>
+
+              <div class="empty-state" id="upcomingEmpty" style="display: none">
+                <div class="empty-icon">
+                  <i class="fas fa-calendar-plus"></i>
+                </div>
+                <h3>No Upcoming Appointments</h3>
+                <p>You don't have any upcoming appointments scheduled.</p>
+                <a href="booking.html" class="btn-primary"
+                  >Book Your First Appointment</a
+                >
+              </div>
+            </div>
+
+            <!-- Booking History -->
+            <div id="history-section" class="dashboard-content">
+              <div class="content-header">
+                <h2>Booking History</h2>
+                <div class="filter-tabs">
+                  <button class="tab-btn active" data-filter="all">All</button>
+                  <button class="tab-btn" data-filter="pending">Pending</button>
+                  <button class="tab-btn" data-filter="completed">
+                    Completed
+                  </button>
+                  <button class="tab-btn" data-filter="cancelled">
+                    Cancelled
+                  </button>
+                </div>
+              </div>
+
+              <div class="appointments-list" id="historyAppointments">
+                <!-- History will be loaded here -->
+              </div>
+
+              <div class="empty-state" id="historyEmpty" style="display: none">
+                <div class="empty-icon">
+                  <i class="fas fa-history"></i>
+                </div>
+                <h3>No Booking History</h3>
+                <p>Your completed and past appointments will appear here.</p>
+              </div>
+            </div>
+
+            <!-- Profile Settings -->
+            <div id="profile-section" class="dashboard-content">
+              <div class="content-header">
+                <h2>Profile Settings</h2>
+              </div>
+
+              <div class="profile-form">
+                <form id="profileForm">
+                  <div class="form-section">
+                    <h3>Personal Information</h3>
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="profileFirstName">First Name</label>
+                        <input
+                          type="text"
+                          id="profileFirstName"
+                          name="firstName"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="profileLastName">Last Name</label>
+                        <input
+                          type="text"
+                          id="profileLastName"
+                          name="lastName"
+                        />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="profileEmail">Email Address</label>
+                      <input type="email" id="profileEmail" name="email" />
+                    </div>
+                    <div class="form-group">
+                      <label for="profilePhone">Phone Number</label>
+                      <input type="tel" id="profilePhone" name="phone" />
+                    </div>
+                  </div>
+
+                  <div class="form-section">
+                    <h3>Preferences</h3>
+                    <div class="form-group">
+                      <label for="preferredStaff">Preferred Staff</label>
+                      <select id="preferredStaff" name="preferredStaff">
+                        <option value="">No preference</option>
+                        <option value="Sarah Johnson">
+                          Sarah Johnson (Hair Specialist)
+                        </option>
+                        <option value="Mike Chen">
+                          Mike Chen (Color Expert)
+                        </option>
+                        <option value="Emma Davis">
+                          Emma Davis (Spa Therapist)
+                        </option>
+                        <option value="Lisa Wong">
+                          Lisa Wong (Bridal Specialist)
+                        </option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="notificationPreference"
+                        >Email Notifications</label
+                      >
+                      <select id="notificationPreference" name="notifications">
+                        <option value="all">All notifications</option>
+                        <option value="important">Important only</option>
+                        <option value="none">No notifications</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                      Save Changes
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-secondary"
+                      onclick="resetProfileForm()"
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </section>
 
     <!-- Appointment Modal -->
     <div id="appointmentModal" class="appointment-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle">Appointment Details</h3>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="appointment-details">
-                    <div class="detail-group">
-                        <label>Service:</label>
-                        <span id="modalService"></span>
-                    </div>
-                    <div class="detail-group">
-                        <label>Date:</label>
-                        <span id="modalDate"></span>
-                    </div>
-                    <div class="detail-group">
-                        <label>Time:</label>
-                        <span id="modalTime"></span>
-                    </div>
-                    <div class="detail-group">
-                        <label>Staff:</label>
-                        <span id="modalStaff"></span>
-                    </div>
-                    <div class="detail-group">
-                        <label>Price:</label>
-                        <span id="modalPrice"></span>
-                    </div>
-                    <div class="detail-group">
-                        <label>Status:</label>
-                        <span id="modalStatus" class="status-badge"></span>
-                    </div>
-                    <div class="detail-group" id="notesGroup">
-                        <label>Notes:</label>
-                        <span id="modalNotes"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer" id="modalActions">
-                <!-- Actions will be populated based on appointment status -->
-            </div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modalTitle">Appointment Details</h3>
+          <button class="modal-close">&times;</button>
         </div>
+        <div class="modal-body">
+          <div class="appointment-details">
+            <div class="detail-group">
+              <label>Service:</label>
+              <span id="modalService"></span>
+            </div>
+            <div class="detail-group">
+              <label>Date:</label>
+              <span id="modalDate"></span>
+            </div>
+            <div class="detail-group">
+              <label>Time:</label>
+              <span id="modalTime"></span>
+            </div>
+            <div class="detail-group">
+              <label>Staff:</label>
+              <span id="modalStaff"></span>
+            </div>
+            <div class="detail-group">
+              <label>Price:</label>
+              <span id="modalPrice"></span>
+            </div>
+            <div class="detail-group">
+              <label>Status:</label>
+              <span id="modalStatus" class="status-badge"></span>
+            </div>
+            <div class="detail-group" id="notesGroup">
+              <label>Notes:</label>
+              <span id="modalNotes"></span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" id="modalActions">
+          <!-- Actions will be populated based on appointment status -->
+        </div>
+      </div>
     </div>
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>JK Salon</h3>
-                    <p>Your premier destination for beauty and wellness services. We provide exceptional care and professional treatments.</p>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-                <div class="footer-section">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="index.html">Home</a></li>
-                        <li><a href="services.html">Services</a></li>
-                        <li><a href="booking.html">Book Appointment</a></li>
-                        <li><a href="gallery.html">Gallery</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Services</h4>
-                    <ul>
-                        <li>Hair Styling</li>
-                        <li>Spa Treatments</li>
-                        <li>Beauty Care</li>
-                        <li>Bridal Packages</li>
-                    </ul>
-                </div>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>JK Salon</h3>
+            <p>
+              Your premier destination for beauty and wellness services. We
+              provide exceptional care and professional treatments.
+            </p>
+            <div class="social-links">
+              <a href="#"><i class="fab fa-facebook-f"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="#"><i class="fab fa-youtube"></i></a>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 JK Salon. All rights reserved.</p>
-            </div>
+          </div>
+          <div class="footer-section">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="services.html">Services</a></li>
+              <li><a href="booking.html">Book Appointment</a></li>
+              <li><a href="gallery.html">Gallery</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Services</h4>
+            <ul>
+              <li>Hair Styling</li>
+              <li>Spa Treatments</li>
+              <li>Beauty Care</li>
+              <li>Bridal Packages</li>
+            </ul>
+          </div>
         </div>
+        <div class="footer-bottom">
+          <p>&copy; 2024 JK Salon. All rights reserved.</p>
+        </div>
+      </div>
     </footer>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="js/main.js"></script>
     <script src="js/dashboard.js"></script>
-</body>
+  </body>
 </html>
