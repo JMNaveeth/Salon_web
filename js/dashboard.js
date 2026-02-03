@@ -547,17 +547,6 @@ function showAppointmentModal(booking) {
     // Modal actions
     modalActions.innerHTML = `
         <button class="btn-secondary" onclick="closeAppointmentModal()">Close</button>
-        ${booking.status === 'pending' ?
-            `<button class="btn-approve" onclick="approveAppointment('${booking.id}')">
-                <i class="fas fa-check"></i> Approve
-            </button>
-            <button class="btn-cancel" onclick="cancelAppointment('${booking.id}')">
-                <i class="fas fa-times"></i> Reject
-            </button>` : ''}
-        ${booking.status === 'confirmed' ?
-            `<button class="btn-cancel" onclick="cancelAppointment('${booking.id}')">
-                <i class="fas fa-times"></i> Cancel Appointment
-            </button>` : ''}
     `;
 
     // Show modal
