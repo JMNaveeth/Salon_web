@@ -470,6 +470,62 @@
     transform: translateX(5px);
 }
 
+/* Added Badge for Custom Services */
+.added-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(46, 125, 50, 0.15) 100%);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    color: #4caf50;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.added-badge i {
+    font-size: 0.75rem;
+}
+
+body.dark-mode .added-badge {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.2) 0%, rgba(46, 125, 50, 0.2) 100%);
+    border-color: rgba(76, 175, 80, 0.4);
+    color: #66bb6a;
+}
+
+/* Book Service Button (for dynamically added services) */
+.btn-book-service {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: var(--gradient);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+.btn-book-service:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+}
+
+.btn-book-service i {
+    transition: transform 0.3s ease;
+    font-size: 0.85rem;
+}
+
+.btn-book-service:hover i {
+    transform: translateX(3px);
+}
+
 /* Package Cards */
 .package-services {
     color: var(--primary);

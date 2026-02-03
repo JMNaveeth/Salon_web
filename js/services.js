@@ -1,6 +1,7 @@
 // Services Page JavaScript - Enhanced with User-Friendly Features
 
 document.addEventListener('DOMContentLoaded', function() {
+    loadDynamicServices(); // Load services from localStorage first
     initServiceFilters();
     initServiceSearch();
     initPriceFilter();
@@ -9,6 +10,169 @@ document.addEventListener('DOMContentLoaded', function() {
     initSmoothScroll();
     initQuickActions();
 });
+
+// Load services from localStorage and display them
+function loadDynamicServices() {
+    const services = Storage.get('services', []);
+    
+    if (services.length === 0) return; // No custom services added yet
+    
+    // Group services by category
+    const servicesByCategory = {};
+    services.forEach(service => {
+        const category = service.category.toLowerCase();
+        if (!servicesByCategory[category]) {
+            servicesByCategory[category] = [];
+        }
+        servicesByCategory[category].push(service);
+    });
+    
+    // Add services to their respective categories
+    Object.keys(servicesByCategory).forEach(category => {
+        let categorySection = document.querySelector(`.service-category-section[data-category="${category}"]`);
+        
+        // If category doesn't exist, create it
+        if (!categorySection) {
+            categorySection = createCategorySection(category);
+        }
+        
+        const servicesList = categorySection.querySelector('.services-list');
+        if (servicesList) {
+            // Add each service to the category
+            servicesByCategory[category].forEach(service => {
+                // Check if service already exists (avoid duplicates)
+                const existingService = servicesList.querySelector(`[data-service-id="${service.id}"]`);
+                if (!existingService) {
+                    const serviceElement = createServiceElement(service);
+                    servicesList.appendChild(serviceElement);
+                }
+            });
+        }
+    });
+}
+
+// Create a new category section if it doesn't exist
+function createCategorySection(category) {
+    const categoryIcons = {
+        'hair': 'fa-cut',
+        'skin care': 'fa-spa',
+        'nails': 'fa-hand-sparkles',
+        'makeup': 'fa-palette',
+        'massage': 'fa-hands',
+        'facial': 'fa-face-smile',
+        'body': 'fa-person'
+    };
+    
+    const icon = categoryIcons[category.toLowerCase()] || 'fa-star';
+    const categoryName = category.charAt(0).toUpperCase() + category.slice(1);
+    
+    const section = document.createElement('div');
+    section.className = 'service-category-section';
+    section.setAttribute('data-category', category.toLowerCase());
+    section.innerHTML = `
+        <div class="category-header">
+            <div class="category-icon">
+                <i class="fas ${icon}"></i>
+            </div>
+            <div>
+                <h2>${categoryName} Services</h2>
+                <p>Professional ${category.toLowerCase()} treatments</p>
+            </div>
+        </div>
+        <div class="services-list"></div>
+    `;
+    
+    // Add to the page before the footer
+    const mainSection = document.querySelector('.services-main-section .container');
+    if (mainSection) {
+        mainSection.appendChild(section);
+    }
+    
+    return section;
+}
+
+// Create service element HTML
+function createServiceElement(service) {
+    const serviceDiv = document.createElement('div');
+    serviceDiv.className = 'service-item';
+    serviceDiv.setAttribute('data-service-id', service.id);
+    serviceDiv.setAttribute('data-search-content', `${service.name} ${service.description || ''}`);
+    
+    const icon = getCategoryIcon(service.category);
+    
+    serviceDiv.innerHTML = `
+        <div class="service-item-icon">
+            <i class="fas ${icon}"></i>
+        </div>
+        <div class="service-item-content">
+            <div class="service-item-header">
+                <h3>${service.name}</h3>
+                <div class="service-item-price">
+                    <span class="price">$${service.price}</span>
+                    <span class="duration">${service.duration} min</span>
+                </div>
+            </div>
+            <p class="service-description">${service.description || 'Professional service'}</p>
+            <div class="service-item-footer">
+                <span class="added-badge"><i class="fas fa-plus-circle"></i> Custom Service</span>
+                <button class="btn-book-service" onclick="bookService('${service.name}', ${service.price})">
+                    Book Now
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    
+    return serviceDiv;
+}
+
+// Get icon based on category
+function getCategoryIcon(category) {
+    const iconMap = {
+        'hair': 'fa-cut',
+        'skin care': 'fa-spa',
+        'nails': 'fa-hand-sparkles',
+        'makeup': 'fa-palette',
+        'massage': 'fa-hands',
+        'facial': 'fa-face-smile',
+        'body': 'fa-person'
+    };
+    return iconMap[category.toLowerCase()] || 'fa-star';
+}
+
+// Book service function (redirect to booking page)
+window.bookService = function(serviceName, price) {
+    // Store selected service in localStorage
+    Storage.set('selectedService', {
+        name: serviceName,
+        price: price,
+        selectedAt: new Date().toISOString()
+    });
+    
+    // Redirect to booking page
+    window.location.href = 'booking.html';
+};
+
+// Storage utility (if not already defined)
+const Storage = {
+    get: function(key, defaultValue = null) {
+        try {
+            const item = localStorage.getItem(key);
+            return item ? JSON.parse(item) : defaultValue;
+        } catch (e) {
+            console.error('Error reading from localStorage:', e);
+            return defaultValue;
+        }
+    },
+    
+    set: function(key, value) {
+        try {
+            localStorage.setItem(key, JSON.stringify(value));
+        } catch (e) {
+            console.error('Error saving to localStorage:', e);
+        }
+    }
+};
 
 // Service Category Filtering
 function initServiceFilters() {
@@ -427,3 +591,16 @@ function initQuickActions() {
         });
     });
 }
+
+// Listen for storage changes (when admin adds a new service)
+window.addEventListener('storage', function(e) {
+    if (e.key === 'services') {
+        // Reload services when admin adds a new one
+        location.reload();
+    }
+});
+
+// Also listen for custom event (for same-tab updates)
+window.addEventListener('servicesUpdated', function() {
+    location.reload();
+});

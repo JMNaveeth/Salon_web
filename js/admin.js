@@ -266,6 +266,9 @@ function saveService() {
     services.push(newService);
     Storage.set('services', services);
     
+    // Trigger event for services page to reload
+    window.dispatchEvent(new Event('servicesUpdated'));
+    
     addActivity('plus-circle', `New service added: ${name}`);
     showToast(`Service "${name}" added successfully!`, 'success');
     
