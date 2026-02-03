@@ -1,14 +1,20 @@
 // Services Page JavaScript - Enhanced with User-Friendly Features
 
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Services page loading...');
     loadDynamicServices(); // Load services from localStorage first
-    initServiceFilters();
-    initServiceSearch();
-    initPriceFilter();
-    initSortServices();
-    initScrollAnimations();
-    initSmoothScroll();
-    initQuickActions();
+    
+    // Initialize all features after a short delay to ensure DOM is ready
+    setTimeout(function() {
+        initServiceFilters();
+        initServiceSearch();
+        initPriceFilter();
+        initSortServices();
+        initScrollAnimations();
+        initSmoothScroll();
+        initQuickActions();
+        console.log('All services features initialized');
+    }, 100);
 });
 
 // Load services from localStorage and display them
@@ -179,6 +185,14 @@ function initServiceFilters() {
     const filterTabs = document.querySelectorAll('.filter-tab');
     const categoryGroups = document.querySelectorAll('.service-category-section');
 
+    console.log('Initializing filters - Tabs found:', filterTabs.length);
+    console.log('Initializing filters - Categories found:', categoryGroups.length);
+
+    if (filterTabs.length === 0) {
+        console.error('No filter tabs found!');
+        return;
+    }
+
     filterTabs.forEach(tab => {
         tab.addEventListener('click', function() {
             // Remove active class from all tabs
@@ -219,6 +233,14 @@ function initServiceSearch() {
     const searchInput = document.getElementById('serviceSearch');
     const serviceItems = document.querySelectorAll('.service-item');
     const categoryGroups = document.querySelectorAll('.service-category-section');
+
+    console.log('Initializing search - Input found:', !!searchInput);
+    console.log('Service items found:', serviceItems.length);
+
+    if (!searchInput) {
+        console.error('Search input not found!');
+        return;
+    }
 
     if (searchInput) {
         searchInput.addEventListener('input', function() {
@@ -450,7 +472,12 @@ console.log('Service categories:', document.querySelectorAll('.service-category-
 // Price Filter Functionality
 function initPriceFilter() {
     const priceFilter = document.getElementById('priceFilter');
-    if (!priceFilter) return;
+    console.log('Initializing price filter - Found:', !!priceFilter);
+    
+    if (!priceFilter) {
+        console.error('Price filter dropdown not found!');
+        return;
+    }
 
     priceFilter.addEventListener('change', function() {
         const filterValue = this.value;
@@ -490,7 +517,12 @@ function initPriceFilter() {
 // Sort Services Functionality
 function initSortServices() {
     const sortSelect = document.getElementById('sortServices');
-    if (!sortSelect) return;
+    console.log('Initializing sort - Found:', !!sortSelect);
+    
+    if (!sortSelect) {
+        console.error('Sort dropdown not found!');
+        return;
+    }
 
     sortSelect.addEventListener('change', function() {
         const sortValue = this.value;
@@ -595,12 +627,41 @@ function initQuickActions() {
 // Listen for storage changes (when admin adds a new service)
 window.addEventListener('storage', function(e) {
     if (e.key === 'services') {
-        // Reload services when admin adds a new one
-        location.reload();
+        // Reload services dynamically without full page reload
+        reloadServices();
     }
 });
 
 // Also listen for custom event (for same-tab updates)
 window.addEventListener('servicesUpdated', function() {
-    location.reload();
+    reloadServices();
 });
+
+// Reload services dynamically without full page refresh
+function reloadServices() {
+    console.log('Reloading services...');
+    
+    // Remove all dynamically added services (those with data-service-id)
+    document.querySelectorAll('[data-service-id]').forEach(el => el.remove());
+    
+    // Reload services from localStorage
+    loadDynamicServices();
+    
+    // Re-initialize all features to include new services
+    setTimeout(function() {
+        initServiceFilters();
+        initServiceSearch();
+        initPriceFilter();
+        initSortServices();
+        console.log('Features re-initialized after reload');
+    }, 100);
+    
+    // Re-initialize filters and animations for new items
+    const serviceItems = document.querySelectorAll('.service-item');
+    serviceItems.forEach((item, index) => {
+        item.style.animation = 'none';
+        setTimeout(() => {
+            item.style.animation = `fadeInUp 0.6s ease ${index * 0.1}s forwards`;
+        }, 10);
+    });
+}
