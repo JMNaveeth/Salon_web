@@ -60,15 +60,15 @@
                             <i class="fas fa-chart-bar"></i>
                             Analytics
                         </a>
-                        <a href="#add-service" class="sidebar-link" data-section="add-service">
+                        <a href="javascript:void(0)" class="sidebar-link" onclick="openServiceModal()">
                             <i class="fas fa-plus-circle"></i>
                             Add Service
                         </a>
-                        <a href="#add-staff" class="sidebar-link" data-section="add-staff">
+                        <a href="javascript:void(0)" class="sidebar-link" onclick="openStaffModal()">
                             <i class="fas fa-user-plus"></i>
                             Add Staff
                         </a>
-                        <a href="#add-photo" class="sidebar-link" data-section="add-photo">
+                        <a href="javascript:void(0)" class="sidebar-link" onclick="openPhotoModal()">
                             <i class="fas fa-camera"></i>
                             Add Customer Photo
                         </a>
@@ -398,6 +398,142 @@
             </div>
         </div>
     </footer>
+
+    <!-- Add Service Modal -->
+    <div id="addServiceModal" class="admin-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus-circle"></i> Add New Service</h3>
+                <button class="modal-close" onclick="closeServiceModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="serviceModalForm">
+                    <div class="form-group">
+                        <label for="modalServiceName">Service Name *</label>
+                        <input type="text" id="modalServiceName" name="name" required placeholder="e.g., Hair Styling">
+                    </div>
+                    <div class="form-group">
+                        <label for="modalServiceCategory">Category *</label>
+                        <select id="modalServiceCategory" name="category" required>
+                            <option value="">Select category</option>
+                            <option value="hair">Hair Care</option>
+                            <option value="skin">Skin Care</option>
+                            <option value="facial">Facial Treatments</option>
+                            <option value="spa">Spa & Wellness</option>
+                            <option value="bridal">Bridal Services</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="modalServicePrice">Price ($) *</label>
+                            <input type="number" id="modalServicePrice" name="price" step="0.01" required placeholder="50.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="modalServiceDuration">Duration (min) *</label>
+                            <input type="number" id="modalServiceDuration" name="duration" required placeholder="60">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalServiceDescription">Description</label>
+                        <textarea id="modalServiceDescription" name="description" rows="3" placeholder="Describe the service..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeServiceModal()">Cancel</button>
+                <button type="button" class="btn-primary" onclick="saveService()">Save Service</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Staff Modal -->
+    <div id="addStaffModal" class="admin-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-plus"></i> Add New Staff</h3>
+                <button class="modal-close" onclick="closeStaffModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="staffModalForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="modalStaffFirstName">First Name *</label>
+                            <input type="text" id="modalStaffFirstName" name="firstName" required placeholder="John">
+                        </div>
+                        <div class="form-group">
+                            <label for="modalStaffLastName">Last Name *</label>
+                            <input type="text" id="modalStaffLastName" name="lastName" required placeholder="Doe">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalStaffSpecialty">Specialty *</label>
+                        <input type="text" id="modalStaffSpecialty" name="specialty" required placeholder="e.g., Hair Specialist">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="modalStaffEmail">Email *</label>
+                            <input type="email" id="modalStaffEmail" name="email" required placeholder="john@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="modalStaffPhone">Phone *</label>
+                            <input type="tel" id="modalStaffPhone" name="phone" required placeholder="+1234567890">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalStaffBio">Bio</label>
+                        <textarea id="modalStaffBio" name="bio" rows="3" placeholder="Short bio..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeStaffModal()">Cancel</button>
+                <button type="button" class="btn-primary" onclick="saveStaff()">Save Staff</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Photo Modal -->
+    <div id="addPhotoModal" class="admin-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-camera"></i> Add Customer Photo</h3>
+                <button class="modal-close" onclick="closePhotoModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="photoModalForm">
+                    <div class="form-group">
+                        <label for="modalPhotoTitle">Title *</label>
+                        <input type="text" id="modalPhotoTitle" name="title" required placeholder="e.g., Bridal Makeup">
+                    </div>
+                    <div class="form-group">
+                        <label for="modalPhotoCategory">Category *</label>
+                        <select id="modalPhotoCategory" name="category" required>
+                            <option value="">Select category</option>
+                            <option value="hair">Hair Styles</option>
+                            <option value="skin">Skin Care</option>
+                            <option value="bridal">Bridal Work</option>
+                            <option value="spa">Spa Treatments</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalPhotoDescription">Description</label>
+                        <textarea id="modalPhotoDescription" name="description" rows="2" placeholder="Optional description..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalPhotoImage">Upload Photo *</label>
+                        <input type="file" id="modalPhotoImage" name="image" accept="image/*" required onchange="previewPhoto(event)">
+                    </div>
+                    <div id="photoPreview" style="display: none;">
+                        <img id="previewImage" style="max-width: 100%; border-radius: 10px; margin-top: 15px;" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closePhotoModal()">Cancel</button>
+                <button type="button" class="btn-primary" onclick="savePhoto()">Save Photo</button>
+            </div>
+        </div>
+    </div>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="js/main.js"></script>
