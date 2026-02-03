@@ -309,18 +309,12 @@
                 };
             }
             
-            // Close service modal handlers
+            // Close service modal handlers (only via buttons)
             const closeBtnService = document.getElementById('closeService');
             const cancelBtnService = document.getElementById('cancelService');
             
             if (closeBtnService) closeBtnService.onclick = () => modalService.classList.remove('active');
             if (cancelBtnService) cancelBtnService.onclick = () => modalService.classList.remove('active');
-            
-            if (modalService) {
-                modalService.onclick = function(e) {
-                    if (e.target === modalService) modalService.classList.remove('active');
-                };
-            }
             
             // ===== STAFF MODAL =====
             const btnStaff = document.getElementById('btnAddStaff');
@@ -333,18 +327,12 @@
                 };
             }
             
-            // Close staff modal handlers
+            // Close staff modal handlers (only via buttons)
             const closeBtnStaff = document.getElementById('closeStaff');
             const cancelBtnStaff = document.getElementById('cancelStaff');
             
             if (closeBtnStaff) closeBtnStaff.onclick = () => modalStaff.classList.remove('active');
             if (cancelBtnStaff) cancelBtnStaff.onclick = () => modalStaff.classList.remove('active');
-            
-            if (modalStaff) {
-                modalStaff.onclick = function(e) {
-                    if (e.target === modalStaff) modalStaff.classList.remove('active');
-                };
-            }
             
             // ===== PHOTO MODAL =====
             const btnPhoto = document.getElementById('btnAddPhoto');
@@ -357,18 +345,12 @@
                 };
             }
             
-            // Close photo modal handlers
+            // Close photo modal handlers (only via buttons)
             const closeBtnPhoto = document.getElementById('closePhoto');
             const cancelBtnPhoto = document.getElementById('cancelPhoto');
             
             if (closeBtnPhoto) closeBtnPhoto.onclick = () => modalPhoto.classList.remove('active');
             if (cancelBtnPhoto) cancelBtnPhoto.onclick = () => modalPhoto.classList.remove('active');
-            
-            if (modalPhoto) {
-                modalPhoto.onclick = function(e) {
-                    if (e.target === modalPhoto) modalPhoto.classList.remove('active');
-                };
-            }
             
             console.log('Backup: All modal handlers attached');
         });

@@ -183,14 +183,7 @@ function initModalButtons() {
         });
     }
     
-    // Close on background click
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('admin-modal')) {
-            e.target.classList.remove('active');
-        }
-    });
-    
-    // Close on Escape key
+    // Close on Escape key only (removed background click to prevent accidental closes)
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             document.querySelectorAll('.admin-modal.active').forEach(modal => {
