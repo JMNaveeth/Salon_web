@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Services Functions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0f0f0f;
+            color: #fff;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #1a1a1a;
+            border-radius: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background: #d4af37;
+            color: #000;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #ffd700;
+        }
+        input, select {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #d4af37;
+            background: #2a2a2a;
+            color: #fff;
+        }
+        .service-item {
+            padding: 15px;
+            margin: 10px 0;
+            background: #2a2a2a;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+        }
+        .price {
+            color: #d4af37;
+            font-weight: bold;
+        }
+        .log {
+            background: #000;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Services Functions Test</h1>
+    <p>Open Developer Console (F12) to see logs</p>
+
+    <div class="test-section">
+        <h2>1. Filter Tabs</h2>
+        <div class="filter-tabs">
+            <button class="filter-tab active" data-category="all">All Services</button>
+            <button class="filter-tab" data-category="hair">Hair</button>
+            <button class="filter-tab" data-category="skin">Skin Care</button>
+        </div>
+        <div class="log" id="filterLog">Click a tab above...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Search</h2>
+        <input type="text" id="serviceSearch" placeholder="Search services...">
+        <div class="log" id="searchLog">Type something...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Price Filter</h2>
+        <select id="priceFilter">
+            <option value="all">All Prices</option>
+            <option value="low">Under $50</option>
+            <option value="medium">$50 - $80</option>
+            <option value="high">Over $80</option>
+        </select>
+        <div class="log" id="priceLog">Select an option...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Sort</h2>
+        <select id="sortServices">
+            <option value="default">Default Order</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+        </select>
+        <div class="log" id="sortLog">Select an option...</div>
+    </div>
+
+    <!-- Sample service items (hidden from view) -->
+    <div style="display: none;">
+        <div class="service-category-section" data-category="hair">
+            <div class="services-list">
+                <div class="service-item">
+                    <h3>Haircut</h3>
+                    <div class="service-item-price"><span class="price">$35</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="service-category-section" data-category="skin">
+            <div class="services-list">
+                <div class="service-item">
+                    <h3>Facial</h3>
+                    <div class="service-item-price"><span class="price">$60</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Test Filter Tabs
+        function testFilters() {
+            const tabs = document.querySelectorAll('.filter-tab');
+            const log = document.getElementById('filterLog');
+            
+            log.innerHTML = '🔘 Setting up filter tabs...<br>';
+            
+            if (tabs.length === 0) {
+                log.innerHTML += '⚠️ No tabs found!<br>';
+                return;
+            }
+            
+            // Remove old listeners
+            tabs.forEach(tab => tab.replaceWith(tab.cloneNode(true)));
+            
+            // Re-query
+            const freshTabs = document.querySelectorAll('.filter-tab');
+            log.innerHTML += `✓ Found ${freshTabs.length} tabs<br>`;
+            
+            freshTabs.forEach((tab, index) => {
+                tab.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    log.innerHTML += `🎯 Tab ${index + 1} clicked: "${category}"<br>`;
+                    
+                    // Remove active from all
+                    freshTabs.forEach(t => t.classList.remove('active'));
+                    // Add to clicked
+                    this.classList.add('active');
+                    
+                    log.innerHTML += `✅ Active class updated<br>`;
+                });
+            });
+            
+            log.innerHTML += '✅ Filter tabs ready!<br>';
+        }
+
+        // Test Search
+        function testSearch() {
+            const searchInput = document.getElementById('serviceSearch');
+            const log = document.getElementById('searchLog');
+            
+            log.innerHTML = '🔍 Setting up search...<br>';
+            
+            if (!searchInput) {
+                log.innerHTML += '⚠️ Search input not found!<br>';
+                return;
+            }
+            
+            searchInput.addEventListener('input', function() {
+                const value = this.value;
+                log.innerHTML += `🔎 Searching for: "${value}"<br>`;
+            });
+            
+            log.innerHTML += '✅ Search ready!<br>';
+        }
+
+        // Test Price Filter
+        function testPriceFilter() {
+            const priceFilter = document.getElementById('priceFilter');
+            const log = document.getElementById('priceLog');
+            
+            log.innerHTML = '💰 Setting up price filter...<br>';
+            
+            if (!priceFilter) {
+                log.innerHTML += '⚠️ Price filter not found!<br>';
+                return;
+            }
+            
+            priceFilter.addEventListener('change', function() {
+                const value = this.value;
+                log.innerHTML += `💵 Filter changed to: "${value}"<br>`;
+            });
+            
+            log.innerHTML += '✅ Price filter ready!<br>';
+        }
+
+        // Test Sort
+        function testSort() {
+            const sortSelect = document.getElementById('sortServices');
+            const log = document.getElementById('sortLog');
+            
+            log.innerHTML = '🔢 Setting up sort...<br>';
+            
+            if (!sortSelect) {
+                log.innerHTML += '⚠️ Sort select not found!<br>';
+                return;
+            }
+            
+            sortSelect.addEventListener('change', function() {
+                const value = this.value;
+                log.innerHTML += `🔀 Sort changed to: "${value}"<br>`;
+            });
+            
+            log.innerHTML += '✅ Sort ready!<br>';
+        }
+
+        // Run all tests when page loads
+        window.addEventListener('load', function() {
+            console.log('%c=== TEST PAGE READY ===', 'background: #d4af37; color: #000; padding: 5px 10px; font-weight: bold;');
+            
+            try {
+                testFilters();
+                testSearch();
+                testPriceFilter();
+                testSort();
+                
+                console.log('%c✓ ALL TESTS INITIALIZED', 'background: green; color: white; padding: 5px 10px; font-weight: bold;');
+            } catch (error) {
+                console.error('%c✗ TEST ERROR:', 'background: red; color: white; padding: 5px 10px; font-weight: bold;', error);
+            }
+        });
+    </script>
+</body>
+</html>

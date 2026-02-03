@@ -1,20 +1,32 @@
 // Services Page JavaScript - Enhanced with User-Friendly Features
 
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Services page loading...');
-    loadDynamicServices(); // Load services from localStorage first
+// Wait for EVERYTHING to be ready
+window.addEventListener('load', function() {
+    console.log('%c=== SERVICES PAGE READY ===', 'background: #d4af37; color: #fff; padding: 5px 10px; font-weight: bold;');
     
-    // Initialize all features after a short delay to ensure DOM is ready
-    setTimeout(function() {
-        initServiceFilters();
-        initServiceSearch();
-        initPriceFilter();
-        initSortServices();
-        initScrollAnimations();
-        initSmoothScroll();
-        initQuickActions();
-        console.log('All services features initialized');
-    }, 100);
+    // Double-check Storage exists (from main.js)
+    if (typeof Storage === 'undefined') {
+        console.error('Storage not found! Check if main.js loaded correctly.');
+        return;
+    }
+    
+    try {
+        // Load dynamic services
+        loadDynamicServices();
+        
+        // Initialize features one by one with error handling
+        try { initServiceFilters(); } catch(e) { console.error('Filter init error:', e); }
+        try { initServiceSearch(); } catch(e) { console.error('Search init error:', e); }
+        try { initPriceFilter(); } catch(e) { console.error('Price filter init error:', e); }
+        try { initSortServices(); } catch(e) { console.error('Sort init error:', e); }
+        try { initScrollAnimations(); } catch(e) { console.error('Animations init error:', e); }
+        try { initSmoothScroll(); } catch(e) { console.error('Smooth scroll init error:', e); }
+        try { initQuickActions(); } catch(e) { console.error('Quick actions init error:', e); }
+        
+        console.log('%c✓ ALL INITIALIZED', 'background: green; color: white; padding: 5px 10px; font-weight: bold;');
+    } catch (error) {
+        console.error('%c✗ CRITICAL ERROR:', 'background: red; color: white; padding: 5px 10px; font-weight: bold;', error);
+    }
 });
 
 // Load services from localStorage and display them
@@ -160,82 +172,63 @@ window.bookService = function(serviceName, price) {
 };
 
 // Storage utility (if not already defined)
-const Storage = {
-    get: function(key, defaultValue = null) {
-        try {
-            const item = localStorage.getItem(key);
-            return item ? JSON.parse(item) : defaultValue;
-        } catch (e) {
-            console.error('Error reading from localStorage:', e);
-            return defaultValue;
-        }
-    },
-    
-    set: function(key, value) {
-        try {
-            localStorage.setItem(key, JSON.stringify(value));
-        } catch (e) {
-            console.error('Error saving to localStorage:', e);
-        }
-    }
-};
+// Storage utility is defined in main.js - no need to redefine it here
 
 // Service Category Filtering
 function initServiceFilters() {
     const filterTabs = document.querySelectorAll('.filter-tab');
     const categoryGroups = document.querySelectorAll('.service-category-section');
 
-    console.log('Initializing filters - Tabs found:', filterTabs.length);
-    console.log('Initializing filters - Categories found:', categoryGroups.length);
+    console.log('🔘 Filter tabs:', filterTabs.length, '| Categories:', categoryGroups.length);
 
     if (filterTabs.length === 0) {
-        console.error('No filter tabs found!');
+        console.warn('⚠️ No filter tabs found');
         return;
     }
 
-    filterTabs.forEach(tab => {
-        tab.addEventListener('click', function() {
-            // Remove active class from all tabs
-            filterTabs.forEach(t => t.classList.remove('active'));
-            // Add active to clicked tab
+    filterTabs.forEach((tab) => {
+        // Remove any existing listeners
+        tab.replaceWith(tab.cloneNode(true));
+    });
+    
+    // Re-query after cloning
+    const freshTabs = document.querySelectorAll('.filter-tab');
+    
+    freshTabs.forEach((tab) => {
+        tab.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('🎯 Tab clicked:', this.getAttribute('data-category'));
+            
+            // Remove active from all
+            freshTabs.forEach(t => t.classList.remove('active'));
+            // Add active to clicked
             this.classList.add('active');
 
             const category = this.getAttribute('data-category');
 
-            // Show/hide category sections
+            // Show/hide sections
             categoryGroups.forEach(group => {
                 const groupCategory = group.getAttribute('data-category');
-                
-                if (category === 'all') {
+                if (category === 'all' || groupCategory === category) {
                     group.style.display = 'block';
-                    group.style.animation = 'fadeInUp 0.6s ease';
-                } else if (groupCategory === category) {
-                    group.style.display = 'block';
-                    group.style.animation = 'fadeInUp 0.6s ease';
                 } else {
                     group.style.display = 'none';
                 }
             });
-
-            // Smooth scroll to services list
-            const servicesSection = document.getElementById('services-list');
-            if (servicesSection && category !== 'all') {
-                setTimeout(() => {
-                    servicesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 100);
-            }
         });
     });
+    
+    console.log('✅ Filters ready');
 }
 
 // Service Search Functionality
 function initServiceSearch() {
     const searchInput = document.getElementById('serviceSearch');
     
-    console.log('Initializing search - Input found:', !!searchInput);
+    console.log('🔍 Search input:', !!searchInput);
 
     if (!searchInput) {
-        console.error('Search input not found!');
+        console.warn('⚠️ Search input not found');
         return;
     }
 
@@ -244,57 +237,36 @@ function initServiceSearch() {
         const categoryGroups = document.querySelectorAll('.service-category-section');
         const searchTerm = this.value.toLowerCase().trim();
         
-        console.log('Searching for:', searchTerm, '- Items:', serviceItems.length);
+        console.log('🔎 Searching:', searchTerm || 'all');
 
         if (searchTerm === '') {
-            // Show all services when search is empty
-                serviceItems.forEach(item => {
-                    item.style.display = 'flex';
-                });
-                categoryGroups.forEach(group => {
-                    group.style.display = 'block';
-                });
-                return;
-            }
+            serviceItems.forEach(item => item.style.display = 'flex');
+            categoryGroups.forEach(group => group.style.display = 'block');
+            return;
+        }
 
-            let visibleCategories = new Set();
+        let visibleCategories = new Set();
 
-            // Search through all service items
-            serviceItems.forEach(item => {
-                const serviceName = item.querySelector('h3').textContent.toLowerCase();
-                const serviceDesc = item.querySelector('.service-description').textContent.toLowerCase();
-                const searchContent = item.getAttribute('data-search-content') || '';
-                const parentCategory = item.closest('.service-category-section');
+        serviceItems.forEach(item => {
+            const serviceName = item.querySelector('h3')?.textContent.toLowerCase() || '';
+            const serviceDesc = item.querySelector('.service-description')?.textContent.toLowerCase() || '';
+            const searchContent = item.getAttribute('data-search-content') || '';
+            const parentCategory = item.closest('.service-category-section');
 
-                if (serviceName.includes(searchTerm) || 
-                    serviceDesc.includes(searchTerm) || 
-                    searchContent.includes(searchTerm)) {
-                    item.style.display = 'flex';
-                    item.style.animation = 'fadeInUp 0.5s ease';
-                    if (parentCategory) {
-                        visibleCategories.add(parentCategory);
-                    }
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-
-            // Show/hide category sections based on search results
-            categoryGroups.forEach(group => {
-                if (visibleCategories.has(group)) {
-                    group.style.display = 'block';
-                } else {
-                    group.style.display = 'none';
-                }
-            });
-
-            // Show "no results" message if needed
-            if (visibleCategories.size === 0) {
-                showNoResultsMessage(searchTerm);
+            if (serviceName.includes(searchTerm) || serviceDesc.includes(searchTerm) || searchContent.includes(searchTerm)) {
+                item.style.display = 'flex';
+                if (parentCategory) visibleCategories.add(parentCategory);
             } else {
-                removeNoResultsMessage();
+                item.style.display = 'none';
             }
         });
+
+        categoryGroups.forEach(group => {
+            group.style.display = visibleCategories.has(group) ? 'block' : 'none';
+        });
+    });
+    
+    console.log('✅ Search ready');
 }
 
 // Show No Results Message
@@ -471,10 +443,10 @@ console.log('Service categories:', document.querySelectorAll('.service-category-
 // Price Filter Functionality
 function initPriceFilter() {
     const priceFilter = document.getElementById('priceFilter');
-    console.log('Initializing price filter - Found:', !!priceFilter);
+    console.log('💰 Price filter:', !!priceFilter);
     
     if (!priceFilter) {
-        console.error('Price filter dropdown not found!');
+        console.warn('⚠️ Price filter not found');
         return;
     }
 
@@ -482,60 +454,47 @@ function initPriceFilter() {
         const filterValue = this.value;
         const serviceItems = document.querySelectorAll('.service-item');
 
-        console.log('Price filter changed to:', filterValue, '- Items:', serviceItems.length);
+        console.log('💵 Filter:', filterValue);
 
         serviceItems.forEach(item => {
-            const priceElement = item.querySelector('.service-item-price .price');
-            if (!priceElement) {
-                console.warn('No price element found for item:', item);
-                return;
-            }
+            const priceElement = item.querySelector('.service-item-price .price, .price');
+            if (!priceElement) return;
 
             const priceText = priceElement.textContent.replace(/[^0-9.]/g, '');
             const price = parseFloat(priceText);
 
-            if (isNaN(price)) {
-                console.warn('Invalid price:', priceText, 'for item:', item);
-                return;
-            }
+            if (isNaN(price)) return;
 
             let shouldShow = true;
 
-            switch(filterValue) {
-                case 'low':
-                    shouldShow = price < 50;
-                    break;
-                case 'medium':
-                    shouldShow = price >= 50 && price <= 80;
-                    break;
-                case 'high':
-                    shouldShow = price > 80;
-                    break;
-                case 'all':
-                default:
-                    shouldShow = true;
-            }
+            if (filterValue === 'low') shouldShow = price < 50;
+            else if (filterValue === 'medium') shouldShow = price >= 50 && price <= 80;
+            else if (filterValue === 'high') shouldShow = price > 80;
 
             item.style.display = shouldShow ? 'flex' : 'none';
         });
 
         updateVisibleCategories();
     });
+    
+    console.log('✅ Price filter ready');
 }
 
 // Sort Services Functionality
 function initSortServices() {
     const sortSelect = document.getElementById('sortServices');
-    console.log('Initializing sort - Found:', !!sortSelect);
+    console.log('🔢 Sort select:', !!sortSelect);
     
     if (!sortSelect) {
-        console.error('Sort dropdown not found!');
+        console.warn('⚠️ Sort select not found');
         return;
     }
 
     sortSelect.addEventListener('change', function() {
         const sortValue = this.value;
         const categoryGroups = document.querySelectorAll('.service-category-section');
+
+        console.log('🔀 Sort:', sortValue);
 
         categoryGroups.forEach(group => {
             const servicesList = group.querySelector('.services-list');
@@ -544,24 +503,18 @@ function initSortServices() {
             const items = Array.from(servicesList.querySelectorAll('.service-item'));
 
             items.sort((a, b) => {
-                switch(sortValue) {
-                    case 'price-low':
-                        return getPrice(a) - getPrice(b);
-                    case 'price-high':
-                        return getPrice(b) - getPrice(a);
-                    case 'duration':
-                        return getDuration(a) - getDuration(b);
-                    case 'rating':
-                        return getRating(b) - getRating(a);
-                    default:
-                        return 0;
-                }
+                if (sortValue === 'price-low') return getPrice(a) - getPrice(b);
+                if (sortValue === 'price-high') return getPrice(b) - getPrice(a);
+                if (sortValue === 'duration') return getDuration(a) - getDuration(b);
+                if (sortValue === 'rating') return getRating(b) - getRating(a);
+                return 0;
             });
 
-            // Re-append sorted items
             items.forEach(item => servicesList.appendChild(item));
         });
     });
+    
+    console.log('✅ Sort ready');
 }
 
 // Helper functions for sorting
