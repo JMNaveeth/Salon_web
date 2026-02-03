@@ -231,23 +231,23 @@ function initServiceFilters() {
 // Service Search Functionality
 function initServiceSearch() {
     const searchInput = document.getElementById('serviceSearch');
-    const serviceItems = document.querySelectorAll('.service-item');
-    const categoryGroups = document.querySelectorAll('.service-category-section');
-
+    
     console.log('Initializing search - Input found:', !!searchInput);
-    console.log('Service items found:', serviceItems.length);
 
     if (!searchInput) {
         console.error('Search input not found!');
         return;
     }
 
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase().trim();
+    searchInput.addEventListener('input', function() {
+        const serviceItems = document.querySelectorAll('.service-item');
+        const categoryGroups = document.querySelectorAll('.service-category-section');
+        const searchTerm = this.value.toLowerCase().trim();
+        
+        console.log('Searching for:', searchTerm, '- Items:', serviceItems.length);
 
-            if (searchTerm === '') {
-                // Show all services when search is empty
+        if (searchTerm === '') {
+            // Show all services when search is empty
                 serviceItems.forEach(item => {
                     item.style.display = 'flex';
                 });
@@ -295,7 +295,6 @@ function initServiceSearch() {
                 removeNoResultsMessage();
             }
         });
-    }
 }
 
 // Show No Results Message
@@ -483,12 +482,22 @@ function initPriceFilter() {
         const filterValue = this.value;
         const serviceItems = document.querySelectorAll('.service-item');
 
+        console.log('Price filter changed to:', filterValue, '- Items:', serviceItems.length);
+
         serviceItems.forEach(item => {
             const priceElement = item.querySelector('.service-item-price .price');
-            if (!priceElement) return;
+            if (!priceElement) {
+                console.warn('No price element found for item:', item);
+                return;
+            }
 
-            const priceText = priceElement.textContent.replace(/[^0-9]/g, '');
-            const price = parseInt(priceText);
+            const priceText = priceElement.textContent.replace(/[^0-9.]/g, '');
+            const price = parseFloat(priceText);
+
+            if (isNaN(price)) {
+                console.warn('Invalid price:', priceText, 'for item:', item);
+                return;
+            }
 
             let shouldShow = true;
 
