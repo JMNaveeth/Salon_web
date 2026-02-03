@@ -50,6 +50,17 @@ body {
     cursor: default;
 }
 
+/* Global Select/Dropdown Styles */
+select {
+    background: #000 !important;
+    color: white !important;
+}
+
+select option {
+    background: #000 !important;
+    color: white !important;
+}
+
 /* Dark Mode Styles */
 body.dark-mode {
     --text: #f0f0f0;
