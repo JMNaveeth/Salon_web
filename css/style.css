@@ -52,12 +52,12 @@ body {
 
 /* Global Select/Dropdown Styles */
 select {
-    background: #000 !important;
+    background: #383838 !important;
     color: white !important;
 }
 
 select option {
-    background: #000 !important;
+    background: grey !important;
     color: white !important;
 }
 
