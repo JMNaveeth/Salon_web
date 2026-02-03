@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Modal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; padding: 50px; background: #0f0f0f; color: white; }
+        
+        .action-btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #D4AF37 0%, #c9a236 100%);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.5);
+        }
+        
+        .admin-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .admin-modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a1a 0%, #242424 100%);
+            border-radius: 20px;
+            border: 2px solid #D4AF37;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3);
+        }
+        
+        .modal-header {
+            padding: 2rem;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .modal-header h3 {
+            color: #D4AF37;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 2rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+        }
+        
+        .modal-close:hover {
+            color: #D4AF37;
+        }
+        
+        .modal-body {
+            padding: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #D4AF37;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            background: #0f0f0f;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+        }
+        
+        .modal-footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+        
+        .btn {
+            padding: 0.8rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .btn-cancel {
+            background: transparent;
+            color: #999;
+            border: 2px solid rgba(153, 153, 153, 0.3);
+        }
+        
+        .btn-save {
+            background: linear-gradient(135deg, #D4AF37 0%, #c9a236 100%);
+            color: #000;
+        }
+        
+        #status {
+            margin-top: 20px;
+            padding: 15px;
+            background: #1a1a1a;
+            border-radius: 10px;
+            border: 1px solid #D4AF37;
+        }
+    </style>
+</head>
+<body>
+    <h1>Modal Test Page</h1>
+    <p>Click the button below to test if modal opens:</p>
+    
+    <button class="action-btn" id="btnAddService">
+        <i class="fas fa-plus-circle"></i>
+        Add Service
+    </button>
+    
+    <div id="status"></div>
+    
+    <!-- Modal -->
+    <div id="addServiceModal" class="admin-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Service</h3>
+                <button class="modal-close" id="closeService">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="serviceModalForm">
+                    <div class="form-group">
+                        <label for="modalServiceName">Service Name *</label>
+                        <input type="text" id="modalServiceName" required placeholder="e.g., Hair Styling">
+                    </div>
+                    <div class="form-group">
+                        <label for="modalServicePrice">Price ($) *</label>
+                        <input type="number" id="modalServicePrice" required placeholder="50.00">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-cancel" id="cancelService">Cancel</button>
+                <button type="button" class="btn btn-save" id="saveServiceBtn">Save Service</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Log everything
+        const status = document.getElementById('status');
+        function log(msg) {
+            console.log(msg);
+            status.innerHTML += msg + '<br>';
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            log('✓ DOM Loaded');
+            
+            const btnAddService = document.getElementById('btnAddService');
+            const serviceModal = document.getElementById('addServiceModal');
+            const closeService = document.getElementById('closeService');
+            const cancelService = document.getElementById('cancelService');
+            
+            log('✓ Button found: ' + (!!btnAddService));
+            log('✓ Modal found: ' + (!!serviceModal));
+            
+            if (btnAddService && serviceModal) {
+                btnAddService.addEventListener('click', function() {
+                    log('✓ Button clicked!');
+                    serviceModal.classList.add('active');
+                    log('✓ Modal active class added');
+                });
+                log('✓ Click event attached');
+            } else {
+                log('✗ ERROR: Button or modal not found!');
+            }
+            
+            if (closeService) {
+                closeService.addEventListener('click', function() {
+                    log('✓ Close button clicked');
+                    serviceModal.classList.remove('active');
+                });
+            }
+            
+            if (cancelService) {
+                cancelService.addEventListener('click', function() {
+                    log('✓ Cancel button clicked');
+                    serviceModal.classList.remove('active');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

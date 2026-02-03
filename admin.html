@@ -293,5 +293,37 @@
 
     <script src="js/main.js"></script>
     <script src="js/admin.js"></script>
+    <script>
+        // Backup direct modal trigger (if admin.js fails)
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Backup script running...');
+            
+            // Direct event listeners as fallback
+            const btn = document.getElementById('btnAddService');
+            const modal = document.getElementById('addServiceModal');
+            
+            if (btn && modal) {
+                btn.onclick = function() {
+                    console.log('Backup: Opening modal');
+                    modal.classList.add('active');
+                };
+                console.log('Backup: Event attached to button');
+            }
+            
+            // Close modal handlers
+            const closeBtn = document.getElementById('closeService');
+            const cancelBtn = document.getElementById('cancelService');
+            
+            if (closeBtn) closeBtn.onclick = () => modal.classList.remove('active');
+            if (cancelBtn) cancelBtn.onclick = () => modal.classList.remove('active');
+            
+            // Close on background click
+            if (modal) {
+                modal.onclick = function(e) {
+                    if (e.target === modal) modal.classList.remove('active');
+                };
+            }
+        });
+    </script>
 </body>
 </html>
