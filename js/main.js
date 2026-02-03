@@ -598,3 +598,121 @@ function initCardInteractivity() {
     });
 }
 
+// Initialize sample data for admin panel
+function initSampleData() {
+    // Only add sample data if none exists
+    if (!Storage.get('dataInitialized')) {
+        // Sample services
+        const services = [
+            {
+                id: 1,
+                name: 'Hair Styling',
+                category: 'Hair',
+                price: 45,
+                duration: 60,
+                description: 'Professional hair styling and treatment',
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 2,
+                name: 'Facial Treatment',
+                category: 'Skin Care',
+                price: 65,
+                duration: 90,
+                description: 'Deep cleansing facial treatment',
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 3,
+                name: 'Manicure',
+                category: 'Nails',
+                price: 35,
+                duration: 45,
+                description: 'Complete nail care and polish',
+                createdAt: new Date().toISOString()
+            }
+        ];
+        
+        // Sample staff
+        const staff = [
+            {
+                id: 1,
+                firstName: 'Emma',
+                lastName: 'Wilson',
+                name: 'Emma Wilson',
+                specialty: 'Hair Stylist',
+                email: 'emma@kinniyasalon.com',
+                phone: '555-0101',
+                bio: 'Expert hair stylist with 10 years experience',
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 2,
+                firstName: 'David',
+                lastName: 'Lee',
+                name: 'David Lee',
+                specialty: 'Skin Specialist',
+                email: 'david@kinniyasalon.com',
+                phone: '555-0102',
+                bio: 'Certified skin care specialist',
+                createdAt: new Date().toISOString()
+            }
+        ];
+        
+        // Sample bookings
+        const today = new Date();
+        const bookings = [
+            {
+                id: '#BK001',
+                customer: 'John Smith',
+                service: 'Hair Styling',
+                date: new Date(today.getTime() + 86400000).toISOString().split('T')[0],
+                time: '10:00 AM',
+                staff: 'Emma Wilson',
+                status: 'pending',
+                price: 45,
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: '#BK002',
+                customer: 'Emily Davis',
+                service: 'Facial Treatment',
+                date: new Date(today.getTime() + 172800000).toISOString().split('T')[0],
+                time: '02:00 PM',
+                staff: 'David Lee',
+                status: 'confirmed',
+                price: 65,
+                createdAt: new Date().toISOString()
+            }
+        ];
+        
+        // Save to localStorage
+        Storage.set('services', services);
+        Storage.set('staff', staff);
+        Storage.set('bookings', bookings);
+        Storage.set('customers', [
+            {
+                name: 'John Smith',
+                email: 'john.smith@example.com',
+                totalBookings: 1
+            },
+            {
+                name: 'Emily Davis',
+                email: 'emily.davis@example.com',
+                totalBookings: 1
+            }
+        ]);
+        Storage.set('customerPhotos', []);
+        Storage.set('dataInitialized', true);
+        
+        console.log('Sample data initialized for admin panel');
+    }
+}
+
+// Initialize sample data on page load
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSampleData);
+} else {
+    initSampleData();
+}
+
