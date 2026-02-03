@@ -484,44 +484,16 @@ function createAppointmentCard(booking, type) {
             <button class="btn-secondary view-details" data-booking-id="${booking.id}">
                 <i class="fas fa-eye"></i> View Details
             </button>
-            ${booking.status === 'pending' ?
-                `<button class="btn-approve approve-booking" data-booking-id="${booking.id}">
-                    <i class="fas fa-check"></i> Approve
-                </button>` : ''}
-            ${type === 'upcoming' && booking.status !== 'cancelled' && booking.status !== 'pending' ?
-                `<button class="btn-cancel cancel-booking" data-booking-id="${booking.id}">
-                    <i class="fas fa-times"></i> Cancel
-                </button>` : ''}
-            ${booking.status === 'pending' ?
-                `<button class="btn-cancel cancel-booking" data-booking-id="${booking.id}">
-                    <i class="fas fa-times"></i> Reject
-                </button>` : ''}
         </div>
     `;
 
-    // Add event listeners
+    // Add event listener for view details
     const viewBtn = card.querySelector('.view-details');
-    const cancelBtn = card.querySelector('.cancel-booking');
-    const approveBtn = card.querySelector('.approve-booking');
 
     if (viewBtn) {
         viewBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             showAppointmentModal(booking);
-        });
-    }
-
-    if (cancelBtn) {
-        cancelBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            cancelAppointment(booking.id);
-        });
-    }
-
-    if (approveBtn) {
-        approveBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            approveAppointment(booking.id);
         });
     }
 
