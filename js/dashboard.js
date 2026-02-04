@@ -140,20 +140,23 @@ function updateDashboardStats(allBookings, upcomingBookings, pastBookings) {
 // Load overview section
 function loadOverviewSection(allBookings, upcomingBookings, pastBookings) {
     // Update overview stats
+    const confirmedCount = allBookings.filter(b => b.status === 'confirmed').length;
     const completedCount = allBookings.filter(b => b.status === 'completed').length;
     const pendingCount = allBookings.filter(b => b.status === 'pending').length;
     const cancelledCount = allBookings.filter(b => b.status === 'cancelled').length;
     
-    // Calculate total spent
+    // Calculate total spent (only from completed bookings)
     const totalSpent = allBookings
         .filter(b => b.status === 'completed')
         .reduce((sum, b) => sum + (parseFloat(b.price) || 0), 0);
     
+    const overviewConfirmedEl = document.getElementById('overviewConfirmed');
     const overviewCompletedEl = document.getElementById('overviewCompleted');
     const overviewPendingEl = document.getElementById('overviewPending');
     const overviewCancelledEl = document.getElementById('overviewCancelled');
     const totalSpentEl = document.getElementById('totalSpent');
     
+    if (overviewConfirmedEl) overviewConfirmedEl.textContent = confirmedCount;
     if (overviewCompletedEl) overviewCompletedEl.textContent = completedCount;
     if (overviewPendingEl) overviewPendingEl.textContent = pendingCount;
     if (overviewCancelledEl) overviewCancelledEl.textContent = cancelledCount;

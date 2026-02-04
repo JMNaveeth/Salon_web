@@ -96,12 +96,12 @@
               <!-- Dashboard Stats Grid -->
               <div class="dashboard-stats-grid">
                 <div class="stat-card">
-                  <div class="stat-icon" style="background: rgba(76, 175, 80, 0.1);">
-                    <i class="fas fa-check-circle" style="color: #4CAF50;"></i>
+                  <div class="stat-icon" style="background: rgba(33, 150, 243, 0.1);">
+                    <i class="fas fa-calendar-check" style="color: #2196F3;"></i>
                   </div>
                   <div class="stat-info">
-                    <div class="stat-value" id="overviewCompleted">0</div>
-                    <div class="stat-title">Completed</div>
+                    <div class="stat-value" id="overviewConfirmed">0</div>
+                    <div class="stat-title">Confirmed</div>
                   </div>
                 </div>
                 <div class="stat-card">
@@ -111,6 +111,15 @@
                   <div class="stat-info">
                     <div class="stat-value" id="overviewPending">0</div>
                     <div class="stat-title">Pending</div>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-icon" style="background: rgba(76, 175, 80, 0.1);">
+                    <i class="fas fa-check-circle" style="color: #4CAF50;"></i>
+                  </div>
+                  <div class="stat-info">
+                    <div class="stat-value" id="overviewCompleted">0</div>
+                    <div class="stat-title">Completed</div>
                   </div>
                 </div>
                 <div class="stat-card">
@@ -205,6 +214,9 @@
                 <div class="filter-tabs">
                   <button class="tab-btn active" data-filter="all">All</button>
                   <button class="tab-btn" data-filter="pending">Pending</button>
+                  <button class="tab-btn" data-filter="confirmed">
+                    Confirmed
+                  </button>
                   <button class="tab-btn" data-filter="completed">
                     Completed
                   </button>
