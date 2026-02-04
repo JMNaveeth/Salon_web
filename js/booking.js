@@ -277,11 +277,16 @@ function checkTimeSlotAvailability(date, time) {
     // Get existing bookings from localStorage
     const bookings = Storage.get('bookings', []);
 
-    // A slot is unavailable only if it is already booked at this exact date & time
-    const isBooked = bookings.some(booking => booking.date === date && booking.time === time);
+    // Check if this time slot is already booked
+    const isBooked = bookings.some(booking => {
+        return booking.date === date && booking.time === time;
+    });
 
-    // No random blocking – this uses only real booking data
-    return !isBooked;
+    // For demo purposes, randomly mark some slots as unavailable
+    // In a real app, this would check against actual bookings
+    const randomUnavailable = Math.random() < 0.2; // 20% chance
+
+    return !isBooked && !randomUnavailable;
 }
 
 // Staff selection
