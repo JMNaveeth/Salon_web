@@ -598,8 +598,12 @@ function initCardInteractivity() {
     });
 }
 
-// Initialize sample data for admin panel
+// Initialize sample data for admin panel (dev/local use only)
 function initSampleData() {
+    // Only run sample seeding on local/dev environments
+    const isLocalHost = location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.hostname === '';
+    if (!isLocalHost) return;
+
     // Only add sample data if none exists
     if (!Storage.get('dataInitialized')) {
         // Sample services
@@ -658,54 +662,17 @@ function initSampleData() {
                 createdAt: new Date().toISOString()
             }
         ];
-        
-        // Sample bookings
-        const today = new Date();
-        const bookings = [
-            {
-                id: '#BK001',
-                customer: 'John Smith',
-                service: 'Hair Styling',
-                date: new Date(today.getTime() + 86400000).toISOString().split('T')[0],
-                time: '10:00 AM',
-                staff: 'Emma Wilson',
-                status: 'pending',
-                price: 45,
-                createdAt: new Date().toISOString()
-            },
-            {
-                id: '#BK002',
-                customer: 'Emily Davis',
-                service: 'Facial Treatment',
-                date: new Date(today.getTime() + 172800000).toISOString().split('T')[0],
-                time: '02:00 PM',
-                staff: 'David Lee',
-                status: 'confirmed',
-                price: 65,
-                createdAt: new Date().toISOString()
-            }
-        ];
+
+        // Note: We do NOT seed sample bookings/customers here anymore.
+        // Real bookings will come from actual users via the booking form/admin panel.
         
         // Save to localStorage
         Storage.set('services', services);
         Storage.set('staff', staff);
-        Storage.set('bookings', bookings);
-        Storage.set('customers', [
-            {
-                name: 'John Smith',
-                email: 'john.smith@example.com',
-                totalBookings: 1
-            },
-            {
-                name: 'Emily Davis',
-                email: 'emily.davis@example.com',
-                totalBookings: 1
-            }
-        ]);
         Storage.set('customerPhotos', []);
         Storage.set('dataInitialized', true);
         
-        console.log('Sample data initialized for admin panel');
+        console.log('Sample services/staff initialized for admin panel (local only)');
     }
 }
 
