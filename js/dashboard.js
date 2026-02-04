@@ -119,7 +119,7 @@ function loadDashboardData() {
     // Load sections
     loadOverviewSection(bookings, upcomingBookings, pastBookings);
     loadAnalytics(bookings);
-    loadBookingHistory(pastBookings);
+    loadBookingHistory(bookings); // Pass ALL bookings, not just past ones
     loadProfileData(userProfile);
 }
 
@@ -379,6 +379,9 @@ function loadAnalytics(bookings) {
     }
 }
 
+// Store current filter state
+let currentFilter = 'all';
+
 // Load booking history
 function loadBookingHistory(bookings) {
     const container = document.getElementById('historyAppointments');
@@ -387,44 +390,81 @@ function loadBookingHistory(bookings) {
 
     if (!container) return;
 
-    // Show all bookings initially
-    filterBookings(bookings, 'all');
+    // Sort bookings by date (most recent first)
+    const sortedBookings = [...bookings].sort((a, b) => {
+        const dateA = new Date(`${a.date}T${a.time}`);
+        const dateB = new Date(`${b.date}T${b.time}`);
+        return dateB - dateA;
+    });
 
-    // Filter functionality
+    // Apply current filter to display bookings
+    displayFilteredBookings(sortedBookings, currentFilter);
+
+    // Set up filter functionality (remove old listeners by cloning)
     filterTabs.forEach(tab => {
-        tab.addEventListener('click', function() {
-            filterTabs.forEach(t => t.classList.remove('active'));
+        const newTab = tab.cloneNode(true);
+        tab.parentNode.replaceChild(newTab, tab);
+        
+        newTab.addEventListener('click', function() {
+            // Update active state
+            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
             this.classList.add('active');
 
-            const filter = this.getAttribute('data-filter');
-            filterBookings(bookings, filter);
+            // Get filter value and update current filter
+            currentFilter = this.getAttribute('data-filter');
+            
+            // Display filtered bookings
+            displayFilteredBookings(sortedBookings, currentFilter);
         });
     });
 }
 
-function filterBookings(bookings, filter) {
+// Display filtered bookings based on status
+function displayFilteredBookings(bookings, filter) {
     const container = document.getElementById('historyAppointments');
     const emptyState = document.getElementById('historyEmpty');
 
     if (!container) return;
 
+    // Clear container
     container.innerHTML = '';
 
-    let filteredBookings = bookings;
-
-    if (filter !== 'all') {
+    // Filter bookings based on status
+    let filteredBookings;
+    if (filter === 'all') {
+        filteredBookings = bookings;
+    } else {
         filteredBookings = bookings.filter(booking => booking.status === filter);
     }
 
+    // Show empty state if no bookings match filter
     if (filteredBookings.length === 0) {
-        if (emptyState) emptyState.style.display = 'block';
+        if (emptyState) {
+            emptyState.style.display = 'block';
+            const emptyIcon = emptyState.querySelector('.empty-icon i');
+            const emptyTitle = emptyState.querySelector('h3');
+            const emptyText = emptyState.querySelector('p');
+            
+            // Customize empty state message based on filter
+            if (filter === 'all') {
+                if (emptyIcon) emptyIcon.className = 'fas fa-history';
+                if (emptyTitle) emptyTitle.textContent = 'No Booking History';
+                if (emptyText) emptyText.textContent = 'Your appointments will appear here.';
+            } else {
+                if (emptyIcon) emptyIcon.className = 'fas fa-filter';
+                if (emptyTitle) emptyTitle.textContent = `No ${filter.charAt(0).toUpperCase() + filter.slice(1)} Bookings`;
+                if (emptyText) emptyText.textContent = `You don't have any ${filter} appointments.`;
+            }
+        }
         if (container) container.style.display = 'none';
         return;
     }
 
+    // Hide empty state and show container
     if (emptyState) emptyState.style.display = 'none';
     if (container) container.style.display = 'block';
 
+    // Create and append booking cards
     filteredBookings.forEach(booking => {
         const appointmentCard = createAppointmentCard(booking, 'history');
         container.appendChild(appointmentCard);
