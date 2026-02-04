@@ -451,8 +451,16 @@ function generateBookingId() {
     return 'JK' + Date.now().toString().slice(-8);
 }
 
-function extractPriceFromService(serviceString) {
-    const priceMatch = serviceString.match(/\$(\d+)/);
+function extractPriceFromService(serviceName) {
+    // Get the actual selected option to extract price from its text
+    const serviceSelect = document.getElementById('service');
+    if (!serviceSelect) return 0;
+    
+    const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
+    if (!selectedOption) return 0;
+    
+    // Extract price from option text (e.g., "Bridal Makeup - $150")
+    const priceMatch = selectedOption.text.match(/\$(\d+)/);
     return priceMatch ? parseInt(priceMatch[1]) : 0;
 }
 
