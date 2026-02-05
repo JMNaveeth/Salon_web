@@ -109,7 +109,14 @@ function initModalButtons() {
         saveServiceBtn.addEventListener('click', function(e) {
             e.preventDefault();
             console.log('Save Service button clicked');
-            saveService();
+            
+            // Check if we're in edit mode
+            const mode = saveServiceBtn.getAttribute('data-mode');
+            if (mode === 'edit' && window.editingServiceId) {
+                updateService(window.editingServiceId);
+            } else {
+                saveService();
+            }
         });
     } else {
         console.error('saveServiceBtn not found!');
@@ -308,7 +315,11 @@ function saveService() {
         console.log('New service:', newService);
         
         services.push(newService);
-        Storage.set('services', services);
+        const saved = Storage.set('services', services);
+        
+        if (!saved) {
+            throw new Error('Failed to save to localStorage');
+        }
         
         console.log('Service saved to localStorage');
         
@@ -319,16 +330,16 @@ function saveService() {
         loadServices();
         
         addActivity('plus-circle', `New service added: ${name}`);
-        alert(`Service "${name}" added successfully!`);
+        alert(`✅ Service "${name}" added successfully!`);
         
         // Close modal and reset form
         document.getElementById('addServiceModal').classList.remove('active');
         document.getElementById('serviceModalForm').reset();
         
-        console.log('Service added successfully!');
+        console.log('✅ Service added successfully!');
     } catch (error) {
-        console.error('Error saving service:', error);
-        alert('Error saving service: ' + error.message);
+        console.error('❌ Error saving service:', error);
+        alert('❌ Error saving service: ' + error.message);
     }
 }
 
@@ -553,11 +564,12 @@ function createServiceCard(service) {
 }
 
 function editService(serviceId) {
+    console.log('Editing service:', serviceId);
     const services = Storage.get('services', []);
     const service = services.find(s => s.id === serviceId);
     
     if (!service) {
-        showToast('Service not found', 'error');
+        alert('Service not found');
         return;
     }
     
@@ -568,94 +580,128 @@ function editService(serviceId) {
     document.getElementById('modalServiceDuration').value = service.duration;
     document.getElementById('modalServiceDescription').value = service.description || '';
     
-    // Change save button to update
+    // Store the service ID for update
+    window.editingServiceId = serviceId;
+    
+    // Change save button text
     const saveBtn = document.getElementById('saveServiceBtn');
     saveBtn.textContent = 'Update Service';
-    saveBtn.onclick = function() {
-        updateService(serviceId);
-    };
+    saveBtn.setAttribute('data-mode', 'edit');
     
     // Open modal
     document.getElementById('addServiceModal').classList.add('active');
 }
 
 function updateService(serviceId) {
+    console.log('Updating service:', serviceId);
+    
     const name = document.getElementById('modalServiceName').value.trim();
     const category = document.getElementById('modalServiceCategory').value.trim();
     const price = document.getElementById('modalServicePrice').value.trim();
     const duration = document.getElementById('modalServiceDuration').value.trim();
     const description = document.getElementById('modalServiceDescription').value.trim();
     
-    if (!name || !category || !price || !duration) {
-        showToast('Please fill in all required fields', 'error');
+    // Validation
+    if (!name) {
+        alert('Please enter service name');
         return;
     }
     
-    const services = Storage.get('services', []);
-    const serviceIndex = services.findIndex(s => s.id === serviceId);
-    
-    if (serviceIndex === -1) {
-        showToast('Service not found', 'error');
+    if (!category) {
+        alert('Please select a category');
         return;
     }
     
-    services[serviceIndex] = {
-        ...services[serviceIndex],
-        name: name,
-        category: category,
-        price: parseFloat(price),
-        duration: parseInt(duration),
-        description: description,
-        updatedAt: new Date().toISOString()
-    };
+    if (!price || parseFloat(price) <= 0) {
+        alert('Please enter a valid price');
+        return;
+    }
     
-    Storage.set('services', services);
+    if (!duration || parseInt(duration) <= 0) {
+        alert('Please enter a valid duration');
+        return;
+    }
     
-    // Trigger event for services page to reload
-    window.dispatchEvent(new Event('servicesUpdated'));
-    
-    // Reload services list
-    loadServices();
-    
-    addActivity('edit', `Service updated: ${name}`);
-    showToast(`Service "${name}" updated successfully!`, 'success');
-    
-    // Reset modal
-    document.getElementById('addServiceModal').classList.remove('active');
-    document.getElementById('serviceModalForm').reset();
-    
-    // Reset save button
-    const saveBtn = document.getElementById('saveServiceBtn');
-    saveBtn.textContent = 'Save Service';
-    saveBtn.onclick = function() {
-        saveService();
-    };
+    try {
+        const services = Storage.get('services', []);
+        const serviceIndex = services.findIndex(s => s.id === serviceId);
+        
+        if (serviceIndex === -1) {
+            alert('Service not found');
+            return;
+        }
+        
+        services[serviceIndex] = {
+            ...services[serviceIndex],
+            name: name,
+            category: category,
+            price: parseFloat(price),
+            duration: parseInt(duration),
+            description: description,
+            updatedAt: new Date().toISOString()
+        };
+        
+        Storage.set('services', services);
+        
+        console.log('✅ Service updated successfully');
+        
+        // Trigger event for services page to reload
+        window.dispatchEvent(new Event('servicesUpdated'));
+        
+        // Reload services list
+        loadServices();
+        
+        addActivity('edit', `Service updated: ${name}`);
+        alert(`✅ Service "${name}" updated successfully!`);
+        
+        // Reset modal
+        document.getElementById('addServiceModal').classList.remove('active');
+        document.getElementById('serviceModalForm').reset();
+        
+        // Reset save button
+        const saveBtn = document.getElementById('saveServiceBtn');
+        saveBtn.textContent = 'Save Service';
+        saveBtn.removeAttribute('data-mode');
+        window.editingServiceId = null;
+    } catch (error) {
+        console.error('❌ Error updating service:', error);
+        alert('❌ Error updating service: ' + error.message);
+    }
 }
 
 function deleteService(serviceId) {
+    console.log('Deleting service:', serviceId);
+    
     const services = Storage.get('services', []);
     const service = services.find(s => s.id === serviceId);
     
     if (!service) {
-        showToast('Service not found', 'error');
+        alert('Service not found');
         return;
     }
     
-    if (!confirm(`Are you sure you want to delete "${service.name}"?`)) {
+    if (!confirm(`⚠️ Are you sure you want to delete "${service.name}"?\n\nThis action cannot be undone.`)) {
         return;
     }
     
-    const updatedServices = services.filter(s => s.id !== serviceId);
-    Storage.set('services', updatedServices);
-    
-    // Trigger event for services page to reload
-    window.dispatchEvent(new Event('servicesUpdated'));
-    
-    // Reload services list
-    loadServices();
-    
-    addActivity('trash', `Service deleted: ${service.name}`);
-    showToast(`Service "${service.name}" deleted successfully!`, 'success');
+    try {
+        const updatedServices = services.filter(s => s.id !== serviceId);
+        Storage.set('services', updatedServices);
+        
+        console.log('✅ Service deleted successfully');
+        
+        // Trigger event for services page to reload
+        window.dispatchEvent(new Event('servicesUpdated'));
+        
+        // Reload services list
+        loadServices();
+        
+        addActivity('trash', `Service deleted: ${service.name}`);
+        alert(`✅ Service "${service.name}" deleted successfully!`);
+    } catch (error) {
+        console.error('❌ Error deleting service:', error);
+        alert('❌ Error deleting service: ' + error.message);
+    }
 }
 
 // Make functions globally accessible
