@@ -352,18 +352,18 @@
 }
 
 .category-icon {
-    width: 80px;
-    height: 80px;
+    width: 72px;
+    height: 72px;
     background: linear-gradient(135deg, var(--primary) 0%, #f4d03f 100%);
-    border-radius: 20px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 
-        0 10px 30px rgba(212, 175, 55, 0.4),
-        inset 0 2px 4px rgba(255, 255, 255, 0.5);
+        0 4px 16px rgba(212, 175, 55, 0.25),
+        inset 0 1px 2px rgba(255, 255, 255, 0.3);
     flex-shrink: 0;
-    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
 }
@@ -391,24 +391,23 @@
 }
 
 .category-icon:hover {
-    transform: rotateY(360deg) scale(1.1);
+    transform: translateY(-4px);
     box-shadow: 
-        0 15px 40px rgba(212, 175, 55, 0.6),
-        inset 0 2px 4px rgba(255, 255, 255, 0.7);
+        0 8px 24px rgba(212, 175, 55, 0.35),
+        inset 0 1px 2px rgba(255, 255, 255, 0.4);
 }
 
 .category-icon i {
-    font-size: 38px;
+    font-size: 34px;
     color: white;
     position: relative;
     z-index: 1;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    transition: all 0.5s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+    transition: all 0.35s ease;
 }
 
 .category-icon:hover i {
-    transform: scale(1.2);
-    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
+    transform: scale(1.1);
 }
 
 .category-header h2 {
@@ -429,151 +428,56 @@
 .services-list {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
+    gap: 35px;
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
     justify-items: center;
-    perspective: 1000px;
-    position: relative;
 }
 
-/* Decorative salon chair silhouette (subtle background) */
-.services-list::before {
-    content: '💺';
-    position: absolute;
-    bottom: -20px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 100px;
-    opacity: 0.03;
-    pointer-events: none;
-    z-index: -1;
-}
-
-/* Service Item - Enhanced 3D Design */
+/* Service Item - Professional Design */
 .service-item {
-    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-    border-radius: 20px;
-    padding: 30px;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 32px 28px;
     box-shadow: 
-        0 10px 30px rgba(0, 0, 0, 0.08),
-        0 1px 8px rgba(0, 0, 0, 0.05),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    border: 2px solid rgba(212, 175, 55, 0.15);
-    transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        0 2px 12px rgba(0, 0, 0, 0.04),
+        0 1px 3px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
-    overflow: visible;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     gap: 0;
     height: 100%;
-    transform-style: preserve-3d;
-    backface-visibility: hidden;
 }
 
-/* Salon mirror frame effect on corners */
-.service-item .service-item-content::before,
-.service-item .service-item-content::after {
-    content: '';
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    border: 2px solid rgba(212, 175, 55, 0.2);
-    transition: all 0.4s ease;
-}
-
-.service-item .service-item-content::before {
-    top: 10px;
-    left: 10px;
-    border-right: none;
-    border-bottom: none;
-}
-
-.service-item .service-item-content::after {
-    bottom: 10px;
-    right: 10px;
-    border-left: none;
-    border-top: none;
-}
-
-.service-item:hover .service-item-content::before,
-.service-item:hover .service-item-content::after {
-    border-color: var(--primary);
-    width: 25px;
-    height: 25px;
-}
-
-/* Animated gradient border effect */
+/* Elegant top accent line */
 .service-item::before {
     content: '';
     position: absolute;
-    inset: -2px;
-    border-radius: 20px;
-    padding: 2px;
-    background: linear-gradient(135deg, 
-        var(--primary) 0%, 
-        #f4d03f 25%, 
-        var(--primary) 50%, 
-        #f4d03f 75%, 
-        var(--primary) 100%);
-    background-size: 200% 200%;
-    -webkit-mask: 
-        linear-gradient(#fff 0 0) content-box, 
-        linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-    animation: borderGlow 3s ease infinite;
-    z-index: -1;
-}
-
-/* Glowing accent on top */
-.service-item::after {
-    content: '';
-    position: absolute;
     top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60%;
+    left: 0;
+    right: 0;
     height: 4px;
-    background: var(--gradient);
-    border-radius: 0 0 10px 10px;
-    box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
-    opacity: 0;
-    transition: all 0.4s ease;
+    background: linear-gradient(90deg, var(--primary) 0%, #f4d03f 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Hover State - Dramatic 3D Lift */
 .service-item:hover {
-    transform: translateY(-15px) rotateX(5deg) scale(1.02);
+    transform: translateY(-8px);
     box-shadow: 
-        0 25px 50px rgba(212, 175, 55, 0.25),
-        0 10px 25px rgba(0, 0, 0, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 1),
-        0 0 0 1px rgba(212, 175, 55, 0.3);
-    border-color: var(--primary);
-    background: linear-gradient(145deg, #ffffff 0%, #fffef8 100%);
+        0 12px 32px rgba(0, 0, 0, 0.08),
+        0 4px 12px rgba(0, 0, 0, 0.06),
+        0 0 0 1px rgba(212, 175, 55, 0.1);
+    border-color: rgba(212, 175, 55, 0.2);
 }
 
 .service-item:hover::before {
-    opacity: 1;
-}
-
-.service-item:hover::after {
-    opacity: 1;
-    height: 5px;
-}
-
-/* Border glow animation */
-@keyframes borderGlow {
-    0%, 100% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
+    transform: scaleX(1);
 }
 
 /* Featured Service */
@@ -627,68 +531,39 @@
     50% { opacity: 1; transform: translateY(-50%) scale(1.2) rotate(180deg); }
 }
 
-/* Service Item Icon - Enhanced 3D Effect */
+/* Service Item Icon - Professional */
 .service-item-icon {
-    width: 70px;
-    height: 70px;
+    width: 64px;
+    height: 64px;
     background: linear-gradient(135deg, var(--primary) 0%, #f4d03f 100%);
-    border-radius: 18px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    border: none;
-    margin-bottom: 20px;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 
-        0 8px 20px rgba(212, 175, 55, 0.3),
-        inset 0 2px 4px rgba(255, 255, 255, 0.5);
-    position: relative;
-    overflow: hidden;
-}
-
-/* Shine effect on icon */
-.service-item-icon::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(
-        45deg,
-        transparent 30%,
-        rgba(255, 255, 255, 0.3) 50%,
-        transparent 70%
-    );
-    transform: rotate(45deg);
-    transition: all 0.6s ease;
+        0 4px 12px rgba(212, 175, 55, 0.2),
+        inset 0 1px 2px rgba(255, 255, 255, 0.3);
+    margin-bottom: 20px;
 }
 
 .service-item:hover .service-item-icon {
-    transform: scale(1.15) rotateY(360deg);
+    transform: translateY(-4px);
     box-shadow: 
-        0 15px 35px rgba(212, 175, 55, 0.5),
-        inset 0 2px 4px rgba(255, 255, 255, 0.7),
-        0 0 30px rgba(212, 175, 55, 0.4);
-}
-
-.service-item:hover .service-item-icon::before {
-    left: 100%;
+        0 8px 20px rgba(212, 175, 55, 0.3),
+        inset 0 1px 2px rgba(255, 255, 255, 0.4);
 }
 
 .service-item-icon i {
-    font-size: 32px;
+    font-size: 30px;
     color: white;
-    transition: all 0.5s ease;
-    position: relative;
-    z-index: 1;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.35s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .service-item:hover .service-item-icon i {
-    transform: scale(1.2);
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+    transform: scale(1.08);
 }
 
 /* Service Item Content */
@@ -696,19 +571,6 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    position: relative;
-}
-
-/* Add subtle comb pattern to service card background */
-.service-item-content .service-item-header::before {
-    content: '⎯⎯⎯';
-    position: absolute;
-    top: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 8px;
-    color: rgba(212, 175, 55, 0.15);
-    letter-spacing: 2px;
 }
 
 .service-item-header {
@@ -717,48 +579,35 @@
     align-items: flex-start;
     margin-bottom: 12px;
     gap: 12px;
-    position: relative;
-    padding-top: 8px;
 }
 
 .service-item-header h3 {
     font-family: 'Playfair Display', serif;
     font-size: 1.4rem;
-    color: var(--text);
+    color: #1a1a1a;
     margin: 0;
     line-height: 1.3;
-    font-weight: 700;
-    transition: all 0.3s ease;
-    background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.service-item:hover .service-item-header h3 {
-    letter-spacing: 0.5px;
-    transform: translateX(3px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
 }
 
 .service-item-price {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 8px;
+    gap: 6px;
     flex-shrink: 0;
     text-align: right;
-    padding: 12px 16px;
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.05) 100%);
-    border-radius: 12px;
-    border: 1px solid rgba(212, 175, 55, 0.2);
-    transition: all 0.4s ease;
+    padding: 10px 14px;
+    background: rgba(212, 175, 55, 0.06);
+    border-radius: 10px;
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    transition: all 0.35s ease;
 }
 
 .service-item:hover .service-item-price {
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(212, 175, 55, 0.1) 100%);
-    border-color: var(--primary);
-    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
-    transform: scale(1.05);
+    background: rgba(212, 175, 55, 0.1);
+    border-color: rgba(212, 175, 55, 0.25);
 }
 
 .service-item-price .price {
@@ -807,25 +656,15 @@
 .service-item-price .duration {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    background: rgba(212, 175, 55, 0.15);
-    border-radius: 20px;
-    color: var(--primary-dark);
-    font-size: 0.85rem;
-    font-weight: 600;
+    gap: 5px;
+    color: #666;
+    font-size: 0.875rem;
+    font-weight: 500;
     white-space: nowrap;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(212, 175, 55, 0.3);
-}
-
-.service-item:hover .service-item-price .duration {
-    background: rgba(212, 175, 55, 0.25);
-    transform: scale(1.05);
 }
 
 .service-item-price .duration i {
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     color: var(--primary);
 }
 
@@ -876,34 +715,9 @@
     align-items: center;
     margin-top: auto;
     padding-top: 20px;
-    border-top: 2px solid rgba(212, 175, 55, 0.15);
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
     gap: 12px;
     flex-wrap: wrap;
-    transition: all 0.3s ease;
-    position: relative;
-}
-
-/* Elegant center diamond on footer border */
-.service-item-footer::before {
-    content: '◈';
-    position: absolute;
-    top: -9px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: white;
-    padding: 0 8px;
-    color: rgba(212, 175, 55, 0.4);
-    font-size: 12px;
-    transition: all 0.3s ease;
-}
-
-.service-item:hover .service-item-footer {
-    border-top-color: rgba(212, 175, 55, 0.3);
-}
-
-.service-item:hover .service-item-footer::before {
-    color: var(--primary);
-    transform: translateX(-50%) scale(1.3);
 }
 
 .service-rating {
@@ -977,72 +791,48 @@ body.dark-mode .added-badge {
     color: #66bb6a;
 }
 
-/* Book Service Button (for dynamically added services) - Enhanced 3D */
+/* Book Service Button - Professional */
 .btn-book-service {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    padding: 14px 28px;
+    gap: 8px;
+    padding: 12px 24px;
     background: linear-gradient(135deg, var(--primary) 0%, #f4d03f 100%);
     color: white;
     border: none;
-    border-radius: 50px;
-    font-weight: 700;
-    font-size: 0.95rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 
-        0 8px 20px rgba(212, 175, 55, 0.4),
-        inset 0 1px 2px rgba(255, 255, 255, 0.5);
-    position: relative;
-    overflow: hidden;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Shine effect on button */
-.btn-book-service::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.4),
-        transparent
-    );
-    transition: left 0.5s ease;
-}
-
-.btn-book-service:hover::before {
-    left: 100%;
+        0 2px 8px rgba(212, 175, 55, 0.25),
+        inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    letter-spacing: 0.01em;
 }
 
 .btn-book-service:hover {
-    transform: translateY(-3px) scale(1.05);
+    transform: translateY(-2px);
     box-shadow: 
-        0 15px 35px rgba(212, 175, 55, 0.5),
-        inset 0 1px 2px rgba(255, 255, 255, 0.7),
-        0 0 25px rgba(212, 175, 55, 0.3);
+        0 6px 16px rgba(212, 175, 55, 0.35),
+        inset 0 1px 1px rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
 }
 
 .btn-book-service:active {
-    transform: translateY(-1px) scale(1.02);
+    transform: translateY(0);
     box-shadow: 
-        0 8px 20px rgba(212, 175, 55, 0.4),
-        inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        0 2px 8px rgba(212, 175, 55, 0.25),
+        inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .btn-book-service i {
-    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    font-size: 0.9rem;
+    transition: transform 0.35s ease;
+    font-size: 0.85rem;
 }
 
 .btn-book-service:hover i {
-    transform: translateX(5px) rotate(45deg);
+    transform: translateX(4px);
 }
 
 /* Package Cards */
