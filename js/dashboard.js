@@ -11,6 +11,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Start real-time updates (refresh every 5 seconds)
     startRealTimeUpdates();
+    
+    // Update reminder statistics
+    updateReminderStats();
+    
+    // Update reminder stats every minute
+    setInterval(updateReminderStats, 60000);
 });
 
 // Start real-time updates
@@ -697,6 +703,25 @@ function resetProfileForm() {
 function formatTimeDisplay(hour, minute) {
     const period = hour >= 12 ? 'PM' : 'AM';
     const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+    return `${displayHour}:${minute.toString().padStart(2, '0')} ${period}`;
+}
+
+// Update reminder statistics display
+function updateReminderStats() {
+    if (typeof reminderService === 'undefined') return;
+    
+    const stats = reminderService.getStatistics();
+    
+    const reminders48hEl = document.getElementById('reminders48h');
+    const reminders24hEl = document.getElementById('reminders24h');
+    const reminders2hEl = document.getElementById('reminders2h');
+    const upcomingRemindersEl = document.getElementById('upcomingReminders');
+    
+    if (reminders48hEl) reminders48hEl.textContent = stats.reminders48h;
+    if (reminders24hEl) reminders24hEl.textContent = stats.reminders24h;
+    if (reminders2hEl) reminders2hEl.textContent = stats.reminders2h;
+    if (upcomingRemindersEl) upcomingRemindersEl.textContent = stats.upcomingReminders;
+}
     return `${displayHour}:${minute.toString().padStart(2, '0')} ${period}`;
 }
 

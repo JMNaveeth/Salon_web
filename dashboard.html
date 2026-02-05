@@ -153,6 +153,38 @@
                   <a href="booking.html" class="btn-primary">Make Your First Booking</a>
                 </div>
               </div>
+
+              <!-- Reminder System Status -->
+              <div class="reminder-status-card">
+                <div class="reminder-header">
+                  <h3><i class="fas fa-bell"></i> Reminder System</h3>
+                  <span class="status-badge" id="reminderStatus">
+                    <i class="fas fa-circle"></i> Active
+                  </span>
+                </div>
+                <div class="reminder-stats">
+                  <div class="reminder-stat">
+                    <span class="stat-label">48h Reminders Sent</span>
+                    <span class="stat-value" id="reminders48h">0</span>
+                  </div>
+                  <div class="reminder-stat">
+                    <span class="stat-label">24h Reminders Sent</span>
+                    <span class="stat-value" id="reminders24h">0</span>
+                  </div>
+                  <div class="reminder-stat">
+                    <span class="stat-label">2h Reminders Sent</span>
+                    <span class="stat-value" id="reminders2h">0</span>
+                  </div>
+                  <div class="reminder-stat">
+                    <span class="stat-label">Upcoming Appointments</span>
+                    <span class="stat-value" id="upcomingReminders">0</span>
+                  </div>
+                </div>
+                <div class="reminder-info">
+                  <i class="fas fa-info-circle"></i>
+                  <span>Automatic reminders via Email, SMS & WhatsApp</span>
+                </div>
+              </div>
             </div>
 
             <!-- Book Appointment Section -->
@@ -420,7 +452,9 @@
     </footer>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/reminder-service.js"></script>
     <script src="js/dashboard.js"></script>
   </body>
 </html>

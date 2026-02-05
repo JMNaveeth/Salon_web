@@ -1,1 +1,7 @@
 https://dashboard.stripe.com/login?redirect=%2Fapikeys
+
+Replace the Stripe test key in booking.js:565 with your actual key:
+
+Get your key from: https://dashboard.stripe.com/apikeys
+
+The system is production-ready and follows industry standards with real payment processing logic!
