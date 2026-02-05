@@ -105,9 +105,14 @@ function initModalButtons() {
     }
     
     if (saveServiceBtn) {
-        saveServiceBtn.addEventListener('click', function() {
+        console.log('Attaching saveService button event listener');
+        saveServiceBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Save Service button clicked');
             saveService();
         });
+    } else {
+        console.error('saveServiceBtn not found!');
     }
     
     // Add Staff Modal
@@ -255,43 +260,76 @@ function addActivity(icon, message) {
 }
 
 function saveService() {
+    console.log('saveService function called');
+    
     const name = document.getElementById('modalServiceName').value.trim();
     const category = document.getElementById('modalServiceCategory').value.trim();
     const price = document.getElementById('modalServicePrice').value.trim();
     const duration = document.getElementById('modalServiceDuration').value.trim();
     const description = document.getElementById('modalServiceDescription').value.trim();
     
-    if (!name || !category || !price || !duration) {
-        showToast('Please fill in all required fields', 'error');
+    console.log('Form values:', { name, category, price, duration, description });
+    
+    // Validation
+    if (!name) {
+        alert('Please enter service name');
         return;
     }
     
-    const services = Storage.get('services', []);
+    if (!category) {
+        alert('Please select a category');
+        return;
+    }
     
-    const newService = {
-        id: Date.now(),
-        name: name,
-        category: category,
-        price: parseFloat(price),
-        duration: parseInt(duration),
-        description: description,
-        createdAt: new Date().toISOString()
-    };
+    if (!price || parseFloat(price) <= 0) {
+        alert('Please enter a valid price');
+        return;
+    }
     
-    services.push(newService);
-    Storage.set('services', services);
+    if (!duration || parseInt(duration) <= 0) {
+        alert('Please enter a valid duration');
+        return;
+    }
     
-    // Trigger event for services page to reload
-    window.dispatchEvent(new Event('servicesUpdated'));
-    
-    // Reload services list
-    loadServices();
-    
-    addActivity('plus-circle', `New service added: ${name}`);
-    showToast(`Service "${name}" added successfully!`, 'success');
-    
-    document.getElementById('addServiceModal').classList.remove('active');
-    document.getElementById('serviceModalForm').reset();
+    try {
+        const services = Storage.get('services', []);
+        console.log('Current services:', services);
+        
+        const newService = {
+            id: Date.now(),
+            name: name,
+            category: category,
+            price: parseFloat(price),
+            duration: parseInt(duration),
+            description: description,
+            createdAt: new Date().toISOString()
+        };
+        
+        console.log('New service:', newService);
+        
+        services.push(newService);
+        Storage.set('services', services);
+        
+        console.log('Service saved to localStorage');
+        
+        // Trigger event for services page to reload
+        window.dispatchEvent(new Event('servicesUpdated'));
+        
+        // Reload services list
+        loadServices();
+        
+        addActivity('plus-circle', `New service added: ${name}`);
+        alert(`Service "${name}" added successfully!`);
+        
+        // Close modal and reset form
+        document.getElementById('addServiceModal').classList.remove('active');
+        document.getElementById('serviceModalForm').reset();
+        
+        console.log('Service added successfully!');
+    } catch (error) {
+        console.error('Error saving service:', error);
+        alert('Error saving service: ' + error.message);
+    }
 }
 
 function saveStaff() {
