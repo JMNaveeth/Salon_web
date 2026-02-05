@@ -63,6 +63,10 @@
                             <i class="fas fa-calendar-check"></i>
                             Bookings
                         </a>
+                        <a href="#services" class="sidebar-link" data-section="services">
+                            <i class="fas fa-concierge-bell"></i>
+                            Services
+                        </a>
                         <a href="#settings" class="sidebar-link" data-section="settings">
                             <i class="fas fa-cogs"></i>
                             Settings
@@ -141,6 +145,31 @@
                             <h2>Bookings</h2>
                         </div>
                         <p style="color: #999;">Bookings data will be displayed here.</p>
+                    </div>
+
+                    <!-- Services Section -->
+                    <div id="services-section" class="admin-content">
+                        <div class="content-header">
+                            <h2>Services Management</h2>
+                            <button class="btn btn-primary" id="btnAddServiceFromList">
+                                <i class="fas fa-plus-circle"></i> Add New Service
+                            </button>
+                        </div>
+                        
+                        <!-- Services List -->
+                        <div class="services-container">
+                            <div class="services-grid" id="servicesGrid">
+                                <!-- Services will be loaded here -->
+                            </div>
+                            <div class="empty-state" id="servicesEmpty" style="display: none;">
+                                <i class="fas fa-concierge-bell"></i>
+                                <h3>No Services Added Yet</h3>
+                                <p>Start by adding your first service to the system</p>
+                                <button class="btn btn-primary" onclick="document.getElementById('btnAddService').click()">
+                                    <i class="fas fa-plus-circle"></i> Add Service
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Settings Section -->
