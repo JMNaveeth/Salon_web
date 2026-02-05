@@ -531,21 +531,7 @@
     border-top: 4px solid transparent;
 }
 
-/* Sparkle on badge */
-.service-badge::after {
-    content: '\u2728';
-    position: absolute;
-    top: 50%;
-    right: 8px;
-    transform: translateY(-50%);
-    font-size: 10px;
-    animation: badgeSparkle 2s ease-in-out infinite;
-}
 
-@keyframes badgeSparkle {
-    0%, 100% { opacity: 0.5; transform: translateY(-50%) scale(1); }
-    50% { opacity: 1; transform: translateY(-50%) scale(1.2) rotate(180deg); }
-}
 
 /* Service Item Icon - Modern Glow */
 .service-item-icon {
@@ -660,24 +646,7 @@
     position: relative;
 }
 
-/* Sparkle decoration on price */
-.service-item-price .price::before {
-    content: '\u2728';
-    position: absolute;
-    left: -18px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 12px;
-    background: var(--gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: priceSparkle 3s ease-in-out infinite;
-}
 
-@keyframes priceSparkle {
-    0%, 100% { opacity: 0.3; transform: translateY(-50%) rotate(0deg); }
-    50% { opacity: 1; transform: translateY(-50%) rotate(180deg) scale(1.2); }
-}
 
 .service-item:hover .service-item-price .price {
     transform: scale(1.1);
