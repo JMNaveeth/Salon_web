@@ -722,8 +722,6 @@ function updateReminderStats() {
     if (reminders2hEl) reminders2hEl.textContent = stats.reminders2h;
     if (upcomingRemindersEl) upcomingRemindersEl.textContent = stats.upcomingReminders;
 }
-    return `${displayHour}:${minute.toString().padStart(2, '0')} ${period}`;
-}
 
 // Initialize modal close events
 document.addEventListener('DOMContentLoaded', function() {
