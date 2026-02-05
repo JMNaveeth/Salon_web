@@ -26,6 +26,41 @@
     padding: 80px 0;
     background: radial-gradient(circle at center, var(--bg-light) 0%, var(--bg) 100%);
     position: relative;
+    overflow: hidden;
+}
+
+/* Salon-themed background decorations */
+.services-main-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 20% 30%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(212, 175, 55, 0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Floating salon tools decoration */
+.services-main-section::after {
+    content: '✂ ✂ ✂';
+    position: absolute;
+    top: 50px;
+    right: -50px;
+    font-size: 80px;
+    color: rgba(212, 175, 55, 0.05);
+    transform: rotate(-25deg);
+    pointer-events: none;
+    z-index: 0;
+    animation: floatTools 20s ease-in-out infinite;
+}
+
+@keyframes floatTools {
+    0%, 100% { transform: rotate(-25deg) translateY(0); }
+    50% { transform: rotate(-25deg) translateY(-30px); }
 }
 
 /* Services Page Header */
@@ -33,6 +68,34 @@
     text-align: center;
     padding: 40px 20px;
     margin-bottom: 40px;
+    position: relative;
+}
+
+/* Decorative sparkles around header */
+.services-page-header::before,
+.services-page-header::after {
+    content: '✨';
+    position: absolute;
+    font-size: 30px;
+    animation: sparkle 3s ease-in-out infinite;
+    opacity: 0.6;
+}
+
+.services-page-header::before {
+    top: 20px;
+    left: 20%;
+    animation-delay: 0s;
+}
+
+.services-page-header::after {
+    top: 20px;
+    right: 20%;
+    animation-delay: 1.5s;
+}
+
+@keyframes sparkle {
+    0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.6; }
+    50% { transform: scale(1.3) rotate(180deg); opacity: 1; }
 }
 
 .services-page-header h1 {
@@ -194,6 +257,31 @@
     margin-bottom: 35px;
     padding-bottom: 20px;
     border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+    position: relative;
+}
+
+/* Elegant salon divider with decorative elements */
+.category-header::before,
+.category-header::after {
+    content: '◆';
+    position: absolute;
+    bottom: -8px;
+    color: var(--primary);
+    font-size: 14px;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.category-header::before {
+    left: 25%;
+}
+
+.category-header::after {
+    right: 25%;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
 }
 
 .category-icon {
@@ -280,6 +368,20 @@
     padding: 0 20px;
     justify-items: center;
     perspective: 1000px;
+    position: relative;
+}
+
+/* Decorative salon chair silhouette (subtle background) */
+.services-list::before {
+    content: '💺';
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 100px;
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: -1;
 }
 
 /* Service Item - Enhanced 3D Design */
@@ -301,6 +403,38 @@
     height: 100%;
     transform-style: preserve-3d;
     backface-visibility: hidden;
+}
+
+/* Salon mirror frame effect on corners */
+.service-item .service-item-content::before,
+.service-item .service-item-content::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(212, 175, 55, 0.2);
+    transition: all 0.4s ease;
+}
+
+.service-item .service-item-content::before {
+    top: 10px;
+    left: 10px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.service-item .service-item-content::after {
+    bottom: 10px;
+    right: 10px;
+    border-left: none;
+    border-top: none;
+}
+
+.service-item:hover .service-item-content::before,
+.service-item:hover .service-item-content::after {
+    border-color: var(--primary);
+    width: 25px;
+    height: 25px;
 }
 
 /* Animated gradient border effect */
@@ -464,6 +598,19 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    position: relative;
+}
+
+/* Add subtle comb pattern to service card background */
+.service-item-content .service-item-header::before {
+    content: '⎯⎯⎯';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8px;
+    color: rgba(212, 175, 55, 0.15);
+    letter-spacing: 2px;
 }
 
 .service-item-header {
@@ -472,6 +619,8 @@
     align-items: flex-start;
     margin-bottom: 12px;
     gap: 12px;
+    position: relative;
+    padding-top: 8px;
 }
 
 .service-item-header h3 {
@@ -613,10 +762,30 @@
     gap: 12px;
     flex-wrap: wrap;
     transition: all 0.3s ease;
+    position: relative;
+}
+
+/* Elegant center diamond on footer border */
+.service-item-footer::before {
+    content: '◈';
+    position: absolute;
+    top: -9px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 0 8px;
+    color: rgba(212, 175, 55, 0.4);
+    font-size: 12px;
+    transition: all 0.3s ease;
 }
 
 .service-item:hover .service-item-footer {
     border-top-color: rgba(212, 175, 55, 0.3);
+}
+
+.service-item:hover .service-item-footer::before {
+    color: var(--primary);
+    transform: translateX(-50%) scale(1.3);
 }
 
 .service-rating {
