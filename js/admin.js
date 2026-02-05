@@ -1,38 +1,91 @@
 'use strict';
 
-const Storage = {
-    get: function(key, defaultValue = null) {
-        try {
-            const stored = localStorage.getItem(key);
-            return stored ? JSON.parse(stored) : defaultValue;
-        } catch (error) {
-            console.error('Storage get error:', error);
-            return defaultValue;
+// Storage is defined in main.js - verify it's available
+if (typeof Storage === 'undefined') {
+    console.error('WARNING: Storage not found from main.js! Defining fallback...');
+    window.Storage = {
+        get: function(key, defaultValue = null) {
+            try {
+                const stored = localStorage.getItem(key);
+                return stored ? JSON.parse(stored) : defaultValue;
+            } catch (error) {
+                console.error('Storage get error:', error);
+                return defaultValue;
+            }
+        },
+        set: function(key, value) {
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+                return true;
+            } catch (error) {
+                console.error('Storage set error:', error);
+                return false;
+            }
         }
-    },
-    
-    set: function(key, value) {
-        try {
-            localStorage.setItem(key, JSON.stringify(value));
-            return true;
-        } catch (error) {
-            console.error('Storage set error:', error);
-            return false;
-        }
-    }
-};
+    };
+} else {
+    console.log('SUCCESS: Storage loaded from main.js');
+}
 
-// Initialize when DOM loads
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Admin Panel Loading...');
+// Initialize admin panel
+function initAdminPanel() {
+    console.log('Admin Panel Initializing...');
+    console.log('DOM Ready:', document.readyState);
     
-    initNavigation();
-    loadDashboardStats();
-    loadRecentActivity();
-    initModalButtons();
-    loadServices(); // Load services on page load
+    try {
+        initNavigation();
+        console.log('SUCCESS: Navigation initialized');
+    } catch (e) {
+        console.error('ERROR: Navigation error:', e);
+    }
+    
+    try {
+        loadDashboardStats();
+        console.log('SUCCESS: Dashboard stats loaded');
+    } catch (e) {
+        console.error('ERROR: Dashboard stats error:', e);
+    }
+    
+    try {
+        loadRecentActivity();
+        console.log('SUCCESS: Activity loaded');
+    } catch (e) {
+        console.error('ERROR: Activity error:', e);
+    }
+    
+    try {
+        initModalButtons();
+        console.log('SUCCESS: Modal buttons initialized');
+    } catch (e) {
+        console.error('ERROR: Modal buttons error:', e);
+    }
+    
+    try {
+        loadServices();
+        console.log('SUCCESS: Services loaded');
+    } catch (e) {
+        console.error('ERROR: Services error:', e);
+    }
     
     console.log('Admin Panel Ready!');
+}
+
+// Initialize when DOM is ready - use multiple methods for compatibility
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAdminPanel);
+} else {
+    // DOM already loaded
+    initAdminPanel();
+}
+
+// Fallback initialization
+window.addEventListener('load', function() {
+    console.log('Window loaded - verifying initialization');
+    // Only re-init if something failed
+    if (!document.querySelector('.sidebar-link.active')) {
+        console.warn('WARNING: Admin not initialized, running fallback...');
+        initAdminPanel();
+    }
 });
 
 function initNavigation() {
@@ -77,47 +130,60 @@ function initModalButtons() {
     const cancelService = document.getElementById('cancelService');
     const saveServiceBtn = document.getElementById('saveServiceBtn');
     
-    console.log('Service button found:', !!btnAddService);
-    console.log('Service modal found:', !!serviceModal);
+    console.log('btnAddService:', btnAddService ? 'FOUND' : 'NOT FOUND');
+    console.log('serviceModal:', serviceModal ? 'FOUND' : 'NOT FOUND');
+    console.log('saveServiceBtn:', saveServiceBtn ? 'FOUND' : 'NOT FOUND');
     
     if (btnAddService && serviceModal) {
-        btnAddService.addEventListener('click', function() {
-            console.log('Opening Service Modal');
+        // Remove any existing listeners by cloning
+        const newBtn = btnAddService.cloneNode(true);
+        btnAddService.parentNode.replaceChild(newBtn, btnAddService);
+        
+        newBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Add Service button clicked!');
             serviceModal.classList.add('active');
             const form = document.getElementById('serviceModalForm');
             if (form) form.reset();
+            console.log('Modal opened');
         });
-        console.log('Service button event listener attached');
+        console.log('Service button event attached');
     } else {
         console.error('Service button or modal not found!');
     }
     
     if (closeService && serviceModal) {
         closeService.addEventListener('click', function() {
+            console.log('Closing service modal');
             serviceModal.classList.remove('active');
         });
     }
     
     if (cancelService && serviceModal) {
         cancelService.addEventListener('click', function() {
+            console.log('Canceling service modal');
             serviceModal.classList.remove('active');
         });
     }
     
     if (saveServiceBtn) {
-        console.log('Attaching saveService button event listener');
-        saveServiceBtn.addEventListener('click', function(e) {
+        // Clone to remove old listeners
+        const newSaveBtn = saveServiceBtn.cloneNode(true);
+        saveServiceBtn.parentNode.replaceChild(newSaveBtn, saveServiceBtn);
+        
+        newSaveBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            console.log('Save Service button clicked');
+            console.log('Save Service button clicked!');
             
             // Check if we're in edit mode
-            const mode = saveServiceBtn.getAttribute('data-mode');
+            const mode = newSaveBtn.getAttribute('data-mode');
             if (mode === 'edit' && window.editingServiceId) {
                 updateService(window.editingServiceId);
             } else {
                 saveService();
             }
         });
+        console.log('Save Service button event attached');
     } else {
         console.error('saveServiceBtn not found!');
     }
@@ -129,28 +195,40 @@ function initModalButtons() {
     const cancelStaff = document.getElementById('cancelStaff');
     const saveStaffBtn = document.getElementById('saveStaffBtn');
     
-    if (btnAddStaff) {
-        btnAddStaff.addEventListener('click', function() {
-            console.log('Opening Staff Modal');
+    console.log('btnAddStaff:', btnAddStaff ? 'FOUND' : 'NOT FOUND');
+    
+    if (btnAddStaff && staffModal) {
+        const newStaffBtn = btnAddStaff.cloneNode(true);
+        btnAddStaff.parentNode.replaceChild(newStaffBtn, btnAddStaff);
+        
+        newStaffBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Add Staff button clicked!');
             staffModal.classList.add('active');
             document.getElementById('staffModalForm').reset();
         });
+        console.log('Staff button event attached');
     }
     
-    if (closeStaff) {
+    if (closeStaff && staffModal) {
         closeStaff.addEventListener('click', function() {
             staffModal.classList.remove('active');
         });
     }
     
-    if (cancelStaff) {
+    if (cancelStaff && staffModal) {
         cancelStaff.addEventListener('click', function() {
             staffModal.classList.remove('active');
         });
     }
     
     if (saveStaffBtn) {
-        saveStaffBtn.addEventListener('click', function() {
+        const newSaveStaffBtn = saveStaffBtn.cloneNode(true);
+        saveStaffBtn.parentNode.replaceChild(newSaveStaffBtn, saveStaffBtn);
+        
+        newSaveStaffBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Save Staff button clicked!');
             saveStaff();
         });
     }
@@ -163,42 +241,54 @@ function initModalButtons() {
     const savePhotoBtn = document.getElementById('savePhotoBtn');
     const photoImage = document.getElementById('modalPhotoImage');
     
-    if (btnAddPhoto) {
-        btnAddPhoto.addEventListener('click', function() {
-            console.log('Opening Photo Modal');
+    console.log('btnAddPhoto:', btnAddPhoto ? 'FOUND' : 'NOT FOUND');
+    
+    if (btnAddPhoto && photoModal) {
+        const newPhotoBtn = btnAddPhoto.cloneNode(true);
+        btnAddPhoto.parentNode.replaceChild(newPhotoBtn, btnAddPhoto);
+        
+        newPhotoBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Add Photo button clicked!');
             photoModal.classList.add('active');
             document.getElementById('photoModalForm').reset();
             document.getElementById('photoPreview').style.display = 'none';
         });
+        console.log('Photo button event attached');
     }
     
-    if (closePhoto) {
+    if (closePhoto && photoModal) {
         closePhoto.addEventListener('click', function() {
             photoModal.classList.remove('active');
         });
     }
     
-    if (cancelPhoto) {
+    if (cancelPhoto && photoModal) {
         cancelPhoto.addEventListener('click', function() {
             photoModal.classList.remove('active');
         });
     }
     
     if (savePhotoBtn) {
-        savePhotoBtn.addEventListener('click', function() {
+        const newSavePhotoBtn = savePhotoBtn.cloneNode(true);
+        savePhotoBtn.parentNode.replaceChild(newSavePhotoBtn, savePhotoBtn);
+        
+        newSavePhotoBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Save Photo button clicked!');
             savePhoto();
         });
     }
     
     // Add Service from services list page
     const btnAddServiceFromList = document.getElementById('btnAddServiceFromList');
-    if (btnAddServiceFromList) {
-        btnAddServiceFromList.addEventListener('click', function() {
-            if (serviceModal) {
-                serviceModal.classList.add('active');
-                const form = document.getElementById('serviceModalForm');
-                if (form) form.reset();
-            }
+    if (btnAddServiceFromList && serviceModal) {
+        btnAddServiceFromList.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Add Service From List clicked!');
+            serviceModal.classList.add('active');
+            const form = document.getElementById('serviceModalForm');
+            if (form) form.reset();
         });
     }
     
@@ -208,7 +298,7 @@ function initModalButtons() {
         });
     }
     
-    // Close on Escape key only (removed background click to prevent accidental closes)
+    // Close on Escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             document.querySelectorAll('.admin-modal.active').forEach(modal => {
@@ -216,6 +306,8 @@ function initModalButtons() {
             });
         }
     });
+    
+    console.log('All modal buttons initialized');
 }
 
 function loadDashboardStats() {
@@ -329,17 +421,17 @@ function saveService() {
         // Reload services list
         loadServices();
         
-        addActivity('plus-circle', `New service added: ${name}`);
-        alert(`✅ Service "${name}" added successfully!`);
+        addActivity('plus-circle', 'New service added: ' + name);
+        alert('SUCCESS! Service "' + name + '" added successfully!');
         
         // Close modal and reset form
         document.getElementById('addServiceModal').classList.remove('active');
         document.getElementById('serviceModalForm').reset();
         
-        console.log('✅ Service added successfully!');
+        console.log('Service added successfully!');
     } catch (error) {
-        console.error('❌ Error saving service:', error);
-        alert('❌ Error saving service: ' + error.message);
+        console.error('Error saving service:', error);
+        alert('ERROR: Failed to save service - ' + error.message);
     }
 }
 
@@ -352,13 +444,13 @@ function saveStaff() {
     const bio = document.getElementById('modalStaffBio').value.trim();
     
     if (!firstName || !lastName || !specialty || !email || !phone) {
-        showToast('Please fill in all required fields', 'error');
+        alert('Please fill in all required fields');
         return;
     }
     
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-        showToast('Please enter a valid email address', 'error');
+        alert('Please enter a valid email address');
         return;
     }
     
@@ -368,7 +460,7 @@ function saveStaff() {
         id: Date.now(),
         firstName: firstName,
         lastName: lastName,
-        name: `${firstName} ${lastName}`,
+        name: firstName + ' ' + lastName,
         specialty: specialty,
         email: email,
         phone: phone,
@@ -379,8 +471,8 @@ function saveStaff() {
     staff.push(newStaff);
     Storage.set('staff', staff);
     
-    addActivity('user-plus', `New staff member added: ${firstName} ${lastName}`);
-    showToast(`Staff member "${firstName} ${lastName}" added successfully!`, 'success');
+    addActivity('user-plus', 'New staff member added: ' + firstName + ' ' + lastName);
+    alert('SUCCESS! Staff member "' + firstName + ' ' + lastName + '" added successfully!');
     
     document.getElementById('addStaffModal').classList.remove('active');
     document.getElementById('staffModalForm').reset();
@@ -414,19 +506,19 @@ function savePhoto() {
     const fileInput = document.getElementById('modalPhotoImage');
     
     if (!title || !category || !fileInput.files[0]) {
-        showToast('Please fill in all required fields and select an image', 'error');
+        alert('Please fill in all required fields and select an image');
         return;
     }
     
     const file = fileInput.files[0];
     
     if (!file.type.startsWith('image/')) {
-        showToast('Please select a valid image file', 'error');
+        alert('Please select a valid image file');
         return;
     }
     
     if (file.size > 5 * 1024 * 1024) {
-        showToast('Image size should be less than 5MB', 'error');
+        alert('Image size should be less than 5MB');
         return;
     }
     
@@ -447,8 +539,8 @@ function savePhoto() {
         photos.push(newPhoto);
         Storage.set('customerPhotos', photos);
         
-        addActivity('camera', `New customer photo added: ${title}`);
-        showToast(`Photo "${title}" added successfully!`, 'success');
+        addActivity('camera', 'New customer photo added: ' + title);
+        alert('SUCCESS! Photo "' + title + '" added successfully!');
         
         document.getElementById('addPhotoModal').classList.remove('active');
         document.getElementById('photoModalForm').reset();
@@ -456,31 +548,28 @@ function savePhoto() {
     };
     
     reader.onerror = function() {
-        showToast('Error reading image file', 'error');
+        alert('Error reading image file');
     };
     
     reader.readAsDataURL(file);
 }
 
-function showToast(message, type = 'success') {
+function showToast(message, type) {
     const existingToast = document.querySelector('.toast');
     if (existingToast) {
         existingToast.remove();
     }
     
     const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
+    toast.className = 'toast ' + (type || 'success');
     
     const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
     
-    toast.innerHTML = `
-        <i class="fas ${icon}"></i>
-        <span>${message}</span>
-    `;
+    toast.innerHTML = '<i class="fas ' + icon + '"></i><span>' + message + '</span>';
     
     document.body.appendChild(toast);
     
-    setTimeout(() => {
+    setTimeout(function() {
         toast.remove();
     }, 3000);
 }
@@ -505,7 +594,7 @@ function loadServices() {
     
     if (emptyState) emptyState.style.display = 'none';
     
-    services.forEach(service => {
+    services.forEach(function(service) {
         const serviceCard = createServiceCard(service);
         servicesGrid.appendChild(serviceCard);
     });
@@ -535,30 +624,31 @@ function createServiceCard(service) {
     const icon = categoryIcons[service.category] || 'fa-concierge-bell';
     const color = categoryColors[service.category] || '#D4AF37';
     
-    card.innerHTML = `
-        <div class="service-card-header">
-            <div class="service-icon" style="background: ${color}20; color: ${color};">
-                <i class="fas ${icon}"></i>
-            </div>
-            <div class="service-actions">
-                <button class="btn-icon btn-edit" onclick="editService(${service.id})" title="Edit">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button class="btn-icon btn-delete" onclick="deleteService(${service.id})" title="Delete">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        </div>
-        <div class="service-card-body">
-            <h3>${service.name}</h3>
-            <div class="service-meta">
-                <span class="service-category">${service.category.charAt(0).toUpperCase() + service.category.slice(1)}</span>
-                <span class="service-duration"><i class="fas fa-clock"></i> ${service.duration} min</span>
-            </div>
-            ${service.description ? `<p class="service-description">${service.description}</p>` : ''}
-            <div class="service-price">$${service.price.toFixed(2)}</div>
-        </div>
-    `;
+    const categoryName = service.category.charAt(0).toUpperCase() + service.category.slice(1);
+    const descriptionHTML = service.description ? '<p class="service-description">' + service.description + '</p>' : '';
+    
+    card.innerHTML = '<div class="service-card-header">' +
+        '<div class="service-icon" style="background: ' + color + '20; color: ' + color + ';">' +
+        '<i class="fas ' + icon + '"></i>' +
+        '</div>' +
+        '<div class="service-actions">' +
+        '<button class="btn-icon btn-edit" onclick="editService(' + service.id + ')" title="Edit">' +
+        '<i class="fas fa-edit"></i>' +
+        '</button>' +
+        '<button class="btn-icon btn-delete" onclick="deleteService(' + service.id + ')" title="Delete">' +
+        '<i class="fas fa-trash"></i>' +
+        '</button>' +
+        '</div>' +
+        '</div>' +
+        '<div class="service-card-body">' +
+        '<h3>' + service.name + '</h3>' +
+        '<div class="service-meta">' +
+        '<span class="service-category">' + categoryName + '</span>' +
+        '<span class="service-duration"><i class="fas fa-clock"></i> ' + service.duration + ' min</span>' +
+        '</div>' +
+        descriptionHTML +
+        '<div class="service-price">$' + service.price.toFixed(2) + '</div>' +
+        '</div>';
     
     return card;
 }
@@ -566,7 +656,7 @@ function createServiceCard(service) {
 function editService(serviceId) {
     console.log('Editing service:', serviceId);
     const services = Storage.get('services', []);
-    const service = services.find(s => s.id === serviceId);
+    const service = services.find(function(s) { return s.id === serviceId; });
     
     if (!service) {
         alert('Service not found');
@@ -624,7 +714,7 @@ function updateService(serviceId) {
     
     try {
         const services = Storage.get('services', []);
-        const serviceIndex = services.findIndex(s => s.id === serviceId);
+        const serviceIndex = services.findIndex(function(s) { return s.id === serviceId; });
         
         if (serviceIndex === -1) {
             alert('Service not found');
@@ -632,18 +722,19 @@ function updateService(serviceId) {
         }
         
         services[serviceIndex] = {
-            ...services[serviceIndex],
+            id: services[serviceIndex].id,
             name: name,
             category: category,
             price: parseFloat(price),
             duration: parseInt(duration),
             description: description,
+            createdAt: services[serviceIndex].createdAt,
             updatedAt: new Date().toISOString()
         };
         
         Storage.set('services', services);
         
-        console.log('✅ Service updated successfully');
+        console.log('Service updated successfully');
         
         // Trigger event for services page to reload
         window.dispatchEvent(new Event('servicesUpdated'));
@@ -651,8 +742,8 @@ function updateService(serviceId) {
         // Reload services list
         loadServices();
         
-        addActivity('edit', `Service updated: ${name}`);
-        alert(`✅ Service "${name}" updated successfully!`);
+        addActivity('edit', 'Service updated: ' + name);
+        alert('SUCCESS! Service "' + name + '" updated successfully!');
         
         // Reset modal
         document.getElementById('addServiceModal').classList.remove('active');
@@ -664,8 +755,8 @@ function updateService(serviceId) {
         saveBtn.removeAttribute('data-mode');
         window.editingServiceId = null;
     } catch (error) {
-        console.error('❌ Error updating service:', error);
-        alert('❌ Error updating service: ' + error.message);
+        console.error('Error updating service:', error);
+        alert('ERROR: Failed to update service - ' + error.message);
     }
 }
 
@@ -673,22 +764,22 @@ function deleteService(serviceId) {
     console.log('Deleting service:', serviceId);
     
     const services = Storage.get('services', []);
-    const service = services.find(s => s.id === serviceId);
+    const service = services.find(function(s) { return s.id === serviceId; });
     
     if (!service) {
         alert('Service not found');
         return;
     }
     
-    if (!confirm(`⚠️ Are you sure you want to delete "${service.name}"?\n\nThis action cannot be undone.`)) {
+    if (!confirm('Are you sure you want to delete "' + service.name + '"?\n\nThis action cannot be undone.')) {
         return;
     }
     
     try {
-        const updatedServices = services.filter(s => s.id !== serviceId);
+        const updatedServices = services.filter(function(s) { return s.id !== serviceId; });
         Storage.set('services', updatedServices);
         
-        console.log('✅ Service deleted successfully');
+        console.log('Service deleted successfully');
         
         // Trigger event for services page to reload
         window.dispatchEvent(new Event('servicesUpdated'));
@@ -696,11 +787,11 @@ function deleteService(serviceId) {
         // Reload services list
         loadServices();
         
-        addActivity('trash', `Service deleted: ${service.name}`);
-        alert(`✅ Service "${service.name}" deleted successfully!`);
+        addActivity('trash', 'Service deleted: ' + service.name);
+        alert('SUCCESS! Service "' + service.name + '" deleted successfully!');
     } catch (error) {
-        console.error('❌ Error deleting service:', error);
-        alert('❌ Error deleting service: ' + error.message);
+        console.error('Error deleting service:', error);
+        alert('ERROR: Failed to delete service - ' + error.message);
     }
 }
 

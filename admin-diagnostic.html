@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel Diagnostic</title>
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        #diagnostic-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1a1a1a;
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            padding: 15px;
+            max-width: 400px;
+            max-height: 500px;
+            overflow-y: auto;
+            z-index: 999999;
+            color: white;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        #diagnostic-panel h3 {
+            margin: 0 0 10px 0;
+            color: #d4af37;
+        }
+        .diag-success { color: #4caf50; }
+        .diag-error { color: #f44336; }
+        .diag-info { color: #2196f3; }
+        .diag-close {
+            float: right;
+            cursor: pointer;
+            background: #d4af37;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <!-- Diagnostic Panel -->
+    <div id="diagnostic-panel">
+        <button class="diag-close" onclick="this.parentElement.remove()">✕</button>
+        <h3>🔧 Admin Panel Diagnostic</h3>
+        <div id="diag-output"></div>
+    </div>
+
+    <!-- Original Admin Page Content -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html"><h2>Kinniya Salon</h2></a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="admin-header">
+        <div class="container">
+            <div class="admin-header-content">
+                <h1><i class="fas fa-cog"></i> Admin Panel</h1>
+                <p>Manage bookings, services, and salon operations</p>
+                
+                <div class="quick-actions">
+                    <button class="action-btn" id="btnAddService">
+                        <i class="fas fa-plus-circle"></i>
+                        Add Service
+                    </button>
+                    <button class="action-btn" id="btnAddStaff">
+                        <i class="fas fa-user-plus"></i>
+                        Add Staff
+                    </button>
+                    <button class="action-btn" id="btnAddPhoto">
+                        <i class="fas fa-camera"></i>
+                        Add Customer Photo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Diagnostic Script -->
+    <script>
+        const diagOutput = document.getElementById('diag-output');
+        let testsPassed = 0;
+        let testsFailed = 0;
+
+        function diagLog(message, type = 'info') {
+            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+            const className = `diag-${type}`;
+            diagOutput.innerHTML += `<div class="${className}">${icon} ${message}</div>`;
+            console.log(`[DIAG] ${message}`);
+            if (type === 'success') testsPassed++;
+            if (type === 'error') testsFailed++;
+        }
+
+        // Run diagnostics BEFORE loading other scripts
+        diagLog('🔍 Starting diagnostics...', 'info');
+        diagLog(`Browser: ${navigator.userAgent.split(')')[0]})`, 'info');
+        diagLog(`Page loaded at: ${new Date().toLocaleTimeString()}`, 'info');
+
+        // Test 1: Check button existence
+        setTimeout(() => {
+            diagLog('\n--- BUTTON EXISTENCE TEST ---', 'info');
+            const buttons = ['btnAddService', 'btnAddStaff', 'btnAddPhoto'];
+            buttons.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    diagLog(`${id}: FOUND`, 'success');
+                } else {
+                    diagLog(`${id}: NOT FOUND`, 'error');
+                }
+            });
+
+            // Test 2: Check if buttons are clickable
+            diagLog('\n--- BUTTON CLICKABILITY TEST ---', 'info');
+            const testBtn = document.getElementById('btnAddService');
+            if (testBtn) {
+                const styles = window.getComputedStyle(testBtn);
+                diagLog(`pointer-events: ${styles.pointerEvents}`, styles.pointerEvents !== 'none' ? 'success' : 'error');
+                diagLog(`display: ${styles.display}`, styles.display !== 'none' ? 'success' : 'error');
+                diagLog(`visibility: ${styles.visibility}`, styles.visibility !== 'hidden' ? 'success' : 'error');
+                diagLog(`opacity: ${styles.opacity}`, parseFloat(styles.opacity) > 0 ? 'success' : 'error');
+                diagLog(`z-index: ${styles.zIndex}`, 'info');
+            }
+        }, 500);
+    </script>
+
+    <!-- Load Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/admin.js"></script>
+
+    <!-- Post-load diagnostics -->
+    <script>
+        setTimeout(() => {
+            diagLog('\n--- SCRIPT LOADING TEST ---', 'info');
+            diagLog(`Storage object: ${typeof Storage !== 'undefined' ? 'LOADED' : 'NOT FOUND'}`, typeof Storage !== 'undefined' ? 'success' : 'error');
+            diagLog(`initNavigation: ${typeof initNavigation !== 'undefined' ? 'LOADED' : 'NOT FOUND'}`, typeof initNavigation !== 'undefined' ? 'success' : 'error');
+            diagLog(`saveService: ${typeof saveService !== 'undefined' ? 'LOADED' : 'NOT FOUND'}`, typeof saveService !== 'undefined' ? 'success' : 'error');
+            diagLog(`editService: ${typeof editService !== 'undefined' ? 'LOADED' : 'NOT FOUND'}`, typeof editService !== 'undefined' ? 'success' : 'error');
+
+            // Test 3: Check event listeners
+            diagLog('\n--- EVENT LISTENER TEST ---', 'info');
+            const btn = document.getElementById('btnAddService');
+            if (btn) {
+                // Add a test listener
+                let clickCount = 0;
+                btn.addEventListener('click', function() {
+                    clickCount++;
+                    diagLog(`Click detected! Count: ${clickCount}`, 'success');
+                });
+                diagLog('Test listener attached to btnAddService', 'success');
+                diagLog('Try clicking "Add Service" button now!', 'info');
+            }
+
+            // Test 4: Check for JavaScript errors
+            diagLog('\n--- ERROR CHECK ---', 'info');
+            window.addEventListener('error', function(e) {
+                diagLog(`JS Error: ${e.message} at ${e.filename}:${e.lineno}`, 'error');
+            });
+
+            // Final summary
+            setTimeout(() => {
+                diagLog(`\n--- SUMMARY ---`, 'info');
+                diagLog(`Tests passed: ${testsPassed}`, testsPassed > 0 ? 'success' : 'info');
+                diagLog(`Tests failed: ${testsFailed}`, testsFailed > 0 ? 'error' : 'success');
+                if (testsFailed === 0) {
+                    diagLog('✅ All tests passed! Buttons should work.', 'success');
+                } else {
+                    diagLog('⚠️ Some issues detected. Check red messages above.', 'error');
+                }
+            }, 2000);
+        }, 1500);
+    </script>
+</body>
+</html>
