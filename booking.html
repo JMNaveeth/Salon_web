@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="css/booking.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+    <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
     <!-- Navigation -->
@@ -147,7 +148,93 @@
                             </div>
                             <div class="step-navigation">
                                 <button type="button" class="btn-secondary prev-step">Previous</button>
-                                <button type="submit" class="btn-primary">Book Appointment</button>
+                                <button type="button" class="btn-primary next-step">Next Step</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Payment -->
+                        <div class="booking-step" id="step4">
+                            <div class="step-header">
+                                <div class="step-number">4</div>
+                                <h3>Payment</h3>
+                            </div>
+                            
+                            <!-- Payment Breakdown -->
+                            <div class="payment-breakdown">
+                                <h4>Payment Summary</h4>
+                                <div class="breakdown-item">
+                                    <span>Service Cost:</span>
+                                    <span id="paymentServiceCost">$0</span>
+                                </div>
+                                <div class="breakdown-item">
+                                    <span>Platform Fee (10%):</span>
+                                    <span id="paymentPlatformFee">$0</span>
+                                </div>
+                                <div class="breakdown-divider"></div>
+                                <div class="breakdown-item total">
+                                    <span>Total Amount:</span>
+                                    <span id="paymentTotal">$0</span>
+                                </div>
+                            </div>
+
+                            <!-- Payment Method Selection -->
+                            <div class="payment-methods">
+                                <h4>Select Payment Method</h4>
+                                <div class="payment-options">
+                                    <label class="payment-option active">
+                                        <input type="radio" name="paymentMethod" value="card" checked>
+                                        <div class="option-content">
+                                            <i class="fas fa-credit-card"></i>
+                                            <span>Credit/Debit Card</span>
+                                        </div>
+                                    </label>
+                                    <label class="payment-option">
+                                        <input type="radio" name="paymentMethod" value="cash">
+                                        <div class="option-content">
+                                            <i class="fas fa-money-bill-wave"></i>
+                                            <span>Pay at Salon</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Card Payment Form -->
+                            <div id="cardPaymentSection" class="card-payment-section">
+                                <h4>Card Details</h4>
+                                <div class="form-group">
+                                    <label for="cardholderName">Cardholder Name *</label>
+                                    <input type="text" id="cardholderName" placeholder="John Doe">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cardNumber">Card Number *</label>
+                                    <div id="card-element" class="card-element">
+                                        <!-- Stripe Card Element will be mounted here -->
+                                    </div>
+                                    <div id="card-errors" class="card-errors"></div>
+                                </div>
+                                <div class="payment-security">
+                                    <i class="fas fa-lock"></i>
+                                    <span>Your payment is secure and encrypted</span>
+                                </div>
+                            </div>
+
+                            <!-- Pay at Salon Message -->
+                            <div id="cashPaymentSection" class="cash-payment-section" style="display: none;">
+                                <div class="info-box">
+                                    <i class="fas fa-info-circle"></i>
+                                    <div>
+                                        <h4>Payment at Salon</h4>
+                                        <p>You've chosen to pay at the salon. Please bring the total amount when you arrive for your appointment.</p>
+                                        <p><strong>Note:</strong> A small booking fee will still apply to secure your appointment.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="step-navigation">
+                                <button type="button" class="btn-secondary prev-step">Previous</button>
+                                <button type="submit" class="btn-primary" id="submitPayment">
+                                    <i class="fas fa-lock"></i> Complete Booking
+                                </button>
                             </div>
                         </div>
                     </form>
