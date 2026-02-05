@@ -1,5 +1,9 @@
 // Booking system JavaScript functionality
 
+// Payment configuration
+const PLATFORM_FEE_PERCENTAGE = 0.10; // 10% platform fee for developer
+let stripe, cardElement;
+
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize booking system
     initBookingSteps();
@@ -8,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initTimeSlots();
     initFormValidation();
     initBookingForm();
+    initPaymentStep();
 
     // Load selected service if coming from services page
     loadSelectedService();
@@ -83,30 +88,64 @@ function validateCurrentStep(stepIndex) {
             }
             return true;
 
+        case 2: // Customer details
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            
+            if (!firstName || !lastName) {
+                showMessage('Please enter your full name', 'error');
+                return false;
+            }
+            if (!email || !validateEmail(email)) {
+                showMessage('Please enter a valid email address', 'error');
+                return false;
+            }
+            if (!phone) {
+                showMessage('Please enter your phone number', 'error');
+                return false;
+            }
+            
+            // Update payment step with customer details
+            updatePaymentStep();
+            return true;
+
         default:
             return true;
     }
+}
+
+function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 // Service selection
 function initServiceSelection() {
     const serviceSelect = document.getElementById('service');
     const summaryService = document.getElementById('summaryService');
+    const summaryServicePrice = document.getElementById('summaryServicePrice');
+    const summaryPlatformFee = document.getElementById('summaryPlatformFee');
     const summaryPrice = document.getElementById('summaryPrice');
 
     if (serviceSelect) {
         serviceSelect.addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
             const serviceText = selectedOption.text.split(' - ')[0];
-            const priceText = selectedOption.text.split(' - ')[1] || '$0';
+            const servicePrice = extractPriceFromService(this.value);
+            const platformFee = calculatePlatformFee(servicePrice);
+            const totalPrice = servicePrice + platformFee;
 
-            summaryService.textContent = serviceText;
-            summaryPrice.textContent = priceText;
-
-            // Update staff preferences based on service
-            updateStaffOptions(serviceText);
+            if (summaryService) summaryService.textContent = serviceText;
+            if (summaryServicePrice) summaryServicePrice.textContent = `$${servicePrice}`;
+            if (summaryPlatformFee) summaryPlatformFee.textContent = `$${platformFee}`;
+            if (summaryPrice) summaryPrice.textContent = `$${totalPrice}`;
         });
     }
+}
+
+function calculatePlatformFee(servicePrice) {
+    return Math.round(servicePrice * PLATFORM_FEE_PERCENTAGE);
 }
 
 function updateStaffOptions(serviceName) {
@@ -389,31 +428,74 @@ function initBookingForm() {
     const form = document.getElementById('bookingForm');
 
     if (form) {
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            // Validate all required fields
-            const requiredFields = form.querySelectorAll('input[required], select[required]');
-            let allValid = true;
+            const submitButton = document.getElementById('submitPayment');
+            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+            
+            // Disable submit button
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
-            requiredFields.forEach(field => {
-                if (!validateField(field)) {
-                    allValid = false;
+            try {
+                // Process payment if card method selected
+                if (paymentMethod === 'card') {
+                    const cardholderName = document.getElementById('cardholderName').value.trim();
+                    
+                    if (!cardholderName) {
+                        showMessage('Please enter cardholder name', 'error');
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = '<i class="fas fa-lock"></i> Complete Booking';
+                        return;
+                    }
+
+                    // In a real implementation, you would create a payment intent on your server
+                    // and then confirm the payment here
+                    // For now, we'll simulate successful payment
+                    const paymentResult = await simulatePayment();
+                    
+                    if (!paymentResult.success) {
+                        showMessage('Payment failed. Please try again.', 'error');
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = '<i class="fas fa-lock"></i> Complete Booking';
+                        return;
+                    }
                 }
-            });
 
-            if (!allValid) {
-                showMessage('Please fill in all required fields correctly', 'error');
-                return;
+                // Submit booking
+                submitBooking(new FormData(form), paymentMethod);
+                
+            } catch (error) {
+                console.error('Booking error:', error);
+                showMessage('An error occurred. Please try again.', 'error');
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-lock"></i> Complete Booking';
             }
-
-            // Submit booking
-            submitBooking(new FormData(form));
         });
     }
 }
 
-function submitBooking(formData) {
+async function simulatePayment() {
+    // Simulate payment processing delay
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // In production, replace this with actual Stripe payment processing:
+    // const {error, paymentIntent} = await stripe.confirmCardPayment(clientSecret, {
+    //     payment_method: {
+    //         card: cardElement,
+    //         billing_details: {name: cardholderName}
+    //     }
+    // });
+    
+    return { success: true, transactionId: 'TXN_' + Date.now() };
+}
+
+function submitBooking(formData, paymentMethod) {
+    const servicePrice = extractPriceFromService(formData.get('service'));
+    const platformFee = calculatePlatformFee(servicePrice);
+    const totalPrice = servicePrice + platformFee;
+
     // Create booking object
     const booking = {
         id: generateBookingId(),
@@ -426,9 +508,17 @@ function submitBooking(formData) {
         email: formData.get('email'),
         phone: formData.get('phone'),
         notes: formData.get('notes'),
-        status: 'pending', // Changed from 'confirmed' to 'pending'
+        status: 'pending',
         createdAt: new Date().toISOString(),
-        price: extractPriceFromService(formData.get('service'))
+        payment: {
+            method: paymentMethod,
+            servicePrice: servicePrice,
+            platformFee: platformFee,
+            totalPrice: totalPrice,
+            status: paymentMethod === 'card' ? 'paid' : 'pending',
+            paidAt: paymentMethod === 'card' ? new Date().toISOString() : null
+        },
+        price: servicePrice // Keep for backward compatibility
     };
 
     // Save to localStorage
@@ -445,6 +535,11 @@ function submitBooking(formData) {
     // Reset form
     document.getElementById('bookingForm').reset();
     resetBookingSummary();
+    
+    // Re-enable button
+    const submitButton = document.getElementById('submitPayment');
+    submitButton.disabled = false;
+    submitButton.innerHTML = '<i class="fas fa-lock"></i> Complete Booking';
 }
 
 function generateBookingId() {
@@ -462,6 +557,75 @@ function extractPriceFromService(serviceName) {
     // Extract price from option text (e.g., "Bridal Makeup - $150")
     const priceMatch = selectedOption.text.match(/\$(\d+)/);
     return priceMatch ? parseInt(priceMatch[1]) : 0;
+}
+
+// ===================================
+// PAYMENT STEP FUNCTIONALITY
+// ===================================
+
+function initPaymentStep() {
+    // Initialize Stripe (Replace with your actual publishable key)
+    // For demo purposes, using test key - replace with your own
+    stripe = Stripe('pk_test_51QhExHP8O4Z4P4Z4P4Z4P4Z4P4Z4P4Z4P4Z4P4Z4P4Z4P4Z4P'); // REPLACE THIS WITH YOUR STRIPE KEY
+    
+    // Create card element
+    const elements = stripe.elements();
+    cardElement = elements.create('card', {
+        style: {
+            base: {
+                color: '#fff',
+                fontFamily: '"Inter", sans-serif',
+                fontSize: '16px',
+                '::placeholder': {
+                    color: 'rgba(255, 255, 255, 0.4)'
+                }
+            },
+            invalid: {
+                color: '#ff4444',
+                iconColor: '#ff4444'
+            }
+        }
+    });
+    
+    cardElement.mount('#card-element');
+    
+    // Handle card errors
+    cardElement.on('change', function(event) {
+        const displayError = document.getElementById('card-errors');
+        if (event.error) {
+            displayError.textContent = event.error.message;
+        } else {
+            displayError.textContent = '';
+        }
+    });
+    
+    // Payment method selection
+    const paymentOptions = document.querySelectorAll('input[name="paymentMethod"]');
+    const cardSection = document.getElementById('cardPaymentSection');
+    const cashSection = document.getElementById('cashPaymentSection');
+    
+    paymentOptions.forEach(option => {
+        option.addEventListener('change', function() {
+            if (this.value === 'card') {
+                cardSection.style.display = 'block';
+                cashSection.style.display = 'none';
+            } else {
+                cardSection.style.display = 'none';
+                cashSection.style.display = 'block';
+            }
+        });
+    });
+}
+
+function updatePaymentStep() {
+    const servicePrice = extractPriceFromService(document.getElementById('service').value);
+    const platformFee = calculatePlatformFee(servicePrice);
+    const totalPrice = servicePrice + platformFee;
+    
+    // Update payment breakdown
+    document.getElementById('paymentServiceCost').textContent = `$${servicePrice}`;
+    document.getElementById('paymentPlatformFee').textContent = `$${platformFee}`;
+    document.getElementById('paymentTotal').textContent = `$${totalPrice}`;
 }
 
 function showConfirmationModal(booking) {
