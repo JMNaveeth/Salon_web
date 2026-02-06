@@ -500,12 +500,12 @@ function previewPhoto(event) {
 }
 
 function savePhoto() {
-    const title = document.getElementById('modalPhotoTitle').value.trim();
+    const name = document.getElementById('modalPhotoTitle').value.trim();
     const category = document.getElementById('modalPhotoCategory').value.trim();
     const description = document.getElementById('modalPhotoDescription').value.trim();
     const fileInput = document.getElementById('modalPhotoImage');
     
-    if (!title || !category || !fileInput.files[0]) {
+    if (!name || !category || !fileInput.files[0]) {
         alert('Please fill in all required fields and select an image');
         return;
     }
@@ -529,7 +529,7 @@ function savePhoto() {
         
         const newPhoto = {
             id: Date.now(),
-            title: title,
+            name: name,
             category: category,
             description: description,
             image: e.target.result,
@@ -539,8 +539,8 @@ function savePhoto() {
         photos.push(newPhoto);
         Storage.set('customerPhotos', photos);
         
-        addActivity('camera', 'New customer photo added: ' + title);
-        alert('SUCCESS! Photo "' + title + '" added successfully!');
+        addActivity('camera', 'New customer photo added: ' + name);
+        alert('SUCCESS! Photo "' + name + '" added successfully!');
         
         document.getElementById('addPhotoModal').classList.remove('active');
         document.getElementById('photoModalForm').reset();
