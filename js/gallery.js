@@ -67,24 +67,24 @@ function loadCustomerPhotos() {
                             </div>` :
                             `<img src="${mediaUrl}" alt="${photo.name || photo.title}" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;" />`
                         }
+                        <div class="gallery-gradient-overlay"></div>
                         <div class="gallery-card-header">
                             <div class="media-type-badge ${isVideo ? 'video' : 'photo'}">
                                 <i class="fas fa-${isVideo ? 'video' : 'image'}"></i>
                             </div>
-                            <div class="category-badge">${categoryDisplay}</div>
                         </div>
-                        <div class="gallery-overlay">
-                            <div class="gallery-info">
-                                <div class="customer-avatar">
+                        <div class="gallery-card-footer">
+                            <div class="customer-info-compact">
+                                <div class="customer-avatar-small">
                                     <i class="fas fa-user-circle"></i>
                                 </div>
-                                <h4>${photo.name || photo.title}</h4>
-                                <p class="description">${photo.description || 'Our valued customer\'s amazing transformation'}</p>
-                                <div class="info-divider"></div>
-                                <div class="work-badge">
-                                    <i class="fas fa-crown"></i>
-                                    <span>Customer Work</span>
+                                <div class="customer-details">
+                                    <h4 class="customer-name">${photo.name || photo.title}</h4>
+                                    <p class="customer-desc">${photo.description || 'Our valued customer'}</p>
                                 </div>
+                            </div>
+                            <div class="work-badge-small">
+                                <i class="fas fa-crown"></i>
                             </div>
                         </div>
                     </div>
