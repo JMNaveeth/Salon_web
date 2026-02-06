@@ -19,8 +19,7 @@ function loadCustomerPhotos() {
         if (customerPhotos.length > 0) {
             console.log('Loading customer photos:', customerPhotos.length);
             
-            // Insert customer photos at the beginning of the gallery
-            customerPhotos.forEach((photo, index) => {
+            customerPhotos.forEach(photo => {
                 const galleryItem = document.createElement('div');
                 galleryItem.className = `gallery-item ${photo.category}`;
                 galleryItem.innerHTML = `
@@ -38,8 +37,7 @@ function loadCustomerPhotos() {
                     </div>
                 `;
                 
-                // Insert at the beginning of gallery
-                galleryGrid.insertBefore(galleryItem, galleryGrid.firstChild);
+                galleryGrid.appendChild(galleryItem);
             });
         }
     } catch (error) {
