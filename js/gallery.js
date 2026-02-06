@@ -1,12 +1,34 @@
 // Gallery Filtering and Animations
 document.addEventListener('DOMContentLoaded', function() {
-    loadCustomerPhotos(); // Load customer photos first
+    updateGalleryStats(); // Update stats first
+    loadCustomerPhotos(); // Load customer photos
     initGalleryFilter();
     initGalleryAnimations();
     // initCursor(); // DISABLED - using normal cursor
     animateStats();
     initParallax();
 });
+
+// Update gallery statistics based on real data
+function updateGalleryStats() {
+    try {
+        const customerPhotos = JSON.parse(localStorage.getItem('customerPhotos')) || [];
+        const totalPhotosEl = document.getElementById('totalPhotos');
+        
+        if (totalPhotosEl) {
+            totalPhotosEl.textContent = customerPhotos.length;
+        }
+        
+        // Count unique categories
+        const categories = new Set(customerPhotos.map(photo => photo.category));
+        const totalCategoriesEl = document.getElementById('totalCategories');
+        if (totalCategoriesEl && categories.size > 0) {
+            totalCategoriesEl.textContent = categories.size;
+        }
+    } catch (error) {
+        console.error('Error updating gallery stats:', error);
+    }
+}
 
 // Load customer photos from localStorage
 function loadCustomerPhotos() {
@@ -85,9 +107,40 @@ function loadCustomerPhotos() {
                 
                 galleryGrid.appendChild(galleryItem);
             });
+        } else {
+            // Show empty state message
+            galleryGrid.innerHTML = `
+                <div class="empty-gallery-message">
+                    <div class="empty-icon">
+                        <i class="fas fa-images"></i>
+                    </div>
+                    <h3>No Photos Yet</h3>
+                    <p>The gallery is waiting to be filled with amazing customer transformations!</p>
+                    <div class="empty-actions">
+                        <a href="admin.html" class="btn-primary">
+                            <i class="fas fa-user-shield"></i>
+                            <span>Shop Owner? Add Photos</span>
+                        </a>
+                        <a href="services.html" class="btn-secondary">
+                            <i class="fas fa-concierge-bell"></i>
+                            <span>View Our Services</span>
+                        </a>
+                    </div>
+                </div>
+            `;
+            console.log('No customer photos found');
         }
     } catch (error) {
         console.error('Error loading customer photos:', error);
+        galleryGrid.innerHTML = `
+            <div class="empty-gallery-message">
+                <div class="empty-icon error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h3>Error Loading Gallery</h3>
+                <p>Something went wrong. Please refresh the page or contact support.</p>
+            </div>
+        `;
     }
 }
 

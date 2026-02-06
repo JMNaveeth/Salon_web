@@ -199,6 +199,112 @@
     gap: 30px;
 }
 
+/* Empty Gallery State */
+.empty-gallery-message {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 80px 40px;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, rgba(26, 26, 26, 0.02) 100%);
+    border-radius: 20px;
+    border: 2px dashed rgba(212, 175, 55, 0.3);
+    animation: fadeIn 0.8s ease;
+}
+
+.empty-icon {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 30px;
+    background: linear-gradient(135deg, var(--primary) 0%, #ffd700 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 15px 40px rgba(212, 175, 55, 0.3);
+    animation: pulse 2s infinite;
+}
+
+.empty-icon i {
+    font-size: 4rem;
+    color: white;
+}
+
+.empty-icon.error {
+    background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
+    box-shadow: 0 15px 40px rgba(255, 68, 68, 0.3);
+}
+
+.empty-gallery-message h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    color: #1a1a1a;
+    margin: 0 0 15px 0;
+    font-weight: 700;
+}
+
+.empty-gallery-message p {
+    font-size: 1.2rem;
+    color: rgba(26, 26, 26, 0.6);
+    margin: 0 0 40px 0;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.empty-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.empty-actions .btn-primary,
+.empty-actions .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 32px;
+    font-size: 1rem;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.empty-actions .btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, #ffd700 100%);
+    color: white;
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+}
+
+.empty-actions .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(212, 175, 55, 0.5);
+}
+
+.empty-actions .btn-secondary {
+    background: white;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.empty-actions .btn-secondary:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-3px);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Gallery Item */
 .gallery-item {
     opacity: 1;
