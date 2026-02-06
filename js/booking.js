@@ -158,13 +158,20 @@ function updateStaffOptions(serviceName) {
             staffSelect.remove(1);
         }
 
-        // Add service-specific staff
-        const serviceStaff = getServiceStaff(serviceName);
-        serviceStaff.forEach(staff => {
+        // Get all staff from localStorage
+        const allStaff = Storage.get('staff', []);
+        
+        // Add all available staff to the dropdown
+        allStaff.forEach(staff => {
             const option = document.createElement('option');
             option.value = staff.name;
             option.textContent = `${staff.name} (${staff.specialty})`;
             staffSelect.appendChild(option);
+        });
+
+        // Update staff selection handler
+        staffSelect.addEventListener('change', function() {
+            summaryStaff.textContent = this.value;
         });
 
         summaryStaff.textContent = 'Any available';
@@ -172,41 +179,14 @@ function updateStaffOptions(serviceName) {
 }
 
 function getServiceStaff(serviceName) {
-    const staffByService = {
-        'Haircut & Styling': [
-            { name: 'Sarah Johnson', specialty: 'Hair Specialist' },
-            { name: 'Mike Chen', specialty: 'Stylist' }
-        ],
-        'Hair Coloring': [
-            { name: 'Mike Chen', specialty: 'Color Expert' },
-            { name: 'Sarah Johnson', specialty: 'Color Specialist' }
-        ],
-        'Hair Treatment': [
-            { name: 'Sarah Johnson', specialty: 'Hair Specialist' },
-            { name: 'Emma Davis', specialty: 'Treatment Expert' }
-        ],
-        'Facial Treatment': [
-            { name: 'Emma Davis', specialty: 'Skin Care Specialist' }
-        ],
-        'Body Waxing': [
-            { name: 'Emma Davis', specialty: 'Waxing Specialist' }
-        ],
-        'Bridal Makeup': [
-            { name: 'Lisa Wong', specialty: 'Bridal Specialist' }
-        ],
-        'Bridal Hair': [
-            { name: 'Lisa Wong', specialty: 'Bridal Specialist' },
-            { name: 'Sarah Johnson', specialty: 'Hair Specialist' }
-        ],
-        'Swedish Massage': [
-            { name: 'Emma Davis', specialty: 'Spa Therapist' }
-        ],
-        'Manicure & Pedicure': [
-            { name: 'Emma Davis', specialty: 'Nail Specialist' }
-        ]
-    };
-
-    return staffByService[serviceName] || [];
+    // Get all staff from localStorage
+    const allStaff = Storage.get('staff', []);
+    
+    // Return all staff (or you can filter by specialty/service if needed)
+    return allStaff.map(staff => ({
+        name: staff.name,
+        specialty: staff.specialty
+    }));
 }
 
 // Date selection
