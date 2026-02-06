@@ -218,7 +218,7 @@
     height: 350px;
     border-radius: 20px;
     overflow: hidden;
-    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+    background: linear-gradient(135deg, #f5f5f5 0%, black 100%);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
