@@ -19,12 +19,13 @@ function loadCustomerPhotos() {
         if (customerPhotos.length > 0) {
             console.log('Loading customer photos:', customerPhotos.length);
             
-            customerPhotos.forEach(photo => {
+            // Insert customer photos at the beginning of the gallery
+            customerPhotos.forEach((photo, index) => {
                 const galleryItem = document.createElement('div');
                 galleryItem.className = `gallery-item ${photo.category}`;
                 galleryItem.innerHTML = `
                     <div class="gallery-card">
-                        <img src="${photo.imageData}" alt="${photo.name || photo.title}" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;" />
+                        <img src="${photo.image || photo.imageData}" alt="${photo.name || photo.title}" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;" />
                         <div class="gallery-overlay">
                             <div class="gallery-info">
                                 <h4>${photo.name || photo.title}</h4>
@@ -37,7 +38,8 @@ function loadCustomerPhotos() {
                     </div>
                 `;
                 
-                galleryGrid.appendChild(galleryItem);
+                // Insert at the beginning of gallery
+                galleryGrid.insertBefore(galleryItem, galleryGrid.firstChild);
             });
         }
     } catch (error) {
