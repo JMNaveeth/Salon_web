@@ -40,6 +40,9 @@
           <a href="#slots" class="nav-link">Available today</a>
           <a href="#contact" class="nav-link">Contact</a>
           <a href="dashboard.html" class="btn-ghost">Dashboard</a>
+          <button onclick="AuthSystem.logout()" class="btn-ghost" style="background: transparent; border: 2px solid var(--primary); color: var(--primary);">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
           <button
             id="theme-toggle"
             class="theme-toggle"
@@ -592,6 +595,19 @@
 
     <!-- Three.js for 3D background -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/auth.js"></script>
     <script src="js/main.js"></script>
+    <script>
+      // Check authentication on page load
+      if (!AuthSystem.checkAuth()) {
+        // Will redirect to auth.html if not logged in or wrong role
+      } else {
+        // Display user info
+        const currentUser = AuthSystem.getCurrentUser();
+        if (currentUser) {
+          console.log('Welcome, ' + currentUser.name);
+        }
+      }
+    </script>
   </body>
 </html>

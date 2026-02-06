@@ -13,7 +13,12 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <a href="index.html"><h2>Kinniya Salon</h2></a>
+                <a href="admin.html"><h2>Kinniya Salon</h2></a>
+            </div>
+            <div class="nav-menu" style="display: flex; gap: 15px; align-items: center;">
+                <button onclick="AuthSystem.logout()" style="background: transparent; border: 2px solid var(--primary); color: var(--primary); padding: 8px 20px; border-radius: 5px; cursor: pointer; font-size: 14px;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
             </div>
         </div>
     </nav>
@@ -320,7 +325,21 @@
         </div>
     </div>
 
+    <script src="js/auth.js"></script>
     <script src="js/main.js"></script>
     <script src="js/admin.js"></script>
+    <script>
+      // Check authentication on page load
+      if (!AuthSystem.checkAuth()) {
+        // Will redirect to auth.html if not logged in or not a shop owner
+      } else {
+        // Display owner info in header
+        const currentUser = AuthSystem.getCurrentUser();
+        if (currentUser && currentUser.role === 'owner') {
+          const headerContent = document.querySelector('.admin-header-content h1');
+          headerContent.innerHTML = '<i class="fas fa-cog"></i> Admin Panel - Welcome, ' + currentUser.name;
+        }
+      }
+    </script>
 </body>
 </html>
