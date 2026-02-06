@@ -1,13 +1,29 @@
 // Booking system JavaScript functionality
+// 
+// PROFESSIONAL BOOKING SYSTEM:
+// - Dynamically loads services from admin panel (localStorage: 'services')
+// - Dynamically loads staff from admin panel (localStorage: 'staff')
+// - Multi-step booking form with validation
+// - Real-time availability checking
+// - Payment integration (Stripe)
+// - 10% platform fee calculation
+//
+// IMPORTANT: Shop owners must add services and staff through the admin panel
+// before customers can make bookings.
 
 // Payment configuration
 const PLATFORM_FEE_PERCENTAGE = 0.10; // 10% platform fee for developer
 let stripe, cardElement;
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Load services and staff from admin panel FIRST
+    loadServicesFromAdmin();
+    loadStaffFromAdmin();
+    
     // Initialize booking system
     initBookingSteps();
     initServiceSelection();
+    initStaffSelection();
     initDateSelection();
     initTimeSlots();
     initFormValidation();
@@ -17,6 +33,105 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load selected service if coming from services page
     loadSelectedService();
 });
+
+// ===================================
+// LOAD SERVICES FROM ADMIN PANEL
+// ===================================
+
+function loadServicesFromAdmin() {
+    const serviceSelect = document.getElementById('service');
+    if (!serviceSelect) return;
+
+    // Get services from localStorage (added by shop owner in admin panel)
+    const services = Storage.get('services', []);
+
+    // Clear existing options except the first placeholder
+    while (serviceSelect.options.length > 1) {
+        serviceSelect.remove(1);
+    }
+
+    // Check if there are any services
+    if (services.length === 0) {
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = 'No services available - Contact salon';
+        option.disabled = true;
+        serviceSelect.appendChild(option);
+        return;
+    }
+
+    // Group services by category
+    const categories = {
+        'hair': 'Hair Services',
+        'facial': 'Facial Services',
+        'special': 'Special (Wedding/Fashion)',
+        'others': 'Other Services'
+    };
+
+    const groupedServices = {};
+    services.forEach(service => {
+        const category = service.category || 'others';
+        if (!groupedServices[category]) {
+            groupedServices[category] = [];
+        }
+        groupedServices[category].push(service);
+    });
+
+    // Add services grouped by category
+    Object.keys(categories).forEach(categoryKey => {
+        if (groupedServices[categoryKey] && groupedServices[categoryKey].length > 0) {
+            const optgroup = document.createElement('optgroup');
+            optgroup.label = categories[categoryKey];
+
+            groupedServices[categoryKey].forEach(service => {
+                const option = document.createElement('option');
+                option.value = service.name;
+                option.textContent = `${service.name} - $${service.price}`;
+                option.dataset.price = service.price;
+                option.dataset.duration = service.duration;
+                optgroup.appendChild(option);
+            });
+
+            serviceSelect.appendChild(optgroup);
+        }
+    });
+
+    console.log(`Loaded ${services.length} services from admin panel`);
+}
+
+// ===================================
+// LOAD STAFF FROM ADMIN PANEL
+// ===================================
+
+function loadStaffFromAdmin() {
+    const staffSelect = document.getElementById('staff');
+    if (!staffSelect) return;
+
+    // Get staff from localStorage (added by shop owner in admin panel)
+    const staff = Storage.get('staff', []);
+
+    // Clear existing options except the first placeholder
+    while (staffSelect.options.length > 1) {
+        staffSelect.remove(1);
+    }
+
+    // Check if there are any staff members
+    if (staff.length === 0) {
+        // Keep "Any available staff" as the only option
+        console.log('No staff members found in admin panel');
+        return;
+    }
+
+    // Add each staff member as an option
+    staff.forEach(member => {
+        const option = document.createElement('option');
+        option.value = member.name;
+        option.textContent = `${member.name}${member.specialty ? ' (' + member.specialty + ')' : ''}`;
+        staffSelect.appendChild(option);
+    });
+
+    console.log(`Loaded ${staff.length} staff members from admin panel`);
+}
 
 // Multi-step form navigation
 function initBookingSteps() {
@@ -70,7 +185,12 @@ function validateCurrentStep(stepIndex) {
         case 0: // Service selection
             const service = document.getElementById('service').value;
             if (!service) {
-                showMessage('Please select a service', 'error');
+                const services = Storage.get('services', []);
+                if (services.length === 0) {
+                    showMessage('No services available. Please contact the salon or ask the shop owner to add services in the admin panel.', 'error');
+                } else {
+                    showMessage('Please select a service', 'error');
+                }
                 return false;
             }
             return true;
@@ -146,47 +266,6 @@ function initServiceSelection() {
 
 function calculatePlatformFee(servicePrice) {
     return Math.round(servicePrice * PLATFORM_FEE_PERCENTAGE);
-}
-
-function updateStaffOptions(serviceName) {
-    const staffSelect = document.getElementById('staff');
-    const summaryStaff = document.getElementById('summaryStaff');
-
-    if (staffSelect && summaryStaff) {
-        // Clear existing options except "Any available"
-        while (staffSelect.options.length > 1) {
-            staffSelect.remove(1);
-        }
-
-        // Get all staff from localStorage
-        const allStaff = Storage.get('staff', []);
-        
-        // Add all available staff to the dropdown
-        allStaff.forEach(staff => {
-            const option = document.createElement('option');
-            option.value = staff.name;
-            option.textContent = `${staff.name} (${staff.specialty})`;
-            staffSelect.appendChild(option);
-        });
-
-        // Update staff selection handler
-        staffSelect.addEventListener('change', function() {
-            summaryStaff.textContent = this.value;
-        });
-
-        summaryStaff.textContent = 'Any available';
-    }
-}
-
-function getServiceStaff(serviceName) {
-    // Get all staff from localStorage
-    const allStaff = Storage.get('staff', []);
-    
-    // Return all staff (or you can filter by specialty/service if needed)
-    return allStaff.map(staff => ({
-        name: staff.name,
-        specialty: staff.specialty
-    }));
 }
 
 // Date selection
@@ -527,14 +606,19 @@ function generateBookingId() {
 }
 
 function extractPriceFromService(serviceName) {
-    // Get the actual selected option to extract price from its text
+    // Get the actual selected option to extract price
     const serviceSelect = document.getElementById('service');
     if (!serviceSelect) return 0;
     
     const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
     if (!selectedOption) return 0;
     
-    // Extract price from option text (e.g., "Bridal Makeup - $150")
+    // First try to get price from dataset (set when loading services)
+    if (selectedOption.dataset.price) {
+        return parseInt(selectedOption.dataset.price);
+    }
+    
+    // Fallback: Extract price from option text (e.g., "Bridal Makeup - $150")
     const priceMatch = selectedOption.text.match(/\$(\d+)/);
     return priceMatch ? parseInt(priceMatch[1]) : 0;
 }
