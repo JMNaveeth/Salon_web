@@ -14,72 +14,12 @@
     --glow-effect: 0 0 40px rgba(212, 175, 55, 0.4);
 }
 
-/* Salon-Themed Animated Background */
+/* Clean Simple Background */
 .services-main-section {
     padding: 80px 0;
-    background: radial-gradient(circle at 50% 50%, var(--bg-light) 0%, var(--bg) 100%);
+    background: var(--bg);
     position: relative;
     overflow: hidden;
-}
-
-/* Animated Salon Tool - Scissors */
-.services-main-section::before {
-    content: '✂';
-    position: absolute;
-    top: 15%;
-    right: 10%;
-    font-size: 80px;
-    color: rgba(212, 175, 55, 0.08);
-    animation: floatScissors 20s ease-in-out infinite;
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* Animated Salon Tool - Mirror/Comb */
-.services-main-section::after {
-    content: '💇';
-    position: absolute;
-    bottom: 20%;
-    left: 8%;
-    font-size: 70px;
-    color: rgba(212, 175, 55, 0.08);
-    animation: floatMirror 18s ease-in-out infinite;
-    pointer-events: none;
-    z-index: 0;
-}
-
-@keyframes floatScissors {
-    0%, 100% { 
-        transform: translateY(0) rotate(0deg);
-        opacity: 0.6;
-    }
-    25% { 
-        transform: translateY(-30px) rotate(15deg);
-        opacity: 0.8;
-    }
-    50% { 
-        transform: translateY(-50px) rotate(-10deg);
-        opacity: 1;
-    }
-    75% { 
-        transform: translateY(-30px) rotate(15deg);
-        opacity: 0.8;
-    }
-}
-
-@keyframes floatMirror {
-    0%, 100% { 
-        transform: translateX(0) translateY(0) scale(1);
-        opacity: 0.6;
-    }
-    33% { 
-        transform: translateX(20px) translateY(-20px) scale(1.1);
-        opacity: 0.8;
-    }
-    66% { 
-        transform: translateX(-10px) translateY(-30px) scale(0.95);
-        opacity: 1;
-    }
 }
 
 /* Services Page Header with 3D Text Effect */
@@ -91,38 +31,63 @@
     perspective: 1000px;
 }
 
-/* Animated Salon Sparkle Decorations */
-.services-page-header::before,
-.services-page-header::after {
-    content: '✨';
-    position: absolute;
-    font-size: 35px;
-    animation: sparkleFloat 4s ease-in-out infinite;
-    filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.5));
-}
-
+/* Floating Salon Tools Decorations */
 .services-page-header::before {
-    top: 20px;
-    left: 15%;
-    animation-delay: 0s;
+    content: '✂';
+    position: absolute;
+    top: -20px;
+    right: 15%;
+    font-size: 60px;
+    color: rgba(212, 175, 55, 0.12);
+    animation: floatScissorsHeader 15s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
 }
 
 .services-page-header::after {
-    top: 20px;
-    right: 15%;
+    content: '💇';
+    position: absolute;
+    top: -20px;
+    left: 15%;
+    font-size: 60px;
+    color: rgba(212, 175, 55, 0.12);
+    animation: floatToolHeader 15s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
     animation-delay: 2s;
 }
 
-@keyframes sparkleFloat {
+@keyframes floatScissorsHeader {
     0%, 100% { 
-        transform: scale(1) translateY(0) rotate(0deg);
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.5;
+    }
+    25% { 
+        transform: translateY(-20px) rotate(15deg);
         opacity: 0.7;
-        filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.4));
     }
     50% { 
-        transform: scale(1.3) translateY(-10px) rotate(180deg);
-        opacity: 1;
-        filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.7));
+        transform: translateY(-30px) rotate(-10deg);
+        opacity: 0.9;
+    }
+    75% { 
+        transform: translateY(-20px) rotate(15deg);
+        opacity: 0.7;
+    }
+}
+
+@keyframes floatToolHeader {
+    0%, 100% { 
+        transform: translateY(0) scale(1);
+        opacity: 0.5;
+    }
+    33% { 
+        transform: translateY(-15px) scale(1.1);
+        opacity: 0.7;
+    }
+    66% { 
+        transform: translateY(-25px) scale(0.95);
+        opacity: 0.9;
     }
 }
 
@@ -1201,10 +1166,173 @@ body.dark-mode .service-item-featured {
     .service-item-header h3 {
         font-size: 1.4rem;
     }
+}
 
-    .price {
-        font-size: 1.8rem;
+/* ===================================
+   ENHANCED FLOATING SALON DECORATIONS
+   =================================== */
+
+/* Additional Floating Salon Tools - Top Right */
+.services-main-section .salon-decor-1 {
+    position: absolute;
+    top: 10%;
+    right: 5%;
+    font-size: 90px;
+    color: rgba(212, 175, 55, 0.08);
+    animation: floatSalon1 20s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.services-main-section .salon-decor-1::before {
+    content: '✂';
+}
+
+/* Additional Floating Salon Tools - Bottom Left */
+.services-main-section .salon-decor-2 {
+    position: absolute;
+    bottom: 15%;
+    left: 5%;
+    font-size: 75px;
+    color: rgba(212, 175, 55, 0.08);
+    animation: floatSalon2 18s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.services-main-section .salon-decor-2::before {
+    content: '💇';
+}
+
+/* Additional Floating Salon Tools - Center Right */
+.services-main-section .salon-decor-3 {
+    position: absolute;
+    top: 50%;
+    right: 8%;
+    font-size: 60px;
+    color: rgba(212, 175, 55, 0.06);
+    animation: floatSalon3 22s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.services-main-section .salon-decor-3::before {
+    content: '💈';
+}
+
+/* Additional Floating Salon Tools - Center Left */
+.services-main-section .salon-decor-4 {
+    position: absolute;
+    top: 35%;
+    left: 7%;
+    font-size: 65px;
+    color: rgba(212, 175, 55, 0.06);
+    animation: floatSalon4 19s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.services-main-section .salon-decor-4::before {
+    content: '✨';
+}
+
+@keyframes floatSalon1 {
+    0%, 100% { 
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.4;
     }
+    25% { 
+        transform: translateY(-30px) rotate(15deg);
+        opacity: 0.6;
+    }
+    50% { 
+        transform: translateY(-50px) rotate(-10deg);
+        opacity: 0.8;
+    }
+    75% { 
+        transform: translateY(-30px) rotate(15deg);
+        opacity: 0.6;
+    }
+}
+
+@keyframes floatSalon2 {
+    0%, 100% { 
+        transform: translateX(0) translateY(0) scale(1);
+        opacity: 0.4;
+    }
+    33% { 
+        transform: translateX(20px) translateY(-20px) scale(1.1);
+        opacity: 0.6;
+    }
+    66% { 
+        transform: translateX(-10px) translateY(-30px) scale(0.95);
+        opacity: 0.8;
+    }
+}
+
+@keyframes floatSalon3 {
+    0%, 100% { 
+        transform: translateY(0) scale(1) rotate(0deg);
+        opacity: 0.3;
+    }
+    50% { 
+        transform: translateY(-35px) scale(1.15) rotate(180deg);
+        opacity: 0.7;
+    }
+}
+
+@keyframes floatSalon4 {
+    0%, 100% { 
+        transform: translateX(0) scale(1);
+        opacity: 0.3;
+    }
+    50% { 
+        transform: translateX(25px) scale(1.2);
+        opacity: 0.7;
+    }
+}
+
+/* ===================================
+   DARK MODE ENHANCEMENTS
+   =================================== */
+
+body.dark-mode .services-main-section {
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(212, 175, 55, 0.06) 0%, transparent 50%),
+        linear-gradient(135deg, #1e1e1e 0%, #121212 50%, #1e1e1e 100%);
+}
+
+body.dark-mode .services-main-section::before {
+    background-image: 
+        repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(212, 175, 55, 0.03) 35px, rgba(212, 175, 55, 0.03) 70px);
+    opacity: 0.6;
+}
+
+body.dark-mode .services-main-section::after {
+    background-image: 
+        radial-gradient(circle at 15% 15%, rgba(212, 175, 55, 0.08) 2px, transparent 2px),
+        radial-gradient(circle at 85% 85%, rgba(212, 175, 55, 0.08) 2px, transparent 2px),
+        radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.05) 1px, transparent 1px);
+}
+
+body.dark-mode .services-page-header::before,
+body.dark-mode .services-page-header::after {
+    color: rgba(212, 175, 55, 0.15);
+}
+
+body.dark-mode .salon-decor-1,
+body.dark-mode .salon-decor-2,
+body.dark-mode .salon-decor-3,
+body.dark-mode .salon-decor-4 {
+    filter: brightness(1.3);
+}
+
+body.dark-mode .salon-decor-1::before,
+body.dark-mode .salon-decor-2::before,
+body.dark-mode .salon-decor-3::before,
+body.dark-mode .salon-decor-4::before {
+    color: rgba(212, 175, 55, 0.12);
 }
 
 /* Print Styles */
