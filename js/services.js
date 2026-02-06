@@ -84,12 +84,9 @@ function loadDynamicServices() {
 function createCategorySection(category) {
     const categoryIcons = {
         'hair': 'fa-cut',
-        'skin care': 'fa-spa',
-        'nails': 'fa-hand-sparkles',
-        'makeup': 'fa-palette',
-        'massage': 'fa-hands',
-        'facial': 'fa-face-smile',
-        'body': 'fa-person'
+        'facial': 'fa-spa',
+        'special': 'fa-gem',
+        'others': 'fa-ellipsis-h'
     };
     
     const icon = categoryIcons[category.toLowerCase()] || 'fa-star';
@@ -152,12 +149,9 @@ function createServiceElement(service) {
 function getCategoryIcon(category) {
     const iconMap = {
         'hair': 'fa-cut',
-        'skin care': 'fa-spa',
-        'nails': 'fa-hand-sparkles',
-        'makeup': 'fa-palette',
-        'massage': 'fa-hands',
-        'facial': 'fa-face-smile',
-        'body': 'fa-person'
+        'facial': 'fa-spa',
+        'special': 'fa-gem',
+        'others': 'fa-ellipsis-h'
     };
     return iconMap[category.toLowerCase()] || 'fa-star';
 }
