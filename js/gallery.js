@@ -22,20 +22,66 @@ function loadCustomerPhotos() {
             customerPhotos.forEach(photo => {
                 const galleryItem = document.createElement('div');
                 galleryItem.className = `gallery-item ${photo.category}`;
+                
+                // Determine media type
+                const isVideo = photo.mediaType === 'video' || (photo.image && photo.image.match(/\.(mp4|webm|ogg)$/i));
+                const mediaUrl = photo.image || photo.imageData;
+                
+                // Get category display name
+                const categoryNames = {
+                    'hair': 'Hair Services',
+                    'facial': 'Facial Services',
+                    'special': 'Wedding/Fashion',
+                    'others': 'Other Services'
+                };
+                const categoryDisplay = categoryNames[photo.category] || photo.category;
+                
                 galleryItem.innerHTML = `
-                    <div class="gallery-card">
-                        <img src="${photo.image || photo.imageData}" alt="${photo.name || photo.title}" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;" />
+                    <div class="gallery-card enhanced">
+                        ${isVideo ? 
+                            `<video src="${mediaUrl}" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;" muted loop playsinline></video>
+                            <div class="video-indicator">
+                                <i class="fas fa-play-circle"></i>
+                            </div>` :
+                            `<img src="${mediaUrl}" alt="${photo.name || photo.title}" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;" />`
+                        }
+                        <div class="gallery-card-header">
+                            <div class="media-type-badge ${isVideo ? 'video' : 'photo'}">
+                                <i class="fas fa-${isVideo ? 'video' : 'image'}"></i>
+                            </div>
+                            <div class="category-badge">${categoryDisplay}</div>
+                        </div>
                         <div class="gallery-overlay">
                             <div class="gallery-info">
+                                <div class="customer-avatar">
+                                    <i class="fas fa-user-circle"></i>
+                                </div>
                                 <h4>${photo.name || photo.title}</h4>
-                                <p>${photo.description || 'Customer photo'}</p>
-                                <div class="customer-work-badge">
-                                    <i class="fas fa-star"></i> Customer Work
+                                <p class="description">${photo.description || 'Our valued customer\'s amazing transformation'}</p>
+                                <div class="info-divider"></div>
+                                <div class="work-badge">
+                                    <i class="fas fa-crown"></i>
+                                    <span>Customer Work</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 `;
+                
+                // Add video hover play functionality
+                if (isVideo) {
+                    const videoElement = galleryItem.querySelector('video');
+                    const card = galleryItem.querySelector('.gallery-card');
+                    
+                    card.addEventListener('mouseenter', () => {
+                        videoElement.play().catch(err => console.log('Video play failed:', err));
+                    });
+                    
+                    card.addEventListener('mouseleave', () => {
+                        videoElement.pause();
+                        videoElement.currentTime = 0;
+                    });
+                }
                 
                 galleryGrid.appendChild(galleryItem);
             });

@@ -482,14 +482,25 @@ function previewPhoto(event) {
     const file = event.target.files[0];
     const preview = document.getElementById('photoPreview');
     const previewImage = document.getElementById('previewImage');
+    const previewVideo = document.getElementById('previewVideo');
     
     if (!preview || !previewImage) return;
     
-    if (file && file.type.startsWith('image/')) {
+    if (file) {
         const reader = new FileReader();
         
         reader.onload = function(e) {
-            previewImage.src = e.target.result;
+            if (file.type.startsWith('image/')) {
+                previewImage.src = e.target.result;
+                previewImage.style.display = 'block';
+                if (previewVideo) previewVideo.style.display = 'none';
+            } else if (file.type.startsWith('video/')) {
+                if (previewVideo) {
+                    previewVideo.src = e.target.result;
+                    previewVideo.style.display = 'block';
+                    previewImage.style.display = 'none';
+                }
+            }
             preview.style.display = 'block';
         };
         
@@ -503,22 +514,29 @@ function savePhoto() {
     const name = document.getElementById('modalPhotoTitle').value.trim();
     const category = document.getElementById('modalPhotoCategory').value.trim();
     const description = document.getElementById('modalPhotoDescription').value.trim();
+    const mediaType = document.getElementById('modalMediaType').value;
     const fileInput = document.getElementById('modalPhotoImage');
     
     if (!name || !category || !fileInput.files[0]) {
-        alert('Please fill in all required fields and select an image');
+        alert('Please fill in all required fields and select a file');
         return;
     }
     
     const file = fileInput.files[0];
     
-    if (!file.type.startsWith('image/')) {
-        alert('Please select a valid image file');
+    // Validate file type
+    const isImage = file.type.startsWith('image/');
+    const isVideo = file.type.startsWith('video/');
+    
+    if (!isImage && !isVideo) {
+        alert('Please select a valid image or video file');
         return;
     }
     
-    if (file.size > 5 * 1024 * 1024) {
-        alert('Image size should be less than 5MB');
+    // Check file size (10MB for images, 50MB for videos)
+    const maxSize = isVideo ? 50 * 1024 * 1024 : 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+        alert(`File size should be less than ${isVideo ? '50MB' : '10MB'}`);
         return;
     }
     
@@ -533,14 +551,15 @@ function savePhoto() {
             category: category,
             description: description,
             image: e.target.result,
+            mediaType: isVideo ? 'video' : 'image',
             createdAt: new Date().toISOString()
         };
         
         photos.push(newPhoto);
         Storage.set('customerPhotos', photos);
         
-        addActivity('camera', 'New customer photo added: ' + name);
-        alert('SUCCESS! Photo "' + name + '" added successfully!');
+        addActivity('camera', `New customer ${isVideo ? 'video' : 'photo'} added: ${name}`);
+        alert(`SUCCESS! ${isVideo ? 'Video' : 'Photo'} "${name}" added successfully!`);
         
         document.getElementById('addPhotoModal').classList.remove('active');
         document.getElementById('photoModalForm').reset();

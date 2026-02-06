@@ -309,11 +309,22 @@
                         <textarea id="modalPhotoDescription" rows="2" placeholder="Optional description..."></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="modalPhotoImage">Upload Photo *</label>
-                        <input type="file" id="modalPhotoImage" accept="image/*" required>
+                        <label for="modalMediaType">Media Type *</label>
+                        <select id="modalMediaType" required>
+                            <option value="image">Photo</option>
+                            <option value="video">Video</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="modalPhotoImage">Upload Media *</label>
+                        <input type="file" id="modalPhotoImage" accept="image/*,video/*" required>
+                        <small style="color: rgba(255,255,255,0.6); display: block; margin-top: 8px;">
+                            <i class="fas fa-info-circle"></i> Supported: Images (JPG, PNG, GIF) & Videos (MP4, WebM)
+                        </small>
                     </div>
                     <div id="photoPreview" style="display: none; margin-top: 15px;">
-                        <img id="previewImage" style="max-width: 100%; border-radius: 10px;" />
+                        <img id="previewImage" style="max-width: 100%; border-radius: 10px; display: none;" />
+                        <video id="previewVideo" controls style="max-width: 100%; border-radius: 10px; display: none;"></video>
                     </div>
                 </form>
             </div>
