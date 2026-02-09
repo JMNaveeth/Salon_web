@@ -736,7 +736,12 @@ function createSalonCard(owner, index) {
     // Get salon stats from services/bookings
     const services = Storage.get('services', []);
     const bookings = Storage.get('bookings', []);
+    const customerPhotos = Storage.get('customerPhotos', []);
     const ownerBookings = bookings.filter(b => b.salonOwner === owner.businessName);
+    
+    // Count owner's gallery photos
+    const ownerPhotos = customerPhotos.filter(p => p.ownerId === owner.email || p.ownerEmail === owner.email);
+    const photoCount = ownerPhotos.length;
     
     // Calculate rating (placeholder - real rating would come from reviews)
     const rating = (4.5 + Math.random() * 0.5).toFixed(1);
@@ -771,6 +776,7 @@ function createSalonCard(owner, index) {
             </p>
             <div class="salon-stats">
                 <span><i class="fas fa-star"></i> ${rating} (${reviewCount})</span>
+                <span><i class="fas fa-images"></i> ${photoCount} ${photoCount === 1 ? 'photo' : 'photos'}</span>
                 <span><i class="fas fa-clock"></i> Next: ${isOpen ? nextTime : 'Tomorrow'}</span>
             </div>
             <div class="salon-actions">
@@ -778,9 +784,9 @@ function createSalonCard(owner, index) {
                     Book this shop
                     <i class="fas fa-arrow-right"></i>
                 </a>
-                <a class="btn-secondary" href="services.html">
-                    View services
-                    <i class="fas fa-list"></i>
+                <a class="btn-secondary" href="gallery.html?owner=${encodeURIComponent(owner.email)}">
+                    View gallery
+                    <i class="fas fa-images"></i>
                 </a>
             </div>
         </div>

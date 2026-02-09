@@ -1,5 +1,6 @@
 // Gallery Filtering and Animations
 document.addEventListener('DOMContentLoaded', function() {
+    updateGalleryHeader(); // Update header if filtering by owner
     updateGalleryStats(); // Update stats first
     loadCustomerPhotos(); // Load customer photos
     initGalleryFilter();
@@ -9,18 +10,59 @@ document.addEventListener('DOMContentLoaded', function() {
     initParallax();
 });
 
+// Get owner filter from URL if present
+function getOwnerFilter() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('owner');
+}
+
+// Update gallery header when viewing specific owner's gallery
+function updateGalleryHeader() {
+    const ownerFilter = getOwnerFilter();
+    if (!ownerFilter) return;
+    
+    // Get owner details
+    const shopOwners = JSON.parse(localStorage.getItem('shopOwners')) || [];
+    const owner = shopOwners.find(o => o.email === ownerFilter);
+    
+    if (owner) {
+        const badge = document.getElementById('galleryOwnerBadge');
+        const title = document.getElementById('galleryTitle');
+        const subtitle = document.getElementById('gallerySubtitle');
+        
+        if (badge) {
+            badge.textContent = owner.businessName || owner.name;
+            badge.style.background = 'var(--gradient)';
+            badge.style.color = 'white';
+        }
+        if (title) {
+            title.innerHTML = `${owner.businessName || owner.name}'s <span class="highlight">Gallery</span>`;
+        }
+        if (subtitle) {
+            subtitle.textContent = `View our work and transformations at ${owner.location || 'our salon'}`;
+        }
+    }
+}
+
 // Update gallery statistics based on real data
 function updateGalleryStats() {
     try {
         const customerPhotos = JSON.parse(localStorage.getItem('customerPhotos')) || [];
+        const ownerFilter = getOwnerFilter();
+        
+        // Filter by owner if parameter exists
+        const filteredPhotos = ownerFilter 
+            ? customerPhotos.filter(p => p.ownerId === ownerFilter || p.ownerEmail === ownerFilter)
+            : customerPhotos;
+        
         const totalPhotosEl = document.getElementById('totalPhotos');
         
         if (totalPhotosEl) {
-            totalPhotosEl.textContent = customerPhotos.length;
+            totalPhotosEl.textContent = filteredPhotos.length;
         }
         
         // Count unique categories
-        const categories = new Set(customerPhotos.map(photo => photo.category));
+        const categories = new Set(filteredPhotos.map(photo => photo.category));
         const totalCategoriesEl = document.getElementById('totalCategories');
         if (totalCategoriesEl && categories.size > 0) {
             totalCategoriesEl.textContent = categories.size;
@@ -37,11 +79,17 @@ function loadCustomerPhotos() {
     
     try {
         const customerPhotos = JSON.parse(localStorage.getItem('customerPhotos')) || [];
+        const ownerFilter = getOwnerFilter();
         
-        if (customerPhotos.length > 0) {
-            console.log('Loading customer photos:', customerPhotos.length);
+        // Filter by owner if parameter exists
+        const filteredPhotos = ownerFilter 
+            ? customerPhotos.filter(p => p.ownerId === ownerFilter || p.ownerEmail === ownerFilter)
+            : customerPhotos;
+        
+        if (filteredPhotos.length > 0) {
+            console.log('Loading customer photos:', filteredPhotos.length, ownerFilter ? '(filtered by owner)' : '');
             
-            customerPhotos.forEach(photo => {
+            filteredPhotos.forEach(photo => {
                 const galleryItem = document.createElement('div');
                 galleryItem.className = `gallery-item ${photo.category}`;
                 
