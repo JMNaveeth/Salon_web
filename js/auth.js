@@ -196,13 +196,15 @@ function loginOwner() {
 // Shop Owner Signup
 function signupOwner() {
     const name = document.getElementById('ownerSignupName').value.trim();
+    const businessName = document.getElementById('ownerSignupBusinessName').value.trim();
+    const location = document.getElementById('ownerSignupLocation').value.trim();
     const email = document.getElementById('ownerSignupEmail').value.trim();
     const phone = document.getElementById('ownerSignupPhone').value.trim();
     const password = document.getElementById('ownerSignupPassword').value.trim();
     const errorElement = document.getElementById('ownerError');
 
     // Validation
-    if (!name || !email || !phone || !password) {
+    if (!name || !businessName || !location || !email || !phone || !password) {
         showError(errorElement, 'Please fill in all fields');
         return;
     }
@@ -224,14 +226,17 @@ function signupOwner() {
         return;
     }
 
-    // Create new shop owner
+    // Create new shop owner with business details
     const newOwner = {
         id: Date.now(),
         name: name,
+        businessName: businessName,
+        location: location,
         email: email,
         phone: phone,
         password: password,
         role: 'owner',
+        bio: `Professional beauty and grooming services at ${businessName}`,
         createdAt: new Date().toISOString()
     };
 
@@ -243,6 +248,8 @@ function signupOwner() {
         userId: newOwner.id,
         email: newOwner.email,
         name: newOwner.name,
+        businessName: newOwner.businessName,
+        location: newOwner.location,
         role: 'owner',
         loginTime: new Date().toISOString()
     };

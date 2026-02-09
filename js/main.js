@@ -696,8 +696,10 @@ function loadRealSalons() {
     if (!salonGrid || !noSalonsMessage) return;
     
     // Get all salon owner accounts from localStorage
-    // In a real app, this would fetch from a database
-    const salonOwners = Storage.get('salonOwners', []);
+    // Shop owners are stored in 'shopOwners' array when they register
+    const salonOwners = Storage.get('shopOwners', []);
+    
+    console.log('Found shop owners:', salonOwners.length, salonOwners);
     
     // Clear existing content
     salonGrid.innerHTML = '';
@@ -750,10 +752,10 @@ function createSalonCard(owner, index) {
         <div class="salon-card-content">
             <div class="salon-card__top">
                 <div>
-                    <h3>${owner.businessName || 'Kinniya Salon'}</h3>
+                    <h3>${owner.businessName || owner.name || 'Kinniya Salon'}</h3>
                     <p class="salon-meta">
                         <i class="fas fa-location-dot"></i>
-                        ${owner.location || 'Location not set'} ${owner.address ? '• ' + owner.address : ''}
+                        ${owner.location || owner.address || 'Location not set'}
                     </p>
                 </div>
                 ${isOpen ? 
@@ -765,14 +767,14 @@ function createSalonCard(owner, index) {
                 }
             </div>
             <p class="salon-desc">
-                ${owner.bio || owner.description || 'Professional beauty and grooming services'}
+                ${owner.bio || owner.description || 'Professional beauty and grooming services by ' + (owner.name || 'our team')}
             </p>
             <div class="salon-stats">
                 <span><i class="fas fa-star"></i> ${rating} (${reviewCount})</span>
                 <span><i class="fas fa-clock"></i> Next: ${isOpen ? nextTime : 'Tomorrow'}</span>
             </div>
             <div class="salon-actions">
-                <a class="btn-primary" href="booking.html?salon=${encodeURIComponent(owner.businessName || owner.email)}">
+                <a class="btn-primary" href="booking.html?salon=${encodeURIComponent(owner.businessName || owner.name || owner.email)}">
                     Book this shop
                     <i class="fas fa-arrow-right"></i>
                 </a>
