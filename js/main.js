@@ -779,14 +779,16 @@ function createSalonCard(owner, index) {
                 <span><i class="fas fa-images"></i> ${photoCount} ${photoCount === 1 ? 'photo' : 'photos'}</span>
                 <span><i class="fas fa-clock"></i> Next: ${isOpen ? nextTime : 'Tomorrow'}</span>
             </div>
-            <div class="salon-actions">
-                <a class="btn-primary" href="booking.html?salon=${encodeURIComponent(owner.businessName || owner.name || owner.email)}">
+            <div class="salon-actions" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a class="btn-secondary" href="gallery.html?owner=${encodeURIComponent(owner.email)}" style="flex: 1; min-width: 150px;">
+                    <i class="fas fa-images"></i> Gallery
+                </a>
+                <a class="btn-secondary" href="services.html?owner=${encodeURIComponent(owner.email)}" style="flex: 1; min-width: 150px;">
+                    <i class="fas fa-list"></i> Services
+                </a>
+                <a class="btn-primary" href="booking.html?salon=${encodeURIComponent(owner.businessName || owner.name || owner.email)}" style="flex: 1 1 100%; min-width: 200px;">
                     Book this shop
                     <i class="fas fa-arrow-right"></i>
-                </a>
-                <a class="btn-secondary" href="gallery.html?owner=${encodeURIComponent(owner.email)}">
-                    View gallery
-                    <i class="fas fa-images"></i>
                 </a>
             </div>
         </div>
