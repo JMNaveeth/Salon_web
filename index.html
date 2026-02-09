@@ -122,111 +122,21 @@
             Pick a shop, see openings, and reserve a time.
           </p>
         </div>
-        <div class="salon-grid">
-          <div class="salon-card">
-            <div class="salon-card-glow"></div>
-            <div class="salon-card-content">
-              <div class="salon-card__top">
-                <div>
-                  <h3>Central Cut Studio</h3>
-                  <p class="salon-meta">
-                    <i class="fas fa-location-dot"></i>
-                    2.1 km • Main Street
-                  </p>
-                </div>
-                <span class="badge badge--open">
-                  <span class="badge-pulse"></span>
-                  Open
-                </span>
-              </div>
-              <p class="salon-desc">
-                Classic fades, beard trims, and quick weekday slots.
-              </p>
-              <div class="salon-stats">
-                <span><i class="fas fa-star"></i> 4.8 (210)</span>
-                <span><i class="fas fa-clock"></i> Next: 3:00 PM</span>
-              </div>
-              <div class="salon-actions">
-                <a class="btn-primary" href="booking.html?salon=central">
-                  Book this shop
-                  <i class="fas fa-arrow-right"></i>
-                </a>
-                <a class="btn-secondary" href="services.html">
-                  View services
-                  <i class="fas fa-list"></i>
-                </a>
-              </div>
-            </div>
+        <!-- Salon Grid - Populated dynamically from shop owner accounts -->
+        <div id="salonGrid" class="salon-grid">
+          <!-- Real salon accounts will appear here -->
+        </div>
+        
+        <!-- Empty State - Shown when no salons exist -->
+        <div id="noSalonsMessage" style="text-align: center; padding: 80px 20px; display: none;">
+          <div style="font-size: 64px; margin-bottom: 20px; opacity: 0.3;">
+            <i class="fas fa-store-slash"></i>
           </div>
-
-          <div class="salon-card">
-            <div class="salon-card-glow"></div>
-            <div class="salon-card-content">
-              <div class="salon-card__top">
-                <div>
-                  <h3>Lakeside Gents</h3>
-                  <p class="salon-meta">
-                    <i class="fas fa-location-dot"></i>
-                    3.4 km • Lakeside Road
-                  </p>
-                </div>
-                <span class="badge badge--open">
-                  <span class="badge-pulse"></span>
-                  Open
-                </span>
-              </div>
-              <p class="salon-desc">
-                Family-friendly barbers with weekend availability.
-              </p>
-              <div class="salon-stats">
-                <span><i class="fas fa-star"></i> 4.6 (150)</span>
-                <span><i class="fas fa-clock"></i> Next: 4:15 PM</span>
-              </div>
-              <div class="salon-actions">
-                <a class="btn-primary" href="booking.html?salon=lakeside">
-                  Book this shop
-                  <i class="fas fa-arrow-right"></i>
-                </a>
-                <a class="btn-secondary" href="services.html">
-                  View services
-                  <i class="fas fa-list"></i>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div class="salon-card">
-            <div class="salon-card-glow"></div>
-            <div class="salon-card-content">
-              <div class="salon-card__top">
-                <div>
-                  <h3>Old Town Barber</h3>
-                  <p class="salon-meta">
-                    <i class="fas fa-location-dot"></i>
-                    4.0 km • Market Lane
-                  </p>
-                </div>
-                <span class="badge badge--closed">Opens 10 AM</span>
-              </div>
-              <p class="salon-desc">
-                Traditional cuts with modern styling products.
-              </p>
-              <div class="salon-stats">
-                <span><i class="fas fa-star"></i> 4.7 (185)</span>
-                <span><i class="fas fa-clock"></i> Next: 10:30 AM</span>
-              </div>
-              <div class="salon-actions">
-                <a class="btn-primary" href="booking.html?salon=oldtown">
-                  Book this shop
-                  <i class="fas fa-arrow-right"></i>
-                </a>
-                <a class="btn-secondary" href="services.html">
-                  View services
-                  <i class="fas fa-list"></i>
-                </a>
-              </div>
-            </div>
-          </div>
+          <h3 style="font-size: 1.8rem; margin-bottom: 10px; color: var(--text-primary);">No Salons Available Yet</h3>
+          <p style="color: var(--text-light); font-size: 1.1rem; margin-bottom: 30px;">Be the first salon owner to register and showcase your services!</p>
+          <a href="admin.html" class="btn-primary">
+            <i class="fas fa-store"></i> Register Your Salon
+          </a>
         </div>
       </div>
     </section>

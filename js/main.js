@@ -38,6 +38,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Theme Toggle
     initThemeToggle();
+    
+    // Load real salon accounts (only on home page)
+    if (document.getElementById('salonGrid')) {
+        loadRealSalons();
+    }
 });
 
 // Theme Toggle Functionality
@@ -681,5 +686,104 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initSampleData);
 } else {
     initSampleData();
+}
+
+// Load Real Salon Accounts (for homepage salon directory)
+function loadRealSalons() {
+    const salonGrid = document.getElementById('salonGrid');
+    const noSalonsMessage = document.getElementById('noSalonsMessage');
+    
+    if (!salonGrid || !noSalonsMessage) return;
+    
+    // Get all salon owner accounts from localStorage
+    // In a real app, this would fetch from a database
+    const salonOwners = Storage.get('salonOwners', []);
+    
+    // Clear existing content
+    salonGrid.innerHTML = '';
+    
+    // Show empty state if no salons
+    if (salonOwners.length === 0) {
+        salonGrid.style.display = 'none';
+        noSalonsMessage.style.display = 'block';
+        return;
+    }
+    
+    // Show salons grid
+    salonGrid.style.display = 'grid';
+    noSalonsMessage.style.display = 'none';
+    
+    // Create salon cards for each registered owner
+    salonOwners.forEach((owner, index) => {
+        const salonCard = createSalonCard(owner, index);
+        salonGrid.appendChild(salonCard);
+    });
+    
+    console.log(`Loaded ${salonOwners.length} real salon(s)`);
+}
+
+// Create salon card element
+function createSalonCard(owner, index) {
+    const card = document.createElement('div');
+    card.className = 'salon-card';
+    
+    // Determine if salon is "open" (business hours logic would go here)
+    const currentHour = new Date().getHours();
+    const isOpen = currentHour >= 9 && currentHour < 20; // 9 AM - 8 PM
+    
+    // Get salon stats from services/bookings
+    const services = Storage.get('services', []);
+    const bookings = Storage.get('bookings', []);
+    const ownerBookings = bookings.filter(b => b.salonOwner === owner.businessName);
+    
+    // Calculate rating (placeholder - real rating would come from reviews)
+    const rating = (4.5 + Math.random() * 0.5).toFixed(1);
+    const reviewCount = ownerBookings.length + Math.floor(Math.random() * 100);
+    
+    // Calculate next available slot (placeholder logic)
+    const nextHours = Math.floor(Math.random() * 3) + 1;
+    const nextMinutes = Math.floor(Math.random() * 60);
+    const nextTime = `${(currentHour + nextHours) % 24}:${nextMinutes.toString().padStart(2, '0')} ${(currentHour + nextHours) >= 12 ? 'PM' : 'AM'}`;
+    
+    card.innerHTML = `
+        <div class="salon-card-glow"></div>
+        <div class="salon-card-content">
+            <div class="salon-card__top">
+                <div>
+                    <h3>${owner.businessName || 'Kinniya Salon'}</h3>
+                    <p class="salon-meta">
+                        <i class="fas fa-location-dot"></i>
+                        ${owner.location || 'Location not set'} ${owner.address ? '• ' + owner.address : ''}
+                    </p>
+                </div>
+                ${isOpen ? 
+                    `<span class="badge badge--open">
+                        <span class="badge-pulse"></span>
+                        Open
+                    </span>` : 
+                    `<span class="badge badge--closed">Opens 9:00 AM</span>`
+                }
+            </div>
+            <p class="salon-desc">
+                ${owner.bio || owner.description || 'Professional beauty and grooming services'}
+            </p>
+            <div class="salon-stats">
+                <span><i class="fas fa-star"></i> ${rating} (${reviewCount})</span>
+                <span><i class="fas fa-clock"></i> Next: ${isOpen ? nextTime : 'Tomorrow'}</span>
+            </div>
+            <div class="salon-actions">
+                <a class="btn-primary" href="booking.html?salon=${encodeURIComponent(owner.businessName || owner.email)}">
+                    Book this shop
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+                <a class="btn-secondary" href="services.html">
+                    View services
+                    <i class="fas fa-list"></i>
+                </a>
+            </div>
+        </div>
+    `;
+    
+    return card;
 }
 
