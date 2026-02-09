@@ -27,6 +27,94 @@ if (typeof Storage === 'undefined') {
     console.log('SUCCESS: Storage loaded from main.js');
 }
 
+// ===== DATA ISOLATION SYSTEM =====
+// Helper function to get current shop owner
+function getCurrentOwner() {
+    const currentUser = Storage.get('currentUser', null);
+    if (!currentUser || currentUser.role !== 'owner') {
+        console.error('No shop owner logged in!');
+        return null;
+    }
+    return currentUser;
+}
+
+// Helper function to get owner's unique ID
+function getOwnerKey() {
+    const owner = getCurrentOwner();
+    if (!owner) return null;
+    // Use email as unique identifier for the shop owner
+    return owner.email;
+}
+
+// Filter data by current owner
+function getOwnerData(dataKey, defaultValue = []) {
+    const ownerKey = getOwnerKey();
+    if (!ownerKey) return defaultValue;
+    
+    const allData = Storage.get(dataKey, []);
+    
+    // Filter data that belongs to this owner
+    return allData.filter(item => item.ownerId === ownerKey || item.ownerEmail === ownerKey);
+}
+
+// Save data with owner ID
+function saveOwnerData(dataKey, newItem) {
+    const ownerKey = getOwnerKey();
+    if (!ownerKey) {
+        console.error('Cannot save data: No owner logged in');
+        return false;
+    }
+    
+    // Add owner identifier to the item
+    newItem.ownerId = ownerKey;
+    newItem.ownerEmail = ownerKey;
+    
+    // Get all data and add the new item
+    const allData = Storage.get(dataKey, []);
+    allData.push(newItem);
+    Storage.set(dataKey, allData);
+    
+    return true;
+}
+
+// Update owner's data
+function updateOwnerData(dataKey, itemId, updatedItem) {
+    const ownerKey = getOwnerKey();
+    if (!ownerKey) return false;
+    
+    // Add owner identifier
+    updatedItem.ownerId = ownerKey;
+    updatedItem.ownerEmail = ownerKey;
+    
+    const allData = Storage.get(dataKey, []);
+    const index = allData.findIndex(item => 
+        item.id === itemId && (item.ownerId === ownerKey || item.ownerEmail === ownerKey)
+    );
+    
+    if (index !== -1) {
+        allData[index] = updatedItem;
+        Storage.set(dataKey, allData);
+        return true;
+    }
+    
+    return false;
+}
+
+// Delete owner's data
+function deleteOwnerData(dataKey, itemId) {
+    const ownerKey = getOwnerKey();
+    if (!ownerKey) return false;
+    
+    const allData = Storage.get(dataKey, []);
+    const filteredData = allData.filter(item => 
+        !(item.id === itemId && (item.ownerId === ownerKey || item.ownerEmail === ownerKey))
+    );
+    
+    Storage.set(dataKey, filteredData);
+    return true;
+}
+// ===== END DATA ISOLATION SYSTEM =====
+
 // Initialize admin panel
 function initAdminPanel() {
     console.log('Admin Panel Initializing...');
@@ -311,22 +399,34 @@ function initModalButtons() {
 }
 
 function loadDashboardStats() {
-    const bookings = Storage.get('bookings', []);
+    // Get only THIS owner's data
+    const bookings = getOwnerData('bookings', []);
+    const customers = getOwnerData('customers', []);
+    const services = getOwnerData('services', []);
+    const staff = getOwnerData('staff', []);
+    
     const today = new Date().toDateString();
     
     const todayBookings = bookings.filter(b => new Date(b.date).toDateString() === today);
     const upcomingBookings = bookings.filter(b => new Date(b.date) > new Date());
     const totalRevenue = bookings.reduce((sum, b) => sum + (parseFloat(b.price) || 0), 0);
-    const customers = Storage.get('customers', []);
     
-    document.getElementById('todayBookings').textContent = todayBookings.length;
-    document.getElementById('upcomingBookings').textContent = upcomingBookings.length;
-    document.getElementById('totalRevenue').textContent = '$' + totalRevenue.toFixed(0);
-    document.getElementById('totalCustomers').textContent = customers.length;
+    const todayBookingsEl = document.getElementById('todayBookings');
+    const upcomingBookingsEl = document.getElementById('upcomingBookings');
+    const totalRevenueEl = document.getElementById('totalRevenue');
+    const totalCustomersEl = document.getElementById('totalCustomers');
+    
+    if (todayBookingsEl) todayBookingsEl.textContent = todayBookings.length;
+    if (upcomingBookingsEl) upcomingBookingsEl.textContent = upcomingBookings.length;
+    if (totalRevenueEl) totalRevenueEl.textContent = '$' + totalRevenue.toFixed(0);
+    if (totalCustomersEl) totalCustomersEl.textContent = customers.length;
+    
+    console.log(`Dashboard Stats - Owner: ${getOwnerKey()}, Bookings: ${bookings.length}, Customers: ${customers.length}`);
 }
 
 function loadRecentActivity() {
-    const activities = Storage.get('activities', []);
+    // Get only THIS owner's activities
+    const activities = getOwnerData('activities', []);
     const activityList = document.getElementById('recentActivity');
     
     if (!activityList) return;
@@ -348,11 +448,16 @@ function loadRecentActivity() {
 }
 
 function addActivity(icon, message) {
+    const ownerKey = getOwnerKey();
+    if (!ownerKey) return;
+    
     const activities = Storage.get('activities', []);
     activities.unshift({
         icon: icon,
         message: message,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        ownerId: ownerKey,
+        ownerEmail: ownerKey
     });
     Storage.set('activities', activities.slice(0, 50));
     loadRecentActivity();
@@ -391,9 +496,6 @@ function saveService() {
     }
     
     try {
-        const services = Storage.get('services', []);
-        console.log('Current services:', services);
-        
         const newService = {
             id: Date.now(),
             name: name,
@@ -406,8 +508,8 @@ function saveService() {
         
         console.log('New service:', newService);
         
-        services.push(newService);
-        const saved = Storage.set('services', services);
+        // Save with owner ID
+        const saved = saveOwnerData('services', newService);
         
         if (!saved) {
             throw new Error('Failed to save to localStorage');
@@ -468,8 +570,8 @@ function saveStaff() {
         createdAt: new Date().toISOString()
     };
     
-    staff.push(newStaff);
-    Storage.set('staff', staff);
+    // Save with owner ID
+    saveOwnerData('staff', newStaff);
     
     addActivity('user-plus', 'New staff member added: ' + firstName + ' ' + lastName);
     alert('SUCCESS! Staff member "' + firstName + ' ' + lastName + '" added successfully!');
@@ -543,8 +645,6 @@ function savePhoto() {
     const reader = new FileReader();
     
     reader.onload = function(e) {
-        const photos = Storage.get('customerPhotos', []);
-        
         const newPhoto = {
             id: Date.now(),
             name: name,
@@ -555,8 +655,8 @@ function savePhoto() {
             createdAt: new Date().toISOString()
         };
         
-        photos.push(newPhoto);
-        Storage.set('customerPhotos', photos);
+        // Save with owner ID
+        saveOwnerData('customerPhotos', newPhoto);
         
         addActivity('camera', `New customer ${isVideo ? 'video' : 'photo'} added: ${name}`);
         alert(`SUCCESS! ${isVideo ? 'Video' : 'Photo'} "${name}" added successfully!`);
@@ -598,7 +698,8 @@ function showToast(message, type) {
 // ===================================
 
 function loadServices() {
-    const services = Storage.get('services', []);
+    // Get only THIS owner's services
+    const services = getOwnerData('services', []);
     const servicesGrid = document.getElementById('servicesGrid');
     const emptyState = document.getElementById('servicesEmpty');
     
@@ -732,26 +833,23 @@ function updateService(serviceId) {
     }
     
     try {
-        const services = Storage.get('services', []);
-        const serviceIndex = services.findIndex(function(s) { return s.id === serviceId; });
-        
-        if (serviceIndex === -1) {
-            alert('Service not found');
-            return;
-        }
-        
-        services[serviceIndex] = {
-            id: services[serviceIndex].id,
+        const updatedService = {
+            id: serviceId,
             name: name,
             category: category,
             price: parseFloat(price),
             duration: parseInt(duration),
             description: description,
-            createdAt: services[serviceIndex].createdAt,
             updatedAt: new Date().toISOString()
         };
         
-        Storage.set('services', services);
+        // Update using owner-specific function
+        const success = updateOwnerData('services', serviceId, updatedService);
+        
+        if (!success) {
+            alert('Service not found or you do not have permission to edit it');
+            return;
+        }
         
         console.log('Service updated successfully');
         
@@ -782,7 +880,8 @@ function updateService(serviceId) {
 function deleteService(serviceId) {
     console.log('Deleting service:', serviceId);
     
-    const services = Storage.get('services', []);
+    // Get only THIS owner's services
+    const services = getOwnerData('services', []);
     const service = services.find(function(s) { return s.id === serviceId; });
     
     if (!service) {
@@ -795,8 +894,8 @@ function deleteService(serviceId) {
     }
     
     try {
-        const updatedServices = services.filter(function(s) { return s.id !== serviceId; });
-        Storage.set('services', updatedServices);
+        // Delete using owner-specific delete function
+        deleteOwnerData('services', serviceId);
         
         console.log('Service deleted successfully');
         
