@@ -796,4 +796,3 @@ function createSalonCard(owner, index) {
     
     return card;
 }
-
