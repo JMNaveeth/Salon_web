@@ -505,19 +505,30 @@
 
     <!-- Three.js for 3D background -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Firebase SDK (Required for authentication) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="js/firebase-config.js"></script>
+    
+    <!-- Application Scripts -->
     <script src="js/auth.js"></script>
     <script src="js/main.js"></script>
     <script>
       // Check authentication on page load
-      if (!AuthSystem.checkAuth()) {
-        // Will redirect to auth.html if not logged in or wrong role
-      } else {
-        // Display user info
-        const currentUser = AuthSystem.getCurrentUser();
+      (async function() {
+        await AuthSystem.checkAuth();
+        
+        // Display user info if logged in
+        const currentUser = await AuthSystem.getCurrentUser();
         if (currentUser) {
           console.log('Welcome, ' + currentUser.name);
         }
-      }
+      })();
     </script>
   </body>
 </html>

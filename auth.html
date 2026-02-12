@@ -365,18 +365,36 @@
         </div>
     </div>
 
+    <!-- Firebase SDK (Required for authentication) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="js/firebase-config.js"></script>
+    
+    <!-- Application Scripts -->
     <script src="js/main.js"></script>
     <script src="js/auth.js"></script>
     <script>
-        // Check if user is already logged in
-        document.addEventListener('DOMContentLoaded', function() {
-            const currentUser = Storage.get('currentUser', null);
-            if (currentUser) {
-                // User already logged in, redirect based on role
-                if (currentUser.role === 'customer') {
-                    window.location.href = 'index.html';
-                } else if (currentUser.role === 'owner') {
-                    window.location.href = 'admin.html';
+        // Check if user is already logged in using Firebase Auth
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                // User is already signed in - fetch their role and redirect
+                try {
+                    const userDoc = await db.collection('users').doc(user.uid).get();
+                    if (userDoc.exists) {
+                        const userData = userDoc.data();
+                        // Redirect based on role
+                        if (userData.role === 'customer') {
+                            window.location.href = 'index.html';
+                        } else if (userData.role === 'owner') {
+                            window.location.href = 'admin.html';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error checking user role:', error);
                 }
             }
         });
