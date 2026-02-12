@@ -3,12 +3,12 @@
 // Get these from: Firebase Console > Project Settings > General > Your apps
 
 const firebaseConfig = {
-    apiKey: "YOUR-API-KEY-HERE",
-    authDomain: "your-project.firebaseapp.com",
-    projectId: "your-project-id",
-    storageBucket: "your-project.appspot.com",
-    messagingSenderId: "123456789012",
-    appId: "1:123456789012:web:abcdef123456"
+     apiKey: "AIzaSyCXCLiHUDToywotKDlyMIGOFj3nghFyjFI",
+  authDomain: "luxe-salon.firebaseapp.com",
+  projectId: "luxe-salon",
+  storageBucket: "luxe-salon.firebasestorage.app",
+  messagingSenderId: "116922070530",
+  appId: "1:116922070530:web:a718c640d924c0903f591b"
 };
 
 // Initialize Firebase
