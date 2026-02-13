@@ -688,79 +688,121 @@ if (document.readyState === 'loading') {
     initSampleData();
 }
 
-// Load Real Salon Accounts (for homepage salon directory)
-function loadRealSalons() {
+// Load Real Salon Accounts from Firebase (for homepage salon directory)
+async function loadRealSalons() {
     const salonGrid = document.getElementById('salonGrid');
     const noSalonsMessage = document.getElementById('noSalonsMessage');
     
     if (!salonGrid || !noSalonsMessage) return;
     
-    // Get all salon owner accounts from localStorage
-    // Shop owners are stored in 'shopOwners' array when they register
-    const salonOwners = Storage.get('shopOwners', []);
+    // Show loading state
+    salonGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--primary-color);"></i><p style="margin-top: 20px; color: var(--text-light);">Loading salons...</p></div>';
     
-    console.log('Found shop owners:', salonOwners.length, salonOwners);
-    
-    // Clear existing content
-    salonGrid.innerHTML = '';
-    
-    // Show empty state if no salons
-    if (salonOwners.length === 0) {
-        salonGrid.style.display = 'none';
-        noSalonsMessage.style.display = 'block';
-        return;
+    try {
+        // Get all salon owner accounts from Firebase
+        const shopOwnersQuery = await db.collection('users').where('role', '==', 'owner').get();
+        
+        const salonOwners = [];
+        shopOwnersQuery.forEach(doc => {
+            salonOwners.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+        
+        console.log('✅ Found shop owners from Firebase:', salonOwners.length, salonOwners);
+        
+        // Clear loading
+        salonGrid.innerHTML = '';
+        
+        // Show empty state if no salons
+        if (salonOwners.length === 0) {
+            salonGrid.style.display = 'none';
+            noSalonsMessage.style.display = 'block';
+            return;
+        }
+        
+        // Show salons grid
+        salonGrid.style.display = 'grid';
+        noSalonsMessage.style.display = 'none';
+        
+        // Create salon cards for each registered owner
+        for (const owner of salonOwners) {
+            const salonCard = await createSalonCard(owner);
+            salonGrid.appendChild(salonCard);
+        }
+        
+        console.log(`✅ Loaded ${salonOwners.length} real salon(s) from Firebase`);
+        
+    } catch (error) {
+        console.error('❌ Error loading salons from Firebase:', error);
+        salonGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #e74c3c;"></i><p style="margin-top: 20px; color: var(--text-light);">Error loading salons. Please refresh the page.</p></div>';
     }
-    
-    // Show salons grid
-    salonGrid.style.display = 'grid';
-    noSalonsMessage.style.display = 'none';
-    
-    // Create salon cards for each registered owner
-    salonOwners.forEach((owner, index) => {
-        const salonCard = createSalonCard(owner, index);
-        salonGrid.appendChild(salonCard);
-    });
-    
-    console.log(`Loaded ${salonOwners.length} real salon(s)`);
 }
 
-// Create salon card element
-function createSalonCard(owner, index) {
+// Create salon card element with Firebase data
+async function createSalonCard(owner) {
     const card = document.createElement('div');
     card.className = 'salon-card';
     
-    // Determine if salon is "open" (business hours logic would go here)
+    // Determine if salon is "open" (business hours logic)
     const currentHour = new Date().getHours();
     const isOpen = currentHour >= 9 && currentHour < 20; // 9 AM - 8 PM
     
-    // Get salon stats from services/bookings
-    const services = Storage.get('services', []);
-    const bookings = Storage.get('bookings', []);
-    const customerPhotos = Storage.get('customerPhotos', []);
-    const ownerBookings = bookings.filter(b => b.salonOwner === owner.businessName);
+    // Get salon stats from Firebase
+    let serviceCount = 0;
+    let bookingCount = 0;
+    let photoCount = 0;
+    let rating = 0;
+    let reviewCount = 0;
     
-    // Count owner's gallery photos
-    const ownerPhotos = customerPhotos.filter(p => p.ownerId === owner.email || p.ownerEmail === owner.email);
-    const photoCount = ownerPhotos.length;
-    
-    // Calculate rating (placeholder - real rating would come from reviews)
-    const rating = (4.5 + Math.random() * 0.5).toFixed(1);
-    const reviewCount = ownerBookings.length + Math.floor(Math.random() * 100);
+    try {
+        // Get services count for this owner
+        const servicesSnapshot = await db.collection('services')
+            .where('ownerId', '==', owner.id)
+            .get();
+        serviceCount = servicesSnapshot.size;
+        
+        // Get bookings count for this owner
+        const bookingsSnapshot = await db.collection('bookings')
+            .where('ownerId', '==', owner.id)
+            .get();
+        bookingCount = bookingsSnapshot.size;
+        
+        // Get gallery photos count for this owner
+        const photosSnapshot = await db.collection('gallery')
+            .where('ownerId', '==', owner.id)
+            .get();
+        photoCount = photosSnapshot.size;
+        
+        // Calculate rating from completed bookings (if you have a reviews system)
+        // For now, use a placeholder based on bookings
+        reviewCount = bookingCount;
+        rating = bookingCount > 0 ? (4.2 + Math.random() * 0.8).toFixed(1) : '5.0';
+        
+    } catch (error) {
+        console.error('Error fetching salon stats:', error);
+    }
     
     // Calculate next available slot (placeholder logic)
     const nextHours = Math.floor(Math.random() * 3) + 1;
     const nextMinutes = Math.floor(Math.random() * 60);
     const nextTime = `${(currentHour + nextHours) % 24}:${nextMinutes.toString().padStart(2, '0')} ${(currentHour + nextHours) >= 12 ? 'PM' : 'AM'}`;
     
+    // Display location from district and area
+    const locationDisplay = owner.area && owner.district 
+        ? `${owner.area}, ${owner.district}` 
+        : owner.location || 'Location not set';
+    
     card.innerHTML = `
         <div class="salon-card-glow"></div>
         <div class="salon-card-content">
             <div class="salon-card__top">
                 <div>
-                    <h3>${owner.businessName || owner.name || 'Kinniya Salon'}</h3>
+                    <h3>${owner.businessName || owner.name || 'Salon'}</h3>
                     <p class="salon-meta">
                         <i class="fas fa-location-dot"></i>
-                        ${owner.location || owner.address || 'Location not set'}
+                        ${locationDisplay}
                     </p>
                 </div>
                 ${isOpen ? 
@@ -772,21 +814,21 @@ function createSalonCard(owner, index) {
                 }
             </div>
             <p class="salon-desc">
-                ${owner.bio || owner.description || 'Professional beauty and grooming services by ' + (owner.name || 'our team')}
+                ${owner.bio || 'Professional beauty and grooming services by ' + (owner.name || 'our team')}
             </p>
             <div class="salon-stats">
                 <span><i class="fas fa-star"></i> ${rating} (${reviewCount})</span>
                 <span><i class="fas fa-images"></i> ${photoCount} ${photoCount === 1 ? 'photo' : 'photos'}</span>
-                <span><i class="fas fa-clock"></i> Next: ${isOpen ? nextTime : 'Tomorrow'}</span>
+                <span><i class="fas fa-clock"></i> Next: ${isOpen ? nextTime : '11:50 AM'}</span>
             </div>
             <div class="salon-actions" style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <a class="btn-secondary" href="gallery.html?owner=${encodeURIComponent(owner.email)}" style="flex: 1; min-width: 150px;">
+                <a class="btn-secondary" href="gallery.html?ownerId=${owner.id}" style="flex: 1; min-width: 150px;">
                     <i class="fas fa-images"></i> Gallery
                 </a>
-                <a class="btn-secondary" href="services.html?owner=${encodeURIComponent(owner.email)}" style="flex: 1; min-width: 150px;">
+                <a class="btn-secondary" href="services.html?ownerId=${owner.id}" style="flex: 1; min-width: 150px;">
                     <i class="fas fa-list"></i> Services
                 </a>
-                <a class="btn-primary" href="booking.html?salon=${encodeURIComponent(owner.businessName || owner.name || owner.email)}" style="flex: 1 1 100%; min-width: 200px;">
+                <a class="btn-primary" href="booking.html?ownerId=${owner.id}" style="flex: 1 1 100%; min-width: 200px;">
                     Book this shop
                     <i class="fas fa-arrow-right"></i>
                 </a>
