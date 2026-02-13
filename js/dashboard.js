@@ -4,19 +4,32 @@
 let dashboardUpdateInterval;
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize dashboard
-    initDashboard();
-    loadDashboardData();
-    initProfileForm();
-    
-    // Start real-time updates (refresh every 5 seconds)
-    startRealTimeUpdates();
-    
-    // Update reminder statistics
-    updateReminderStats();
-    
-    // Update reminder stats every minute
-    setInterval(updateReminderStats, 60000);
+    // Wait for Firebase Auth to initialize
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            // User is logged in, initialize dashboard
+            console.log('User authenticated:', user.email);
+            initDashboard();
+            loadDashboardData();
+            initProfileForm();
+            
+            // Start real-time updates (refresh every 5 seconds)
+            startRealTimeUpdates();
+            
+            // Update reminder statistics
+            updateReminderStats();
+            
+            // Update reminder stats every minute
+            setInterval(updateReminderStats, 60000);
+        } else {
+            // No user logged in, redirect to auth page
+            console.warn('No user logged in - redirecting to auth page');
+            showMessage('Please log in to view your dashboard', 'error');
+            setTimeout(() => {
+                window.location.href = 'auth.html';
+            }, 1500);
+        }
+    });
 });
 
 // Start real-time updates
@@ -102,14 +115,19 @@ async function loadDashboardData() {
         // Get current user from Firebase auth
         const user = firebase.auth().currentUser;
         if (!user) {
-            console.error('No user logged in');
+            console.error('No user logged in - redirecting to login page');
+            showMessage('Please log in to view your dashboard', 'error');
+            setTimeout(() => {
+                window.location.href = 'auth.html';
+            }, 2000);
             return;
         }
+
+        console.log('Loading dashboard for user:', user.email);
 
         // Fetch bookings from Firebase
         const bookingsSnapshot = await db.collection('bookings')
             .where('email', '==', user.email)
-            .orderBy('createdAt', 'desc')
             .get();
         
         const bookings = [];
@@ -118,6 +136,13 @@ async function loadDashboardData() {
                 id: doc.id,
                 ...doc.data()
             });
+        });
+        
+        // Sort bookings by createdAt in memory (newest first)
+        bookings.sort((a, b) => {
+            const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
+            const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
+            return dateB - dateA;
         });
 
         // Separate upcoming and past bookings
@@ -151,7 +176,21 @@ async function loadDashboardData() {
         
     } catch (error) {
         console.error('❌ Error loading dashboard data:', error);
-        showMessage('Failed to load dashboard data. Please refresh the page.', 'error');
+        
+        // Provide more specific error messages
+        let errorMessage = 'Failed to load dashboard data. ';
+        
+        if (error.code === 'permission-denied') {
+            errorMessage += 'Access denied. Please check your permissions.';
+        } else if (error.code === 'unavailable') {
+            errorMessage += 'Firebase is temporarily unavailable. Please try again.';
+        } else if (error.message) {
+            errorMessage += error.message;
+        } else {
+            errorMessage += 'Please refresh the page or contact support.';
+        }
+        
+        showMessage(errorMessage, 'error');
     }
 }
 
