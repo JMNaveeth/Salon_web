@@ -3,6 +3,9 @@
 // Real-time update interval
 let dashboardUpdateInterval;
 
+// Flag to prevent profile reload while user is editing
+let isEditingProfile = false;
+
 document.addEventListener('DOMContentLoaded', function() {
     // Wait for Firebase Auth to initialize
     firebase.auth().onAuthStateChanged(function(user) {
@@ -172,7 +175,11 @@ async function loadDashboardData() {
         loadOverviewSection(bookings, upcomingBookings, pastBookings);
         loadAnalytics(bookings);
         loadBookingHistory(bookings); // Pass ALL bookings, not just past ones
-        await loadProfileData(); // Load from Firebase
+        
+        // Only reload profile if user is not currently editing it
+        if (!isEditingProfile) {
+            await loadProfileData(); // Load from Firebase
+        }
         
     } catch (error) {
         console.error('❌ Error loading dashboard data:', error);
@@ -730,6 +737,27 @@ function initProfileForm() {
     const profileForm = document.getElementById('profileForm');
 
     if (profileForm) {
+        // Add focus/blur listeners to all profile input fields
+        const profileInputs = profileForm.querySelectorAll('input, select, textarea');
+        profileInputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                isEditingProfile = true;
+                console.log('🔒 Profile editing - auto-refresh paused');
+            });
+            
+            input.addEventListener('blur', function() {
+                // Delay clearing the flag to allow clicking between fields
+                setTimeout(() => {
+                    // Check if any profile input still has focus
+                    const stillEditing = Array.from(profileInputs).some(inp => inp === document.activeElement);
+                    if (!stillEditing) {
+                        isEditingProfile = false;
+                        console.log('🔓 Profile editing complete - auto-refresh resumed');
+                    }
+                }, 100);
+            });
+        });
+        
         profileForm.addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -742,11 +770,19 @@ function initProfileForm() {
             const formData = new FormData(profileForm);
             const profileData = Object.fromEntries(formData);
 
+            // Combine firstName and lastName into name field for consistency
+            if (profileData.firstName || profileData.lastName) {
+                profileData.name = `${profileData.firstName || ''} ${profileData.lastName || ''}`.trim();
+            }
+
             try {
                 // Save profile data to Firebase
                 await db.collection('users').doc(user.uid).update(profileData);
                 showMessage('Profile updated successfully', 'success');
                 console.log('✅ Profile updated in Firebase');
+                
+                // Clear editing flag after successful save
+                isEditingProfile = false;
             } catch (error) {
                 console.error('❌ Error updating profile:', error);
                 showMessage('Failed to update profile. Please try again.', 'error');
@@ -756,6 +792,12 @@ function initProfileForm() {
 }
 
 async function loadProfileData(profileData = null) {
+    // Don't reload profile if user is currently editing
+    if (isEditingProfile && !profileData) {
+        console.log('⏸️ Skipping profile reload - user is editing');
+        return;
+    }
+    
     const firstNameEl = document.getElementById('profileFirstName');
     const lastNameEl = document.getElementById('profileLastName');
     const emailEl = document.getElementById('profileEmail');
@@ -770,6 +812,7 @@ async function loadProfileData(profileData = null) {
             try {
                 const userDoc = await db.collection('users').doc(user.uid).get();
                 profileData = userDoc.data() || {};
+                console.log('📋 Loaded profile data:', profileData);
             } catch (error) {
                 console.error('❌ Error loading profile:', error);
                 profileData = {};
@@ -777,6 +820,13 @@ async function loadProfileData(profileData = null) {
         } else {
             profileData = {};
         }
+    }
+
+    // Handle name field - if user has 'name' but not firstName/lastName, split it
+    if (profileData.name && !profileData.firstName && !profileData.lastName) {
+        const nameParts = profileData.name.split(' ');
+        profileData.firstName = nameParts[0] || '';
+        profileData.lastName = nameParts.slice(1).join(' ') || '';
     }
 
     if (firstNameEl) firstNameEl.value = profileData.firstName || '';
@@ -789,7 +839,8 @@ async function loadProfileData(profileData = null) {
 
 async function resetProfileForm() {
     if (confirm('Are you sure you want to reset all profile changes?')) {
-        await loadProfileData();
+        isEditingProfile = false; // Clear editing flag
+        await loadProfileData(); // Force reload from Firebase
     }
 }
 
