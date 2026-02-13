@@ -838,3 +838,110 @@ async function createSalonCard(owner) {
     
     return card;
 }
+
+// Search salons by location (district and/or area)
+async function searchSalonsByLocation() {
+    const districtSelect = document.getElementById('customerFilterDistrict');
+    const areaSelect = document.getElementById('customerFilterArea');
+    const salonGrid = document.getElementById('salonGrid');
+    const noSalonsMessage = document.getElementById('noSalonsMessage');
+    const filterStatus = document.getElementById('filterStatus');
+    const filterStatusText = document.getElementById('filterStatusText');
+    
+    const selectedDistrict = districtSelect?.value || '';
+    const selectedArea = areaSelect?.value || '';
+    
+    // Show loading state
+    salonGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--primary-color);"></i><p style="margin-top: 20px; color: var(--text-light);">Searching salons...</p></div>';
+    
+    try {
+        // Build Firebase query based on filters
+        let query = db.collection('users').where('role', '==', 'owner');
+        
+        // Add district filter if selected
+        if (selectedDistrict) {
+            query = query.where('district', '==', selectedDistrict);
+        }
+        
+        // Add area filter if selected
+        if (selectedArea) {
+            query = query.where('area', '==', selectedArea);
+        }
+        
+        // Execute query
+        const snapshot = await query.get();
+        
+        const filteredSalons = [];
+        snapshot.forEach(doc => {
+            filteredSalons.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+        
+        console.log(`✅ Found ${filteredSalons.length} salon(s) matching the filter`);
+        
+        // Clear loading
+        salonGrid.innerHTML = '';
+        
+        // Show results or empty state
+        if (filteredSalons.length === 0) {
+            salonGrid.style.display = 'none';
+            noSalonsMessage.style.display = 'block';
+            noSalonsMessage.querySelector('h3').textContent = 'No Salons Found';
+            noSalonsMessage.querySelector('h3').insertAdjacentHTML('afterend', '<p style="color: var(--text-light); font-size: 1.1rem; margin-top: 10px;">Try selecting a different location or clear the filter to see all salons.</p>');
+            
+            // Update filter status
+            filterStatus.style.display = 'none';
+        } else {
+            salonGrid.style.display = 'grid';
+            noSalonsMessage.style.display = 'none';
+            
+            // Display filtered salons
+            for (const owner of filteredSalons) {
+                const salonCard = await createSalonCard(owner);
+                salonGrid.appendChild(salonCard);
+            }
+            
+            // Update filter status
+            let statusMessage = `Showing ${filteredSalons.length} salon(s)`;
+            if (selectedArea) {
+                statusMessage += ` in ${selectedArea}, ${selectedDistrict}`;
+            } else if (selectedDistrict) {
+                statusMessage += ` in ${selectedDistrict}`;
+            }
+            
+            filterStatusText.textContent = statusMessage;
+            filterStatus.style.display = 'block';
+        }
+        
+    } catch (error) {
+        console.error('❌ Error searching salons:', error);
+        salonGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #e74c3c;"></i><p style="margin-top: 20px; color: var(--text-light);">Error searching salons. Please try again.</p></div>';
+    }
+}
+
+// Clear location filter and show all salons
+async function clearLocationFilter() {
+    const districtSelect = document.getElementById('customerFilterDistrict');
+    const areaSelect = document.getElementById('customerFilterArea');
+    const filterStatus = document.getElementById('filterStatus');
+    
+    // Reset dropdowns
+    if (districtSelect) districtSelect.value = '';
+    if (areaSelect) {
+        areaSelect.value = '';
+        areaSelect.disabled = true;
+        areaSelect.innerHTML = '<option value="">All Areas</option>';
+    }
+    
+    // Hide filter status
+    filterStatus.style.display = 'none';
+    
+    // Reload all salons
+    await loadRealSalons();
+}
+
+// Make functions available globally
+window.searchSalonsByLocation = searchSalonsByLocation;
+window.clearLocationFilter = clearLocationFilter;

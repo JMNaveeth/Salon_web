@@ -122,6 +122,97 @@
             Pick a shop, see openings, and reserve a time.
           </p>
         </div>
+
+        <!-- Location Filter Section - Ultra Modern Design -->
+        <div class="location-filter-wrapper" style="position: relative; margin-bottom: 50px;">
+          <!-- Animated Background Orbs -->
+          <div class="filter-orb-1" style="position: absolute; width: 300px; height: 300px; background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%); border-radius: 50%; top: -100px; left: -50px; filter: blur(60px); animation: floatOrb 8s ease-in-out infinite; z-index: 0;"></div>
+          <div class="filter-orb-2" style="position: absolute; width: 250px; height: 250px; background: radial-gradient(circle, rgba(192, 192, 192, 0.1) 0%, transparent 70%); border-radius: 50%; bottom: -80px; right: -30px; filter: blur(50px); animation: floatOrb 6s ease-in-out infinite reverse; z-index: 0;"></div>
+          
+          <!-- Main Filter Container -->
+          <div class="location-filter-container" style="position: relative; background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 28px; padding: 40px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08), 0 8px 16px rgba(212, 175, 55, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9); border: 1px solid rgba(212, 175, 55, 0.2); overflow: hidden; z-index: 1;">
+            
+            <!-- Decorative Top Line -->
+            <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, transparent 0%, var(--primary-color) 50%, transparent 100%); opacity: 0.5;"></div>
+            
+            <!-- Header with Icon Badge -->
+            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 32px;">
+              <div class="icon-badge" style="width: 56px; height: 56px; background: linear-gradient(135deg, var(--primary-color) 0%, #c4941f 100%); border-radius: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(212, 175, 55, 0.35); animation: floatIcon 3s ease-in-out infinite;">
+                <i class="fas fa-map-location-dot" style="font-size: 26px; color: white;"></i>
+              </div>
+              <div>
+                <h3 style="font-size: 1.5rem; font-weight: 700; background: linear-gradient(135deg, var(--text-primary) 0%, #666 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin: 0 0 4px 0; letter-spacing: -0.5px;">
+                  Find Your Perfect Salon
+                </h3>
+                <p style="margin: 0; color: var(--text-light); font-size: 0.95rem; font-weight: 400;">
+                  Discover top-rated salons in your neighborhood
+                </p>
+              </div>
+            </div>
+            
+            <!-- Filter Cards Grid -->
+            <div class="filter-grid" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 16px; margin-bottom: 20px;">
+              
+              <!-- District Card -->
+              <div class="filter-card" style="position: relative; background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%); border-radius: 18px; padding: 20px; border: 2px solid #f0f0f0; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                  <div style="width: 36px; height: 36px; background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0.05) 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-map" style="color: var(--primary-color); font-size: 16px;"></i>
+                  </div>
+                  <label style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem; margin: 0; letter-spacing: 0.3px;">
+                    DISTRICT
+                  </label>
+                </div>
+                <select id="customerFilterDistrict" class="filter-select" onchange="AuthSystem.populateAreaDropdown('customerFilterArea', this.value)">
+                  <option value="">All Districts</option>
+                </select>
+              </div>
+              
+              <!-- Area Card -->
+              <div class="filter-card" style="position: relative; background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%); border-radius: 18px; padding: 20px; border: 2px solid #f0f0f0; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                  <div style="width: 36px; height: 36px; background: linear-gradient(135deg, rgba(192, 192, 192, 0.2) 0%, rgba(192, 192, 192, 0.05) 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-location-dot" style="color: #888; font-size: 16px;"></i>
+                  </div>
+                  <label style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem; margin: 0; letter-spacing: 0.3px;">
+                    AREA
+                  </label>
+                </div>
+                <select id="customerFilterArea" class="filter-select" disabled>
+                  <option value="">All Areas</option>
+                </select>
+              </div>
+              
+              <!-- Action Buttons -->
+              <div style="display: flex; flex-direction: column; gap: 10px; justify-content: flex-end;">
+                <button onclick="searchSalonsByLocation()" class="btn-search-location" style="position: relative; padding: 16px 32px; background: linear-gradient(135deg, var(--primary-color) 0%, #c4941f 100%); color: white; border: none; border-radius: 16px; cursor: pointer; font-weight: 700; font-size: 15px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 8px 24px rgba(212, 175, 55, 0.35); font-family: inherit; overflow: hidden; white-space: nowrap; letter-spacing: 0.5px;">
+                  <span style="position: relative; z-index: 1; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-search"></i>
+                    <span>Search</span>
+                  </span>
+                  <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); transition: left 0.6s;"></div>
+                </button>
+                <button onclick="clearLocationFilter()" style="padding: 14px 20px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); color: #666; border: 2px solid #dee2e6; border-radius: 14px; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); font-family: inherit; white-space: nowrap;">
+                  <i class="fas fa-redo-alt"></i> Reset
+                </button>
+              </div>
+            </div>
+            
+            <!-- Filter Status Message -->
+            <div id="filterStatus" style="display: none; margin-top: 20px; padding: 18px 24px; background: linear-gradient(135deg, rgba(46, 204, 113, 0.12) 0%, rgba(46, 204, 113, 0.05) 100%); border-left: 5px solid #2ecc71; border-radius: 16px; animation: slideDown 0.4s ease-out;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);">
+                  <i class="fas fa-check-circle" style="color: white; font-size: 18px;"></i>
+                </div>
+                <div>
+                  <div style="font-weight: 600; color: #27ae60; font-size: 0.95rem; margin-bottom: 2px;">Search Results</div>
+                  <div id="filterStatusText" style="color: #666; font-size: 0.9rem;">Showing all salons</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Salon Grid - Populated dynamically from shop owner accounts -->
         <div id="salonGrid" class="salon-grid">
           <!-- Real salon accounts will appear here -->
@@ -528,7 +619,196 @@
         if (currentUser) {
           console.log('Welcome, ' + currentUser.name);
         }
+        
+        // Add keyboard support for location filter
+        const districtSelect = document.getElementById('customerFilterDistrict');
+        const areaSelect = document.getElementById('customerFilterArea');
+        
+        if (districtSelect) {
+          districtSelect.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+              searchSalonsByLocation();
+            }
+          });
+        }
+        
+        if (areaSelect) {
+          areaSelect.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+              searchSalonsByLocation();
+            }
+          });
+        }
       })();
     </script>
+    
+    <!-- Enhanced CSS for Ultra Modern Location Filter -->
+    <style>
+      /* Keyframe Animations */
+      @keyframes floatOrb {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(30px, -30px) scale(1.1); }
+        66% { transform: translate(-20px, 20px) scale(0.9); }
+      }
+      
+      @keyframes floatIcon {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-8px); }
+      }
+      
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      @keyframes shimmer {
+        0% { left: -100%; }
+        100% { left: 200%; }
+      }
+      
+      /* Filter Select Styling */
+      .filter-select {
+        width: 100%;
+        padding: 14px 40px 14px 16px;
+        border: 2px solid #e8e8e8;
+        border-radius: 14px;
+        font-size: 15px;
+        font-weight: 500;
+        background: white;
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        font-family: inherit;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23d4af37' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+      }
+      
+      .filter-select:hover:not(:disabled) {
+        border-color: var(--primary-color);
+        box-shadow: 0 4px 16px rgba(212, 175, 55, 0.15);
+        transform: translateY(-2px);
+      }
+      
+      .filter-select:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.12), 0 4px 16px rgba(212, 175, 55, 0.2);
+        transform: translateY(-2px);
+      }
+      
+      .filter-select:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background-color: #f9f9f9;
+      }
+      
+      /* Filter Card Hover Effects */
+      .filter-card:hover {
+        border-color: rgba(212, 175, 55, 0.3);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        transform: translateY(-4px);
+      }
+      
+      /* Search Button Hover */
+      .btn-search-location:hover {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 12px 32px rgba(212, 175, 55, 0.45);
+      }
+      
+      .btn-search-location:hover div {
+        left: 100%;
+      }
+      
+      .btn-search-location:active {
+        transform: translateY(-2px) scale(0.98);
+      }
+      
+      /* Reset Button Hover */
+      button[onclick="clearLocationFilter()"]:hover {
+        background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+        border-color: #adb5bd;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      }
+      
+      /* Icon Badge Animation */
+      .icon-badge {
+        animation: floatIcon 3s ease-in-out infinite;
+      }
+      
+      /* Responsive Design */
+      @media (max-width: 1024px) {
+        .filter-grid {
+          grid-template-columns: 1fr 1fr !important;
+        }
+        
+        .filter-grid > div:last-child {
+          grid-column: 1 / -1;
+          flex-direction: row !important;
+        }
+      }
+      
+      @media (max-width: 768px) {
+        .location-filter-container {
+          padding: 24px !important;
+        }
+        
+        .filter-grid {
+          grid-template-columns: 1fr !important;
+          gap: 12px !important;
+        }
+        
+        .icon-badge {
+          width: 48px !important;
+          height: 48px !important;
+        }
+        
+        .icon-badge i {
+          font-size: 22px !important;
+        }
+        
+        h3 {
+          font-size: 1.3rem !important;
+        }
+        
+        .filter-card {
+          padding: 16px !important;
+        }
+        
+        .btn-search-location {
+          padding: 14px 24px !important;
+        }
+      }
+      
+      /* Dark Mode Support */
+      @media (prefers-color-scheme: dark) {
+        .location-filter-container {
+          background: linear-gradient(145deg, rgba(30, 30, 30, 0.95) 0%, rgba(20, 20, 20, 0.85) 100%) !important;
+          border-color: rgba(212, 175, 55, 0.3) !important;
+        }
+        
+        .filter-card {
+          background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%) !important;
+          border-color: #404040 !important;
+        }
+        
+        .filter-select {
+          background: #2a2a2a !important;
+          border-color: #404040 !important;
+          color: #ffffff !important;
+        }
+      }
+    </style>
   </body>
 </html>
