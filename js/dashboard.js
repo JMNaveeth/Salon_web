@@ -96,37 +96,63 @@ function showDashboardSection(sectionId) {
     }
 }
 
-// Load dashboard data
-function loadDashboardData() {
-    const bookings = Storage.get('bookings', []);
-    const userProfile = Storage.get('userProfile', {});
-
-    // Separate upcoming and past bookings
-    const now = new Date();
-    const upcomingBookings = [];
-    const pastBookings = [];
-
-    bookings.forEach(booking => {
-        const bookingDateTime = new Date(`${booking.date}T${booking.time}`);
-        if (bookingDateTime >= now && booking.status !== 'cancelled') {
-            upcomingBookings.push(booking);
-        } else {
-            pastBookings.push(booking);
+// Load dashboard data from Firebase
+async function loadDashboardData() {
+    try {
+        // Get current user from Firebase auth
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            console.error('No user logged in');
+            return;
         }
-    });
 
-    // Sort bookings by date
-    upcomingBookings.sort((a, b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`));
-    pastBookings.sort((a, b) => new Date(`${b.date}T${b.time}`) - new Date(`${a.date}T${a.time}`));
+        // Fetch bookings from Firebase
+        const bookingsSnapshot = await db.collection('bookings')
+            .where('email', '==', user.email)
+            .orderBy('createdAt', 'desc')
+            .get();
+        
+        const bookings = [];
+        bookingsSnapshot.forEach(doc => {
+            bookings.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
 
-    // Update stats
-    updateDashboardStats(bookings, upcomingBookings, pastBookings);
+        // Separate upcoming and past bookings
+        const now = new Date();
+        const upcomingBookings = [];
+        const pastBookings = [];
 
-    // Load sections
-    loadOverviewSection(bookings, upcomingBookings, pastBookings);
-    loadAnalytics(bookings);
-    loadBookingHistory(bookings); // Pass ALL bookings, not just past ones
-    loadProfileData(userProfile);
+        bookings.forEach(booking => {
+            const bookingDateTime = new Date(`${booking.date}T${booking.time}`);
+            if (bookingDateTime >= now && booking.status !== 'cancelled') {
+                upcomingBookings.push(booking);
+            } else {
+                pastBookings.push(booking);
+            }
+        });
+        
+        console.log('✅ Loaded', bookings.length, 'bookings from Firebase');
+
+        // Sort bookings by date
+        upcomingBookings.sort((a, b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`));
+        pastBookings.sort((a, b) => new Date(`${b.date}T${b.time}`) - new Date(`${a.date}T${a.time}`));
+
+        // Update stats
+        updateDashboardStats(bookings, upcomingBookings, pastBookings);
+
+        // Load sections
+        loadOverviewSection(bookings, upcomingBookings, pastBookings);
+        loadAnalytics(bookings);
+        loadBookingHistory(bookings); // Pass ALL bookings, not just past ones
+        await loadProfileData(); // Load from Firebase
+        
+    } catch (error) {
+        console.error('❌ Error loading dashboard data:', error);
+        showMessage('Failed to load dashboard data. Please refresh the page.', 'error');
+    }
 }
 
 // Update dashboard statistics
@@ -609,81 +635,110 @@ function closeAppointmentModal() {
     }
 }
 
-// Cancel appointment
-function cancelAppointment(bookingId) {
-    const bookings = Storage.get('bookings', []);
-    const booking = bookings.find(b => b.id === bookingId);
-    const actionText = booking && booking.status === 'pending' ? 'reject' : 'cancel';
-    
-    if (confirm(`Are you sure you want to ${actionText} this appointment? This action cannot be undone.`)) {
-        const bookingIndex = bookings.findIndex(booking => booking.id === bookingId);
-
-        if (bookingIndex !== -1) {
-            bookings[bookingIndex].status = 'cancelled';
-            bookings[bookingIndex].updatedAt = new Date().toISOString();
-            Storage.set('bookings', bookings);
-
-            // Trigger real-time update
-            window.dispatchEvent(new Event('storage'));
+// Cancel appointment in Firebase
+async function cancelAppointment(bookingId) {
+    try {
+        // Get booking first to determine action text
+        const bookingDoc = await db.collection('bookings').doc(bookingId).get();
+        const booking = bookingDoc.data();
+        const actionText = booking && booking.status === 'pending' ? 'reject' : 'cancel';
+        
+        if (confirm(`Are you sure you want to ${actionText} this appointment? This action cannot be undone.`)) {
+            // Update booking status in Firebase
+            await db.collection('bookings').doc(bookingId).update({
+                status: 'cancelled',
+                updatedAt: new Date().toISOString()
+            });
 
             // Refresh dashboard
-            loadDashboardData();
+            await loadDashboardData();
             closeAppointmentModal();
 
             showMessage(`Appointment ${actionText}led successfully`, 'success');
+            console.log('✅ Booking cancelled in Firebase:', bookingId);
         }
+    } catch (error) {
+        console.error('❌ Error cancelling appointment:', error);
+        showMessage('Failed to cancel appointment. Please try again.', 'error');
     }
 }
 
-// Approve appointment
-function approveAppointment(bookingId) {
+// Approve appointment in Firebase
+async function approveAppointment(bookingId) {
     if (confirm('Approve this appointment?')) {
-        const bookings = Storage.get('bookings', []);
-        const bookingIndex = bookings.findIndex(booking => booking.id === bookingId);
-
-        if (bookingIndex !== -1) {
-            bookings[bookingIndex].status = 'confirmed';
-            bookings[bookingIndex].updatedAt = new Date().toISOString();
-            Storage.set('bookings', bookings);
-
-            // Trigger real-time update
-            window.dispatchEvent(new Event('storage'));
+        try {
+            // Update booking status in Firebase
+            await db.collection('bookings').doc(bookingId).update({
+                status: 'confirmed',
+                updatedAt: new Date().toISOString()
+            });
 
             // Refresh dashboard
-            loadDashboardData();
+            await loadDashboardData();
             closeAppointmentModal();
 
             showMessage('Appointment approved successfully', 'success');
+            console.log('✅ Booking approved in Firebase:', bookingId);
+        } catch (error) {
+            console.error('❌ Error approving appointment:', error);
+            showMessage('Failed to approve appointment. Please try again.', 'error');
         }
     }
 }
 
-// Profile management
+// Profile management with Firebase
 function initProfileForm() {
     const profileForm = document.getElementById('profileForm');
 
     if (profileForm) {
-        profileForm.addEventListener('submit', function(e) {
+        profileForm.addEventListener('submit', async function(e) {
             e.preventDefault();
+
+            const user = firebase.auth().currentUser;
+            if (!user) {
+                showMessage('Please log in to update profile', 'error');
+                return;
+            }
 
             const formData = new FormData(profileForm);
             const profileData = Object.fromEntries(formData);
 
-            // Save profile data
-            Storage.set('userProfile', profileData);
-
-            showMessage('Profile updated successfully', 'success');
+            try {
+                // Save profile data to Firebase
+                await db.collection('users').doc(user.uid).update(profileData);
+                showMessage('Profile updated successfully', 'success');
+                console.log('✅ Profile updated in Firebase');
+            } catch (error) {
+                console.error('❌ Error updating profile:', error);
+                showMessage('Failed to update profile. Please try again.', 'error');
+            }
         });
     }
 }
 
-function loadProfileData(profileData) {
+async function loadProfileData(profileData = null) {
     const firstNameEl = document.getElementById('profileFirstName');
     const lastNameEl = document.getElementById('profileLastName');
     const emailEl = document.getElementById('profileEmail');
     const phoneEl = document.getElementById('profilePhone');
     const preferredStaffEl = document.getElementById('preferredStaff');
     const notificationsEl = document.getElementById('notificationPreference');
+
+    // If no data provided, fetch from Firebase
+    if (!profileData) {
+        const user = firebase.auth().currentUser;
+        if (user) {
+            try {
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                profileData = userDoc.data() || {};
+            } catch (error) {
+                console.error('❌ Error loading profile:', error);
+                profileData = {};
+            }
+        } else {
+            profileData = {};
+        }
+    }
 
     if (firstNameEl) firstNameEl.value = profileData.firstName || '';
     if (lastNameEl) lastNameEl.value = profileData.lastName || '';
@@ -693,9 +748,9 @@ function loadProfileData(profileData) {
     if (notificationsEl) notificationsEl.value = profileData.notifications || 'all';
 }
 
-function resetProfileForm() {
+async function resetProfileForm() {
     if (confirm('Are you sure you want to reset all profile changes?')) {
-        loadProfileData(Storage.get('userProfile', {}));
+        await loadProfileData();
     }
 }
 

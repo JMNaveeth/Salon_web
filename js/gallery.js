@@ -17,43 +17,59 @@ function getOwnerFilter() {
 }
 
 // Update gallery header when viewing specific owner's gallery
-function updateGalleryHeader() {
+async function updateGalleryHeader() {
     const ownerFilter = getOwnerFilter();
     if (!ownerFilter) return;
     
-    // Get owner details
-    const shopOwners = JSON.parse(localStorage.getItem('shopOwners')) || [];
-    const owner = shopOwners.find(o => o.email === ownerFilter);
-    
-    if (owner) {
-        const badge = document.getElementById('galleryOwnerBadge');
-        const title = document.getElementById('galleryTitle');
-        const subtitle = document.getElementById('gallerySubtitle');
+    try {
+        // Get owner details from Firebase
+        const ownerDoc = await db.collection('users').doc(ownerFilter).get();
         
-        if (badge) {
-            badge.textContent = owner.businessName || owner.name;
-            badge.style.background = 'var(--gradient)';
-            badge.style.color = 'white';
+        if (ownerDoc.exists) {
+            const owner = ownerDoc.data();
+            const badge = document.getElementById('galleryOwnerBadge');
+            const title = document.getElementById('galleryTitle');
+            const subtitle = document.getElementById('gallerySubtitle');
+            
+            const locationDisplay = owner.area && owner.district 
+                ? `${owner.area}, ${owner.district}` 
+                : owner.location || 'our salon';
+            
+            if (badge) {
+                badge.textContent = owner.businessName || owner.name;
+                badge.style.background = 'var(--gradient)';
+                badge.style.color = 'white';
+            }
+            if (title) {
+                title.innerHTML = `${owner.businessName || owner.name}'s <span class="highlight">Gallery</span>`;
+            }
+            if (subtitle) {
+                subtitle.textContent = `View our work and transformations at ${locationDisplay}`;
+            }
         }
-        if (title) {
-            title.innerHTML = `${owner.businessName || owner.name}'s <span class="highlight">Gallery</span>`;
-        }
-        if (subtitle) {
-            subtitle.textContent = `View our work and transformations at ${owner.location || 'our salon'}`;
-        }
+    } catch (error) {
+        console.error('Error loading owner details:', error);
     }
 }
 
-// Update gallery statistics based on real data
-function updateGalleryStats() {
+// Update gallery statistics based on real data from Firebase
+async function updateGalleryStats() {
     try {
-        const customerPhotos = JSON.parse(localStorage.getItem('customerPhotos')) || [];
         const ownerFilter = getOwnerFilter();
         
-        // Filter by owner if parameter exists
-        const filteredPhotos = ownerFilter 
-            ? customerPhotos.filter(p => p.ownerId === ownerFilter || p.ownerEmail === ownerFilter)
-            : customerPhotos;
+        // Build query based on owner filter
+        let query = db.collection('gallery');
+        
+        if (ownerFilter) {
+            query = query.where('ownerId', '==', ownerFilter);
+        }
+        
+        const snapshot = await query.get();
+        const filteredPhotos = [];
+        
+        snapshot.forEach(doc => {
+            filteredPhotos.push(doc.data());
+        });
         
         const totalPhotosEl = document.getElementById('totalPhotos');
         
@@ -67,27 +83,45 @@ function updateGalleryStats() {
         if (totalCategoriesEl && categories.size > 0) {
             totalCategoriesEl.textContent = categories.size;
         }
+        
+        console.log('✅ Gallery stats updated:', filteredPhotos.length, 'photos');
     } catch (error) {
         console.error('Error updating gallery stats:', error);
     }
 }
 
-// Load customer photos from localStorage
-function loadCustomerPhotos() {
+// Load customer photos from Firebase
+async function loadCustomerPhotos() {
     const galleryGrid = document.getElementById('galleryGrid');
     if (!galleryGrid) return;
     
     try {
-        const customerPhotos = JSON.parse(localStorage.getItem('customerPhotos')) || [];
+        // Show loading state
+        galleryGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 60px;"><i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--primary-color);"></i><p style="margin-top: 20px; color: var(--text-light);">Loading gallery...</p></div>';
+        
         const ownerFilter = getOwnerFilter();
         
-        // Filter by owner if parameter exists
-        const filteredPhotos = ownerFilter 
-            ? customerPhotos.filter(p => p.ownerId === ownerFilter || p.ownerEmail === ownerFilter)
-            : customerPhotos;
+        // Build query based on owner filter
+        let query = db.collection('gallery');
         
-        if (filteredPhotos.length > 0) {
-            console.log('Loading customer photos:', filteredPhotos.length, ownerFilter ? '(filtered by owner)' : '');
+        if (ownerFilter) {
+            query = query.where('ownerId', '==', ownerFilter);
+        }
+        
+        const snapshot = await query.get();
+        const customerPhotos = [];
+        
+        snapshot.forEach(doc => {
+            customerPhotos.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+        
+        console.log('✅ Loaded', customerPhotos.length, 'photos from Firebase');
+        
+        if (customerPhotos.length > 0) {
+            console.log('Loading customer photos:', customerPhotos.length, ownerFilter ? '(filtered by owner)' : '');
             
             filteredPhotos.forEach(photo => {
                 const galleryItem = document.createElement('div');

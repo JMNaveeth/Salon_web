@@ -38,46 +38,57 @@ document.addEventListener('DOMContentLoaded', function() {
 // LOAD SERVICES FROM ADMIN PANEL
 // ===================================
 
-function loadServicesFromAdmin() {
+async function loadServicesFromAdmin() {
     const serviceSelect = document.getElementById('service');
     if (!serviceSelect) return;
 
-    // Get services from localStorage (added by shop owner in admin panel)
-    const services = Storage.get('services', []);
+    try {
+        // Get services from Firebase
+        const servicesSnapshot = await db.collection('services').get();
+        const services = [];
+        
+        servicesSnapshot.forEach(doc => {
+            services.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+        
+        console.log('✅ Loaded', services.length, 'services from Firebase');
 
-    // Clear existing options except the first placeholder
-    while (serviceSelect.options.length > 1) {
-        serviceSelect.remove(1);
-    }
-
-    // Check if there are any services
-    if (services.length === 0) {
-        const option = document.createElement('option');
-        option.value = '';
-        option.textContent = 'No services available - Contact salon';
-        option.disabled = true;
-        serviceSelect.appendChild(option);
-        return;
-    }
-
-    // Group services by category
-    const categories = {
-        'hair': 'Hair Services',
-        'facial': 'Facial Services',
-        'special': 'Special (Wedding/Fashion)',
-        'others': 'Other Services'
-    };
-
-    const groupedServices = {};
-    services.forEach(service => {
-        const category = service.category || 'others';
-        if (!groupedServices[category]) {
-            groupedServices[category] = [];
+        // Clear existing options except the first placeholder
+        while (serviceSelect.options.length > 1) {
+            serviceSelect.remove(1);
         }
-        groupedServices[category].push(service);
-    });
 
-    // Add services grouped by category
+        // Check if there are any services
+        if (services.length === 0) {
+            const option = document.createElement('option');
+            option.value = '';
+            option.textContent = 'No services available - Contact salon';
+            option.disabled = true;
+            serviceSelect.appendChild(option);
+            return;
+        }
+
+        // Group services by category
+        const categories = {
+            'hair': 'Hair Services',
+            'facial': 'Facial Services',
+            'special': 'Special (Wedding/Fashion)',
+            'others': 'Other Services'
+        };
+
+        const groupedServices = {};
+        services.forEach(service => {
+            const category = service.category || 'others';
+            if (!groupedServices[category]) {
+                groupedServices[category] = [];
+            }
+            groupedServices[category].push(service);
+        });
+
+        // Add services grouped by category
     Object.keys(categories).forEach(categoryKey => {
         if (groupedServices[categoryKey] && groupedServices[categoryKey].length > 0) {
             const optgroup = document.createElement('optgroup');
@@ -96,27 +107,47 @@ function loadServicesFromAdmin() {
         }
     });
 
-    console.log(`Loaded ${services.length} services from admin panel`);
+    console.log(`✅ Loaded ${services.length} services from Firebase`);
+    
+    } catch (error) {
+        console.error('❌ Error loading services from Firebase:', error);
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = 'Error loading services';
+        option.disabled = true;
+        serviceSelect.appendChild(option);
+    }
 }
 
 // ===================================
 // LOAD STAFF FROM ADMIN PANEL
 // ===================================
 
-function loadStaffFromAdmin() {
+async function loadStaffFromAdmin() {
     const staffSelect = document.getElementById('staff');
     if (!staffSelect) return;
 
-    // Get staff from localStorage (added by shop owner in admin panel)
-    const staff = Storage.get('staff', []);
+    try {
+        // Get staff from Firebase
+        const staffSnapshot = await db.collection('staff').get();
+        const staff = [];
+        
+        staffSnapshot.forEach(doc => {
+            staff.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+        
+        console.log('✅ Loaded', staff.length, 'staff members from Firebase');
 
-    // Clear existing options except the first placeholder
-    while (staffSelect.options.length > 1) {
-        staffSelect.remove(1);
-    }
+        // Clear existing options except the first placeholder
+        while (staffSelect.options.length > 1) {
+            staffSelect.remove(1);
+        }
 
-    // Check if there are any staff members
-    if (staff.length === 0) {
+        // Check if there are any staff members
+        if (staff.length === 0) {
         // Keep "Any available staff" as the only option
         console.log('No staff members found in admin panel');
         return;
@@ -142,8 +173,8 @@ function initBookingSteps() {
 
     // Next step buttons
     nextButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            if (validateCurrentStep(currentStep)) {
+        button.addEventListener('click', async function() {
+            if (await validateCurrentStep(currentStep)) {
                 if (currentStep < steps.length - 1) {
                     steps[currentStep].classList.remove('active');
                     currentStep++;
@@ -180,15 +211,21 @@ function getCurrentStep() {
 }
 
 // Step validation
-function validateCurrentStep(stepIndex) {
+async function validateCurrentStep(stepIndex) {
     switch (stepIndex) {
         case 0: // Service selection
             const service = document.getElementById('service').value;
             if (!service) {
-                const services = Storage.get('services', []);
-                if (services.length === 0) {
-                    showMessage('No services available. Please contact the salon or ask the shop owner to add services in the admin panel.', 'error');
-                } else {
+                try {
+                    // Check if services exist in Firebase
+                    const servicesSnapshot = await db.collection('services').limit(1).get();
+                    if (servicesSnapshot.empty) {
+                        showMessage('No services available. Please contact the salon or ask the shop owner to add services in the admin panel.', 'error');
+                    } else {
+                        showMessage('Please select a service', 'error');
+                    }
+                } catch (error) {
+                    console.error('❌ Error checking services:', error);
                     showMessage('Please select a service', 'error');
                 }
                 return false;
@@ -371,20 +408,22 @@ function selectTimeSlot(slotElement, timeString) {
     );
 }
 
-function checkTimeSlotAvailability(date, time) {
-    // Get existing bookings from localStorage
-    const bookings = Storage.get('bookings', []);
+async function checkTimeSlotAvailability(date, time) {
+    try {
+        // Get existing bookings from Firebase
+        const bookingsSnapshot = await db.collection('bookings')
+            .where('date', '==', date)
+            .where('time', '==', time)
+            .get();
 
-    // Check if this time slot is already booked
-    const isBooked = bookings.some(booking => {
-        return booking.date === date && booking.time === time;
-    });
-
-    // For demo purposes, randomly mark some slots as unavailable
-    // In a real app, this would check against actual bookings
-    const randomUnavailable = Math.random() < 0.2; // 20% chance
-
-    return !isBooked && !randomUnavailable;
+        // If any bookings exist for this date/time, slot is not available
+        return bookingsSnapshot.empty;
+        
+    } catch (error) {
+        console.error('❌ Error checking time slot availability:', error);
+        // If error, assume slot is available to not block user
+        return true;
+    }
 }
 
 // Staff selection
@@ -523,7 +562,7 @@ function initBookingForm() {
                 }
 
                 // Submit booking
-                submitBooking(new FormData(form), paymentMethod);
+                await submitBooking(new FormData(form), paymentMethod);
                 
             } catch (error) {
                 console.error('Booking error:', error);
@@ -550,14 +589,13 @@ async function simulatePayment() {
     return { success: true, transactionId: 'TXN_' + Date.now() };
 }
 
-function submitBooking(formData, paymentMethod) {
+async function submitBooking(formData, paymentMethod) {
     const servicePrice = extractPriceFromService(formData.get('service'));
     const platformFee = calculatePlatformFee(servicePrice);
     const totalPrice = servicePrice + platformFee;
 
     // Create booking object
     const booking = {
-        id: generateBookingId(),
         service: formData.get('service'),
         staff: formData.get('staff') || 'Any available',
         date: formData.get('date'),
@@ -580,25 +618,34 @@ function submitBooking(formData, paymentMethod) {
         price: servicePrice // Keep for backward compatibility
     };
 
-    // Save to localStorage
-    const bookings = Storage.get('bookings', []);
-    bookings.push(booking);
-    Storage.set('bookings', bookings);
+    try {
+        // Save to Firebase Firestore
+        const docRef = await db.collection('bookings').add(booking);
+        booking.id = docRef.id; // Use Firebase auto-generated ID
+        
+        console.log('✅ Booking saved to Firebase with ID:', booking.id);
 
-    // Trigger storage event for real-time updates
-    window.dispatchEvent(new Event('storage'));
+        // Show confirmation modal
+        showConfirmationModal(booking);
 
-    // Show confirmation modal
-    showConfirmationModal(booking);
-
-    // Reset form
-    document.getElementById('bookingForm').reset();
-    resetBookingSummary();
-    
-    // Re-enable button
-    const submitButton = document.getElementById('submitPayment');
-    submitButton.disabled = false;
-    submitButton.innerHTML = '<i class="fas fa-lock"></i> Complete Booking';
+        // Reset form
+        document.getElementById('bookingForm').reset();
+        resetBookingSummary();
+        
+        // Re-enable button
+        const submitButton = document.getElementById('submitPayment');
+        submitButton.disabled = false;
+        submitButton.innerHTML = '<i class="fas fa-lock"></i> Complete Booking';
+        
+    } catch (error) {
+        console.error('❌ Error saving booking to Firebase:', error);
+        showMessage('Failed to save booking. Please try again.', 'error');
+        
+        // Re-enable button
+        const submitButton = document.getElementById('submitPayment');
+        submitButton.disabled = false;
+        submitButton.innerHTML = '<i class="fas fa-lock"></i> Complete Booking';
+    }
 }
 
 function generateBookingId() {
@@ -737,9 +784,12 @@ function resetBookingSummary() {
     document.getElementById('summaryPrice').textContent = '$0';
 }
 
-// Load selected service from services page
+// Load selected service from services page (via URL parameters)
 function loadSelectedService() {
-    const selectedService = Storage.get('selectedService');
+    // Get URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedService = urlParams.get('service');
+    
     if (selectedService) {
         const serviceSelect = document.getElementById('service');
         if (serviceSelect) {
@@ -753,8 +803,11 @@ function loadSelectedService() {
                 }
             }
         }
-        // Clear the stored service
-        Storage.remove('selectedService');
+        
+        // Clear URL parameters after loading (optional - for clean URL)
+        if (window.history.replaceState) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
     }
 }
 

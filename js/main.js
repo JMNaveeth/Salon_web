@@ -411,9 +411,16 @@ function showLoading(button) {
     };
 }
 
-// Local Storage helpers
+// ===================================
+// DEPRECATED: Local Storage helpers
+// ===================================
+// NOTE: All app data now uses Firebase Firestore
+// localStorage is only used for theme preference
+// This Storage utility is kept for backward compatibility but should not be used
+// ===================================
 const Storage = {
     set: function(key, value) {
+        console.warn('⚠️ DEPRECATED: Storage.set() - Use Firebase Firestore instead');
         try {
             localStorage.setItem(key, JSON.stringify(value));
         } catch (e) {
@@ -422,6 +429,7 @@ const Storage = {
     },
 
     get: function(key, defaultValue = null) {
+        console.warn('⚠️ DEPRECATED: Storage.get() - Use Firebase Firestore instead');
         try {
             const item = localStorage.getItem(key);
             return item ? JSON.parse(item) : defaultValue;
@@ -432,6 +440,7 @@ const Storage = {
     },
 
     remove: function(key) {
+        console.warn('⚠️ DEPRECATED: Storage.remove() - Use Firebase Firestore instead');
         try {
             localStorage.removeItem(key);
         } catch (e) {
@@ -440,6 +449,7 @@ const Storage = {
     },
 
     clear: function() {
+        console.warn('⚠️ DEPRECATED: Storage.clear() - Use Firebase Firestore instead');
         try {
             localStorage.clear();
         } catch (e) {
@@ -603,90 +613,8 @@ function initCardInteractivity() {
     });
 }
 
-// Initialize sample data for admin panel (dev/local use only)
-function initSampleData() {
-    // Only run sample seeding on local/dev environments
-    const isLocalHost = location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.hostname === '';
-    if (!isLocalHost) return;
-
-    // Only add sample data if none exists
-    if (!Storage.get('dataInitialized')) {
-        // Sample services
-        const services = [
-            {
-                id: 1,
-                name: 'Hair Styling',
-                category: 'Hair',
-                price: 45,
-                duration: 60,
-                description: 'Professional hair styling and treatment',
-                createdAt: new Date().toISOString()
-            },
-            {
-                id: 2,
-                name: 'Facial Treatment',
-                category: 'Skin Care',
-                price: 65,
-                duration: 90,
-                description: 'Deep cleansing facial treatment',
-                createdAt: new Date().toISOString()
-            },
-            {
-                id: 3,
-                name: 'Manicure',
-                category: 'Nails',
-                price: 35,
-                duration: 45,
-                description: 'Complete nail care and polish',
-                createdAt: new Date().toISOString()
-            }
-        ];
-        
-        // Sample staff
-        const staff = [
-            {
-                id: 1,
-                firstName: 'Emma',
-                lastName: 'Wilson',
-                name: 'Emma Wilson',
-                specialty: 'Hair Stylist',
-                email: 'emma@kinniyasalon.com',
-                phone: '555-0101',
-                bio: 'Expert hair stylist with 10 years experience',
-                createdAt: new Date().toISOString()
-            },
-            {
-                id: 2,
-                firstName: 'David',
-                lastName: 'Lee',
-                name: 'David Lee',
-                specialty: 'Skin Specialist',
-                email: 'david@kinniyasalon.com',
-                phone: '555-0102',
-                bio: 'Certified skin care specialist',
-                createdAt: new Date().toISOString()
-            }
-        ];
-
-        // Note: We do NOT seed sample bookings/customers here anymore.
-        // Real bookings will come from actual users via the booking form/admin panel.
-        
-        // Save to localStorage
-        Storage.set('services', services);
-        Storage.set('staff', staff);
-        Storage.set('customerPhotos', []);
-        Storage.set('dataInitialized', true);
-        
-        console.log('Sample services/staff initialized for admin panel (local only)');
-    }
-}
-
-// Initialize sample data on page load
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initSampleData);
-} else {
-    initSampleData();
-}
+// Note: All data now comes from Firebase Firestore
+// Sample data initialization has been removed - use admin panel to add data
 
 // Load Real Salon Accounts from Firebase (for homepage salon directory)
 async function loadRealSalons() {

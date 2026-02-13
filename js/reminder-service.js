@@ -67,58 +67,73 @@ class ReminderService {
     
     // Main function to check bookings and send reminders
     async checkAndSendReminders() {
-        const bookings = Storage.get('bookings', []);
-        const now = new Date().getTime();
-        
-        console.log(`🔍 Checking ${bookings.length} bookings for reminders...`);
-        
-        for (const booking of bookings) {
-            // Only process confirmed or pending bookings
-            if (booking.status !== 'confirmed' && booking.status !== 'pending') {
-                continue;
+        try {
+            // Fetch bookings from Firebase
+            const bookingsSnapshot = await db.collection('bookings')
+                .where('status', 'in', ['confirmed', 'pending'])
+                .get();
+            
+            const bookings = [];
+            bookingsSnapshot.forEach(doc => {
+                bookings.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+            });
+            
+            const now = new Date().getTime();
+            
+            console.log(`🔍 Checking ${bookings.length} bookings for reminders...`);
+            
+            for (const booking of bookings) {
+                const appointmentTime = new Date(`${booking.date}T${booking.time}`).getTime();
+                const timeUntilAppointment = appointmentTime - now;
+                
+                // Skip past appointments
+                if (timeUntilAppointment < 0) {
+                    continue;
+                }
+                
+                // Initialize reminders tracking if not exists
+                if (!booking.reminders) {
+                    booking.reminders = {
+                        '48h': { sent: false, sentAt: null },
+                        '24h': { sent: false, sentAt: null },
+                        '2h': { sent: false, sentAt: null }
+                    };
+                }
+                
+                // Check and send 48-hour reminder
+                if (!booking.reminders['48h'].sent && 
+                    timeUntilAppointment <= this.reminderIntervals['48h'] && 
+                    timeUntilAppointment > this.reminderIntervals['24h']) {
+                    await this.sendReminder(booking, '48h');
+                }
+                
+                // Check and send 24-hour reminder
+                if (!booking.reminders['24h'].sent && 
+                    timeUntilAppointment <= this.reminderIntervals['24h'] && 
+                    timeUntilAppointment > this.reminderIntervals['2h']) {
+                    await this.sendReminder(booking, '24h');
+                }
+                
+                // Check and send 2-hour reminder
+                if (!booking.reminders['2h'].sent && 
+                    timeUntilAppointment <= this.reminderIntervals['2h'] && 
+                    timeUntilAppointment > 0) {
+                    await this.sendReminder(booking, '2h');
+                }
+                
+                // Update booking in Firebase with reminder status
+                await db.collection('bookings').doc(booking.id).update({
+                    reminders: booking.reminders
+                });
             }
             
-            const appointmentTime = new Date(`${booking.date}T${booking.time}`).getTime();
-            const timeUntilAppointment = appointmentTime - now;
-            
-            // Skip past appointments
-            if (timeUntilAppointment < 0) {
-                continue;
-            }
-            
-            // Initialize reminders tracking if not exists
-            if (!booking.reminders) {
-                booking.reminders = {
-                    '48h': { sent: false, sentAt: null },
-                    '24h': { sent: false, sentAt: null },
-                    '2h': { sent: false, sentAt: null }
-                };
-            }
-            
-            // Check and send 48-hour reminder
-            if (!booking.reminders['48h'].sent && 
-                timeUntilAppointment <= this.reminderIntervals['48h'] && 
-                timeUntilAppointment > this.reminderIntervals['24h']) {
-                await this.sendReminder(booking, '48h');
-            }
-            
-            // Check and send 24-hour reminder
-            if (!booking.reminders['24h'].sent && 
-                timeUntilAppointment <= this.reminderIntervals['24h'] && 
-                timeUntilAppointment > this.reminderIntervals['2h']) {
-                await this.sendReminder(booking, '24h');
-            }
-            
-            // Check and send 2-hour reminder
-            if (!booking.reminders['2h'].sent && 
-                timeUntilAppointment <= this.reminderIntervals['2h'] && 
-                timeUntilAppointment > 0) {
-                await this.sendReminder(booking, '2h');
-            }
+            console.log('✅ Reminder check completed');
+        } catch (error) {
+            console.error('❌ Error checking reminders:', error);
         }
-        
-        // Save updated bookings
-        Storage.set('bookings', bookings);
     }
     
     // Send reminder through all channels
@@ -299,24 +314,35 @@ class ReminderService {
             read: false
         };
         
-        const notifications = Storage.get('notifications', []);
-        notifications.unshift(notification);
-        Storage.set('notifications', notifications);
-        
-        // Trigger storage event for real-time updates
-        window.dispatchEvent(new Event('storage'));
+        // Save notification to Firebase
+        try {
+            await db.collection('notifications').add(notification);
+            console.log('✅ Notification saved to Firebase');
+        } catch (error) {
+            console.error('❌ Error saving notification:', error);
+        }
     }
     
     // Get reminder statistics
-    getStatistics() {
-        const bookings = Storage.get('bookings', []);
-        const stats = {
-            totalBookings: bookings.length,
-            reminders48h: 0,
-            reminders24h: 0,
-            reminders2h: 0,
-            upcomingReminders: 0
-        };
+    async getStatistics() {
+        try {
+            // Fetch bookings from Firebase
+            const bookingsSnapshot = await db.collection('bookings').get();
+            const bookings = [];
+            bookingsSnapshot.forEach(doc => {
+                bookings.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+            });
+            
+            const stats = {
+                totalBookings: bookings.length,
+                reminders48h: 0,
+                reminders24h: 0,
+                reminders2h: 0,
+                upcomingReminders: 0
+            };
         
         const now = new Date().getTime();
         

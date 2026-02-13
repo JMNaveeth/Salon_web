@@ -1,119 +1,126 @@
 'use strict';
 
-// Storage is defined in main.js - verify it's available
-if (typeof Storage === 'undefined') {
-    console.error('WARNING: Storage not found from main.js! Defining fallback...');
-    window.Storage = {
-        get: function(key, defaultValue = null) {
-            try {
-                const stored = localStorage.getItem(key);
-                return stored ? JSON.parse(stored) : defaultValue;
-            } catch (error) {
-                console.error('Storage get error:', error);
-                return defaultValue;
-            }
-        },
-        set: function(key, value) {
-            try {
-                localStorage.setItem(key, JSON.stringify(value));
-                return true;
-            } catch (error) {
-                console.error('Storage set error:', error);
-                return false;
-            }
-        }
-    };
-} else {
-    console.log('SUCCESS: Storage loaded from main.js');
-}
+// ===== FIREBASE-BASED DATA ISOLATION SYSTEM =====
+// All data now comes from Firebase Firestore
+// No more localStorage - everything is cloud-based
 
-// ===== DATA ISOLATION SYSTEM =====
-// Helper function to get current shop owner
+// Helper function to get current shop owner from Firebase Auth
 function getCurrentOwner() {
-    const currentUser = Storage.get('currentUser', null);
-    if (!currentUser || currentUser.role !== 'owner') {
-        console.error('No shop owner logged in!');
+    const user = firebase.auth().currentUser;
+    if (!user) {
+        console.error('No user logged in!');
         return null;
     }
-    return currentUser;
+    return user;
 }
 
 // Helper function to get owner's unique ID
 function getOwnerKey() {
     const owner = getCurrentOwner();
     if (!owner) return null;
-    // Use email as unique identifier for the shop owner
-    return owner.email;
+    // Use Firebase UID as unique identifier
+    return owner.uid;
 }
 
-// Filter data by current owner
-function getOwnerData(dataKey, defaultValue = []) {
+// Filter data by current owner from Firebase
+async function getOwnerData(collectionName) {
     const ownerKey = getOwnerKey();
-    if (!ownerKey) return defaultValue;
+    if (!ownerKey) return [];
     
-    const allData = Storage.get(dataKey, []);
-    
-    // Filter data that belongs to this owner
-    return allData.filter(item => item.ownerId === ownerKey || item.ownerEmail === ownerKey);
+    try {
+        const snapshot = await db.collection(collectionName)
+            .where('ownerId', '==', ownerKey)
+            .get();
+        
+        const data = [];
+        snapshot.forEach(doc => {
+            data.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+        
+        return data;
+    } catch (error) {
+        console.error(`❌ Error fetching ${collectionName}:`, error);
+        return [];
+    }
 }
 
-// Save data with owner ID
-function saveOwnerData(dataKey, newItem) {
+// Save data with owner ID to Firebase
+async function saveOwnerData(collectionName, newItem) {
     const ownerKey = getOwnerKey();
     if (!ownerKey) {
         console.error('Cannot save data: No owner logged in');
         return false;
     }
     
-    // Add owner identifier to the item
-    newItem.ownerId = ownerKey;
-    newItem.ownerEmail = ownerKey;
-    
-    // Get all data and add the new item
-    const allData = Storage.get(dataKey, []);
-    allData.push(newItem);
-    Storage.set(dataKey, allData);
-    
-    return true;
-}
-
-// Update owner's data
-function updateOwnerData(dataKey, itemId, updatedItem) {
-    const ownerKey = getOwnerKey();
-    if (!ownerKey) return false;
-    
-    // Add owner identifier
-    updatedItem.ownerId = ownerKey;
-    updatedItem.ownerEmail = ownerKey;
-    
-    const allData = Storage.get(dataKey, []);
-    const index = allData.findIndex(item => 
-        item.id === itemId && (item.ownerId === ownerKey || item.ownerEmail === ownerKey)
-    );
-    
-    if (index !== -1) {
-        allData[index] = updatedItem;
-        Storage.set(dataKey, allData);
-        return true;
+    try {
+        // Add owner identifier to the item
+        newItem.ownerId = ownerKey;
+        newItem.createdAt = newItem.createdAt || new Date().toISOString();
+        
+        // Save to Firebase
+        const docRef = await db.collection(collectionName).add(newItem);
+        console.log(`✅ Saved to ${collectionName} with ID:`, docRef.id);
+        return docRef.id;
+    } catch (error) {
+        console.error(`❌ Error saving to ${collectionName}:`, error);
+        return false;
     }
-    
-    return false;
 }
 
-// Delete owner's data
-function deleteOwnerData(dataKey, itemId) {
+// Update owner's data in Firebase
+async function updateOwnerData(collectionName, itemId, updatedItem) {
     const ownerKey = getOwnerKey();
     if (!ownerKey) return false;
     
-    const allData = Storage.get(dataKey, []);
-    const filteredData = allData.filter(item => 
-        !(item.id === itemId && (item.ownerId === ownerKey || item.ownerEmail === ownerKey))
-    );
-    
-    Storage.set(dataKey, filteredData);
-    return true;
+    try {
+        // Verify ownership before updating
+        const docRef = db.collection(collectionName).doc(itemId);
+        const doc = await docRef.get();
+        
+        if (!doc.exists || doc.data().ownerId !== ownerKey) {
+            console.error('Cannot update: Document not found or not owned by current user');
+            return false;
+        }
+        
+        // Update the document
+        updatedItem.updatedAt = new Date().toISOString();
+        await docRef.update(updatedItem);
+        console.log(`✅ Updated ${collectionName} document:`, itemId);
+        return true;
+    } catch (error) {
+        console.error(`❌ Error updating ${collectionName}:`, error);
+        return false;
+    }
 }
-// ===== END DATA ISOLATION SYSTEM =====
+
+// Delete owner's data from Firebase
+async function deleteOwnerData(collectionName, itemId) {
+    const ownerKey = getOwnerKey();
+    if (!ownerKey) return false;
+    
+    try {
+        // Verify ownership before deleting
+        const docRef = db.collection(collectionName).doc(itemId);
+        const doc = await docRef.get();
+        
+        if (!doc.exists || doc.data().ownerId !== ownerKey) {
+            console.error('Cannot delete: Document not found or not owned by current user');
+            return false;
+        }
+        
+        // Delete the document
+        await docRef.delete();
+        console.log(`✅ Deleted ${collectionName} document:`, itemId);
+        return true;
+    } catch (error) {
+        console.error(`❌ Error deleting ${collectionName}:`, error);
+        return false;
+    }
+}
+// ===== END FIREBASE DATA ISOLATION SYSTEM =====
 
 // Initialize admin panel
 function initAdminPanel() {
@@ -424,46 +431,60 @@ function loadDashboardStats() {
     console.log(`Dashboard Stats - Owner: ${getOwnerKey()}, Bookings: ${bookings.length}, Customers: ${customers.length}`);
 }
 
-function loadRecentActivity() {
-    // Get only THIS owner's activities
-    const activities = getOwnerData('activities', []);
-    const activityList = document.getElementById('recentActivity');
-    
-    if (!activityList) return;
-    
-    if (activities.length === 0) {
-        activityList.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">No recent activity</p>';
-        return;
-    }
-    
-    activityList.innerHTML = activities.slice(0, 10).map(activity => `
-        <div class="activity-item">
-            <i class="fas fa-${activity.icon}"></i>
-            <div class="activity-info">
-                <p>${activity.message}</p>
-                <span>${new Date(activity.timestamp).toLocaleString()}</span>
+async function loadRecentActivity() {
+    try {
+        // Get only THIS owner's activities from Firebase
+        const activities = await getOwnerData('activities');
+        const activityList = document.getElementById('recentActivity');
+        
+        if (!activityList) return;
+        
+        if (activities.length === 0) {
+            activityList.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">No recent activity</p>';
+            return;
+        }
+        
+        // Sort by timestamp descending
+        activities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        activityList.innerHTML = activities.slice(0, 10).map(activity => `
+            <div class="activity-item">
+                <i class="fas fa-${activity.icon}"></i>
+                <div class="activity-info">
+                    <p>${activity.message}</p>
+                    <span>${new Date(activity.timestamp).toLocaleString()}</span>
+                </div>
             </div>
-        </div>
-    `).join('');
+        `).join('');
+        
+        console.log('✅ Loaded', activities.length, 'activities from Firebase');
+    } catch (error) {
+        console.error('❌ Error loading activities:', error);
+    }
 }
 
-function addActivity(icon, message) {
+async function addActivity(icon, message) {
     const ownerKey = getOwnerKey();
     if (!ownerKey) return;
     
-    const activities = Storage.get('activities', []);
-    activities.unshift({
-        icon: icon,
-        message: message,
-        timestamp: new Date().toISOString(),
-        ownerId: ownerKey,
-        ownerEmail: ownerKey
-    });
-    Storage.set('activities', activities.slice(0, 50));
-    loadRecentActivity();
+    try {
+        // Save activity to Firebase
+        await db.collection('activities').add({
+            icon: icon,
+            message: message,
+            timestamp: new Date().toISOString(),
+            ownerId: ownerKey
+        });
+        
+        // Reload activity list
+        await loadRecentActivity();
+        console.log('✅ Activity logged to Firebase');
+    } catch (error) {
+        console.error('❌ Error logging activity:', error);
+    }
 }
 
-function saveService() {
+async function saveService() {
     console.log('saveService function called');
     
     const name = document.getElementById('modalServiceName').value.trim();
@@ -497,33 +518,31 @@ function saveService() {
     
     try {
         const newService = {
-            id: Date.now(),
             name: name,
             category: category,
             price: parseFloat(price),
             duration: parseInt(duration),
-            description: description,
-            createdAt: new Date().toISOString()
+            description: description
         };
         
         console.log('New service:', newService);
         
-        // Save with owner ID
-        const saved = saveOwnerData('services', newService);
+        // Save to Firebase
+        const docId = await saveOwnerData('services', newService);
         
-        if (!saved) {
-            throw new Error('Failed to save to localStorage');
+        if (!docId) {
+            throw new Error('Failed to save to Firebase');
         }
         
-        console.log('Service saved to localStorage');
+        console.log('Service saved to Firebase with ID:', docId);
         
         // Trigger event for services page to reload
         window.dispatchEvent(new Event('servicesUpdated'));
         
         // Reload services list
-        loadServices();
+        await loadServices();
         
-        addActivity('plus-circle', 'New service added: ' + name);
+        await addActivity('plus-circle', 'New service added: ' + name);
         alert('SUCCESS! Service "' + name + '" added successfully!');
         
         // Close modal and reset form
@@ -537,7 +556,7 @@ function saveService() {
     }
 }
 
-function saveStaff() {
+async function saveStaff() {
     const firstName = document.getElementById('modalStaffFirstName').value.trim();
     const lastName = document.getElementById('modalStaffLastName').value.trim();
     const specialty = document.getElementById('modalStaffSpecialty').value.trim();
@@ -556,28 +575,35 @@ function saveStaff() {
         return;
     }
     
-    const staff = Storage.get('staff', []);
-    
-    const newStaff = {
-        id: Date.now(),
-        firstName: firstName,
-        lastName: lastName,
-        name: firstName + ' ' + lastName,
-        specialty: specialty,
-        email: email,
-        phone: phone,
-        bio: bio,
-        createdAt: new Date().toISOString()
-    };
-    
-    // Save with owner ID
-    saveOwnerData('staff', newStaff);
-    
-    addActivity('user-plus', 'New staff member added: ' + firstName + ' ' + lastName);
-    alert('SUCCESS! Staff member "' + firstName + ' ' + lastName + '" added successfully!');
-    
-    document.getElementById('addStaffModal').classList.remove('active');
-    document.getElementById('staffModalForm').reset();
+    try {
+        const newStaff = {
+            firstName: firstName,
+            lastName: lastName,
+            name: firstName + ' ' + lastName,
+            specialty: specialty,
+            email: email,
+            phone: phone,
+            bio: bio
+        };
+        
+        // Save to Firebase
+        const docId = await saveOwnerData('staff', newStaff);
+        
+        if (!docId) {
+            throw new Error('Failed to save to Firebase');
+        }
+        
+        await addActivity('user-plus', 'New staff member added: ' + firstName + ' ' + lastName);
+        alert('SUCCESS! Staff member \"' + firstName + ' ' + lastName + '\" added successfully!');
+        
+        document.getElementById('addStaffModal').classList.remove('active');
+        document.getElementById('staffModalForm').reset();
+        
+        console.log('✅ Staff member saved to Firebase with ID:', docId);
+    } catch (error) {
+        console.error('❌ Error saving staff:', error);
+        alert('ERROR: Failed to save staff - ' + error.message);
+    }
 }
 
 function previewPhoto(event) {
@@ -697,27 +723,33 @@ function showToast(message, type) {
 // SERVICES MANAGEMENT
 // ===================================
 
-function loadServices() {
-    // Get only THIS owner's services
-    const services = getOwnerData('services', []);
-    const servicesGrid = document.getElementById('servicesGrid');
-    const emptyState = document.getElementById('servicesEmpty');
-    
-    if (!servicesGrid) return;
-    
-    servicesGrid.innerHTML = '';
-    
-    if (services.length === 0) {
-        if (emptyState) emptyState.style.display = 'flex';
-        return;
+async function loadServices() {
+    try {
+        // Get only THIS owner's services from Firebase
+        const services = await getOwnerData('services');
+        const servicesGrid = document.getElementById('servicesGrid');
+        const emptyState = document.getElementById('servicesEmpty');
+        
+        if (!servicesGrid) return;
+        
+        servicesGrid.innerHTML = '';
+        
+        if (services.length === 0) {
+            if (emptyState) emptyState.style.display = 'flex';
+            return;
+        }
+        
+        if (emptyState) emptyState.style.display = 'none';
+        
+        services.forEach(function(service) {
+            const serviceCard = createServiceCard(service);
+            servicesGrid.appendChild(serviceCard);
+        });
+        
+        console.log('✅ Loaded', services.length, 'services from Firebase');
+    } catch (error) {
+        console.error('❌ Error loading services:', error);
     }
-    
-    if (emptyState) emptyState.style.display = 'none';
-    
-    services.forEach(function(service) {
-        const serviceCard = createServiceCard(service);
-        servicesGrid.appendChild(serviceCard);
-    });
 }
 
 function createServiceCard(service) {
@@ -773,36 +805,45 @@ function createServiceCard(service) {
     return card;
 }
 
-function editService(serviceId) {
+async function editService(serviceId) {
     console.log('Editing service:', serviceId);
-    const services = Storage.get('services', []);
-    const service = services.find(function(s) { return s.id === serviceId; });
     
-    if (!service) {
-        alert('Service not found');
-        return;
+    try {
+        // Get service from Firebase
+        const docRef = db.collection('services').doc(serviceId);
+        const doc = await docRef.get();
+        
+        if (!doc.exists) {
+            alert('Service not found');
+            return;
+        }
+        
+        const service = doc.data();
+        
+        // Populate modal with service data
+        document.getElementById('modalServiceName').value = service.name;
+        document.getElementById('modalServiceCategory').value = service.category;
+        document.getElementById('modalServicePrice').value = service.price;
+        document.getElementById('modalServiceDuration').value = service.duration;
+        document.getElementById('modalServiceDescription').value = service.description || '';
+        
+        // Store the service ID for update
+        window.editingServiceId = serviceId;
+        
+        // Change save button text
+        const saveBtn = document.getElementById('saveServiceBtn');
+        saveBtn.textContent = 'Update Service';
+        saveBtn.setAttribute('data-mode', 'edit');
+        
+        // Open modal
+        document.getElementById('addServiceModal').classList.add('active');
+    } catch (error) {
+        console.error('❌ Error loading service for edit:', error);
+        alert('Failed to load service data');
     }
-    
-    // Populate modal with service data
-    document.getElementById('modalServiceName').value = service.name;
-    document.getElementById('modalServiceCategory').value = service.category;
-    document.getElementById('modalServicePrice').value = service.price;
-    document.getElementById('modalServiceDuration').value = service.duration;
-    document.getElementById('modalServiceDescription').value = service.description || '';
-    
-    // Store the service ID for update
-    window.editingServiceId = serviceId;
-    
-    // Change save button text
-    const saveBtn = document.getElementById('saveServiceBtn');
-    saveBtn.textContent = 'Update Service';
-    saveBtn.setAttribute('data-mode', 'edit');
-    
-    // Open modal
-    document.getElementById('addServiceModal').classList.add('active');
 }
 
-function updateService(serviceId) {
+async function updateService(serviceId) {
     console.log('Updating service:', serviceId);
     
     const name = document.getElementById('modalServiceName').value.trim();
@@ -834,17 +875,15 @@ function updateService(serviceId) {
     
     try {
         const updatedService = {
-            id: serviceId,
             name: name,
             category: category,
             price: parseFloat(price),
             duration: parseInt(duration),
-            description: description,
-            updatedAt: new Date().toISOString()
+            description: description
         };
         
-        // Update using owner-specific function
-        const success = updateOwnerData('services', serviceId, updatedService);
+        // Update in Firebase
+        const success = await updateOwnerData('services', serviceId, updatedService);
         
         if (!success) {
             alert('Service not found or you do not have permission to edit it');
@@ -857,9 +896,9 @@ function updateService(serviceId) {
         window.dispatchEvent(new Event('servicesUpdated'));
         
         // Reload services list
-        loadServices();
+        await loadServices();
         
-        addActivity('edit', 'Service updated: ' + name);
+        await addActivity('edit', 'Service updated: ' + name);
         alert('SUCCESS! Service "' + name + '" updated successfully!');
         
         // Reset modal
@@ -877,25 +916,32 @@ function updateService(serviceId) {
     }
 }
 
-function deleteService(serviceId) {
+async function deleteService(serviceId) {
     console.log('Deleting service:', serviceId);
     
-    // Get only THIS owner's services
-    const services = getOwnerData('services', []);
-    const service = services.find(function(s) { return s.id === serviceId; });
-    
-    if (!service) {
-        alert('Service not found');
-        return;
-    }
-    
-    if (!confirm('Are you sure you want to delete "' + service.name + '"?\n\nThis action cannot be undone.')) {
-        return;
-    }
-    
     try {
-        // Delete using owner-specific delete function
-        deleteOwnerData('services', serviceId);
+        // Get service name for confirmation
+        const docRef = db.collection('services').doc(serviceId);
+        const doc = await docRef.get();
+        
+        if (!doc.exists) {
+            alert('Service not found');
+            return;
+        }
+        
+        const service = doc.data();
+        
+        if (!confirm('Are you sure you want to delete "' + service.name + '"?\n\nThis action cannot be undone.')) {
+            return;
+        }
+        
+        // Delete from Firebase
+        const success = await deleteOwnerData('services', serviceId);
+        
+        if (!success) {
+            alert('Failed to delete service or you do not have permission');
+            return;
+        }
         
         console.log('Service deleted successfully');
         
@@ -903,9 +949,9 @@ function deleteService(serviceId) {
         window.dispatchEvent(new Event('servicesUpdated'));
         
         // Reload services list
-        loadServices();
+        await loadServices();
         
-        addActivity('trash', 'Service deleted: ' + service.name);
+        await addActivity('trash', 'Service deleted: ' + service.name);
         alert('SUCCESS! Service "' + service.name + '" deleted successfully!');
     } catch (error) {
         console.error('Error deleting service:', error);

@@ -29,25 +29,44 @@ window.addEventListener('load', function() {
     }
 });
 
-// Load services from localStorage and display them
-function loadDynamicServices() {
-    const services = Storage.get('services', []);
+// Load services from Firebase and display them
+async function loadDynamicServices() {
     const servicesContainer = document.getElementById('servicesContainer');
     const noServicesMessage = document.getElementById('noServicesMessage');
     
-    // Show/hide "no services" message
-    if (services.length === 0) {
-        if (servicesContainer) servicesContainer.style.display = 'none';
-        if (noServicesMessage) noServicesMessage.style.display = 'block';
-        return;
-    }
-    
-    if (servicesContainer) servicesContainer.style.display = 'block';
-    if (noServicesMessage) noServicesMessage.style.display = 'none';
-    
-    // Group services by category
-    const servicesByCategory = {};
-    services.forEach(service => {
+    try {
+        // Show loading state
+        if (servicesContainer) {
+            servicesContainer.innerHTML = '<div style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-color);"></i><p style="margin-top: 15px;">Loading services...</p></div>';
+            servicesContainer.style.display = 'block';
+        }
+        
+        // Fetch services from Firebase
+        const servicesSnapshot = await db.collection('services').get();
+        const services = [];
+        
+        servicesSnapshot.forEach(doc => {
+            services.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+        
+        console.log('✅ Loaded', services.length, 'services from Firebase');
+        
+        // Show/hide "no services" message
+        if (services.length === 0) {
+            if (servicesContainer) servicesContainer.style.display = 'none';
+            if (noServicesMessage) noServicesMessage.style.display = 'block';
+            return;
+        }
+        
+        if (servicesContainer) servicesContainer.style.display = 'block';
+        if (noServicesMessage) noServicesMessage.style.display = 'none';
+        
+        // Group services by category
+        const servicesByCategory = {};
+        services.forEach(service => {
         const category = service.category.toLowerCase();
         if (!servicesByCategory[category]) {
             servicesByCategory[category] = [];
@@ -78,6 +97,13 @@ function loadDynamicServices() {
             servicesContainer.appendChild(categorySection);
         }
     });
+    
+    } catch (error) {
+        console.error('❌ Error loading services from Firebase:', error);
+        if (servicesContainer) {
+            servicesContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: #e74c3c;"><i class="fas fa-exclamation-triangle" style="font-size: 2rem;"></i><p style="margin-top: 15px;">Failed to load services. Please refresh the page.</p></div>';
+        }
+    }
 }
 
 // Create a new category section
@@ -158,15 +184,14 @@ function getCategoryIcon(category) {
 
 // Book service function (redirect to booking page)
 window.bookService = function(serviceName, price) {
-    // Store selected service in localStorage
-    Storage.set('selectedService', {
-        name: serviceName,
-        price: price,
-        selectedAt: new Date().toISOString()
+    // Pass selected service via URL parameters
+    const params = new URLSearchParams({
+        service: serviceName,
+        price: price
     });
     
-    // Redirect to booking page
-    window.location.href = 'booking.html';
+    // Redirect to booking page with parameters
+    window.location.href = 'booking.html?' + params.toString();
 };
 
 // Storage utility (if not already defined)
