@@ -313,33 +313,21 @@
                   </div>
 
                   <div class="form-section">
-                    <h3>Preferences</h3>
+                    <h3>Additional Information</h3>
                     <div class="form-group">
-                      <label for="preferredStaff">Preferred Staff</label>
-                      <select id="preferredStaff" name="preferredStaff">
-                        <option value="">No preference</option>
-                        <option value="Sarah Johnson">
-                          Sarah Johnson (Hair Specialist)
-                        </option>
-                        <option value="Mike Chen">
-                          Mike Chen (Color Expert)
-                        </option>
-                        <option value="Emma Davis">
-                          Emma Davis (Spa Therapist)
-                        </option>
-                        <option value="Lisa Wong">
-                          Lisa Wong (Bridal Specialist)
-                        </option>
-                      </select>
+                      <label for="dateOfBirth">Date of Birth</label>
+                      <input type="date" id="dateOfBirth" name="dateOfBirth" />
+                      <small style="color: #999; font-size: 0.875rem;">We'll send you special birthday offers!</small>
                     </div>
                     <div class="form-group">
-                      <label for="notificationPreference"
-                        >Email Notifications</label
+                      <label for="servicePreference"
+                        >Service Preference</label
                       >
-                      <select id="notificationPreference" name="notifications">
-                        <option value="all">All notifications</option>
-                        <option value="important">Important only</option>
-                        <option value="none">No notifications</option>
+                      <select id="servicePreference" name="servicePreference">
+                        <option value="">Select preference</option>
+                        <option value="men">Men's Services</option>
+                        <option value="women">Women's Services</option>
+                        <option value="unisex">Both</option>
                       </select>
                     </div>
                   </div>

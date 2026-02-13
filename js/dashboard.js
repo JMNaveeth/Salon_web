@@ -802,8 +802,8 @@ async function loadProfileData(profileData = null) {
     const lastNameEl = document.getElementById('profileLastName');
     const emailEl = document.getElementById('profileEmail');
     const phoneEl = document.getElementById('profilePhone');
-    const preferredStaffEl = document.getElementById('preferredStaff');
-    const notificationsEl = document.getElementById('notificationPreference');
+    const dateOfBirthEl = document.getElementById('dateOfBirth');
+    const servicePreferenceEl = document.getElementById('servicePreference');
 
     // If no data provided, fetch from Firebase
     if (!profileData) {
@@ -833,8 +833,8 @@ async function loadProfileData(profileData = null) {
     if (lastNameEl) lastNameEl.value = profileData.lastName || '';
     if (emailEl) emailEl.value = profileData.email || '';
     if (phoneEl) phoneEl.value = profileData.phone || '';
-    if (preferredStaffEl) preferredStaffEl.value = profileData.preferredStaff || '';
-    if (notificationsEl) notificationsEl.value = profileData.notifications || 'all';
+    if (dateOfBirthEl) dateOfBirthEl.value = profileData.dateOfBirth || '';
+    if (servicePreferenceEl) servicePreferenceEl.value = profileData.servicePreference || '';
 }
 
 async function resetProfileForm() {
