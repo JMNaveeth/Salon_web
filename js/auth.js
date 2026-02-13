@@ -5,12 +5,381 @@
 // Global variable to store current user profile
 let currentUserProfile = null;
 
+// 📍 Location Data - All 25 Districts of Sri Lanka with Areas
+const LOCATION_DATA = {
+    // Eastern Province
+    'Trincomalee': [
+        'Kinniya',
+        'Trincomalee Town',
+        'Nilaveli',
+        'Kuchchaveli',
+        'Mutur',
+        'Kantale',
+        'Gomarankadawala',
+        'Seruwila',
+        'Thampalakamam',
+        'Town & Gravets',
+        'Kinniya Pattu'
+    ],
+    'Batticaloa': [
+        'Batticaloa Town',
+        'Kaluwanchikudy',
+        'Valachchenai',
+        'Eravur',
+        'Kattankudy',
+        'Oddamavadi',
+        'Chenkalady',
+        'Vakarai',
+        'Koralai Pattu',
+        'Manmunai North',
+        'Manmunai South West',
+        'Manmunai Pattu',
+        'Porativu Pattu'
+    ],
+    'Ampara': [
+        'Ampara Town',
+        'Akkaraipattu',
+        'Kalmunai',
+        'Sainthamaruthu',
+        'Pottuvil',
+        'Sammanthurai',
+        'Thirukkovil',
+        'Nintavur',
+        'Addalachchenai',
+        'Dehiattakandiya',
+        'Damana',
+        'Padiyathalawa',
+        'Uhana'
+    ],
+    
+    // Northern Province
+    'Jaffna': [
+        'Jaffna Town',
+        'Nallur',
+        'Chavakachcheri',
+        'Point Pedro',
+        'Chankanai',
+        'Karainagar',
+        'Velanai',
+        'Vaddukoddai',
+        'Kayts',
+        'Delft',
+        'Valvettithurai',
+        'Tellippalai',
+        'Sandilipay',
+        'Uduvil'
+    ],
+    'Kilinochchi': [
+        'Kilinochchi Town',
+        'Pallai',
+        'Paranthan',
+        'Poonakary',
+        'Karachchi',
+        'Pachchilaipalli'
+    ],
+    'Mannar': [
+        'Mannar Town',
+        'Madhu',
+        'Nanattan',
+        'Manthai West',
+        'Musali',
+        'Nanaddan'
+    ],
+    'Mullaitivu': [
+        'Mullaitivu Town',
+        'Oddusuddan',
+        'Puthukudiyiruppu',
+        'Manthai East',
+        'Thunukkai',
+        'Welioya'
+    ],
+    'Vavuniya': [
+        'Vavuniya Town',
+        'Vavuniya South',
+        'Vavuniya North',
+        'Vengalacheddikulam',
+        'Cheddikulam',
+        'Omanthai'
+    ],
+    
+    // North Western Province
+    'Puttalam': [
+        'Puttalam Town',
+        'Chilaw',
+        'Wennappuwa',
+        'Nattandiya',
+        'Marawila',
+        'Dankotuwa',
+        'Anamaduwa',
+        'Mundel',
+        'Palavi',
+        'Kalpitiya'
+    ],
+    'Kurunegala': [
+        'Kurunegala Town',
+        'Kuliyapitiya',
+        'Narammala',
+        'Wariyapola',
+        'Pannala',
+        'Maho',
+        'Melsiripura',
+        'Galgamuwa',
+        'Nikaweratiya',
+        'Polgahawela',
+        'Mawathagama',
+        'Giriulla',
+        'Bingiriya',
+        'Alawwa'
+    ],
+    
+    // North Central Province
+    'Anuradhapura': [
+        'Anuradhapura Town',
+        'Medawachchiya',
+        'Kebithigollawa',
+        'Horowpothana',
+        'Kekirawa',
+        'Thambuttegama',
+        'Thalawa',
+        'Nochchiyagama',
+        'Galenbindunuwewa',
+        'Mihintale',
+        'Rambewa',
+        'Kahatagasdigiliya'
+    ],
+    'Polonnaruwa': [
+        'Polonnaruwa Town',
+        'Kaduruwela',
+        'Medirigiriya',
+        'Hingurakgoda',
+        'Dimbulagala',
+        'Elahera',
+        'Welikanda',
+        'Lankapura',
+        'Aralaganwila'
+    ],
+    
+    // Central Province
+    'Matale': [
+        'Matale Town',
+        'Dambulla',
+        'Sigiriya',
+        'Galewela',
+        'Naula',
+        'Ukuwela',
+        'Rattota',
+        'Pallepola',
+        'Yatawatta',
+        'Laggala'
+    ],
+    'Kandy': [
+        'Kandy City',
+        'Peradeniya',
+        'Katugastota',
+        'Gampola',
+        'Nawalapitiya',
+        'Akurana',
+        'Galagedara',
+        'Pilimathalawa',
+        'Kadugannawa',
+        'Teldeniya',
+        'Kundasale',
+        'Wattegama',
+        'Harispattuwa',
+        'Panvila'
+    ],
+    'Nuwara Eliya': [
+        'Nuwara Eliya Town',
+        'Hatton',
+        'Nuwara Eliya',
+        'Walapane',
+        'Hanguranketha',
+        'Kothmale',
+        'Nildandahinna',
+        'Ambagamuwa',
+        'Maskeliya',
+        'Ginigathena'
+    ],
+    
+    // Uva Province
+    'Badulla': [
+        'Badulla Town',
+        'Bandarawela',
+        'Haputale',
+        'Welimada',
+        'Mahiyanganaya',
+        'Hali Ela',
+        'Passara',
+        'Ella',
+        'Diyatalawa',
+        'Haldummulla',
+        'Soranathota',
+        'Meegahakivula'
+    ],
+    'Monaragala': [
+        'Monaragala Town',
+        'Wellawaya',
+        'Bibile',
+        'Buttala',
+        'Katharagama',
+        'Thanamalwila',
+        'Siyambalanduwa',
+        'Medagama',
+        'Badalkumbura'
+    ],
+    
+    // Sabaragamuwa Province
+    'Ratnapura': [
+        'Ratnapura Town',
+        'Embilipitiya',
+        'Balangoda',
+        'Pelmadulla',
+        'Kuruwita',
+        'Eheliyagoda',
+        'Kahawatta',
+        'Kalawana',
+        'Kolonna',
+        'Elapatha',
+        'Nivithigala'
+    ],
+    'Kegalle': [
+        'Kegalle Town',
+        'Mawanella',
+        'Warakapola',
+        'Rambukkana',
+        'Galigamuwa',
+        'Ruwanwella',
+        'Dehiowita',
+        'Deraniyagala',
+        'Yatiyantota',
+        'Kitulgala',
+        'Aranayake'
+    ],
+    
+    // Western Province
+    'Colombo': [
+        'Colombo City',
+        'Fort',
+        'Pettah',
+        'Kollupitiya',
+        'Bambalapitiya',
+        'Wellawatta',
+        'Dehiwala',
+        'Mount Lavinia',
+        'Borella',
+        'Maradana',
+        'Kotahena',
+        'Grandpass',
+        'Slave Island',
+        'Cinnamon Gardens',
+        'Havelock Town',
+        'Nugegoda',
+        'Maharagama',
+        'Kotte',
+        'Rajagiriya',
+        'Battaramulla',
+        'Nawala',
+        'Kaduwela',
+        'Kolonnawa',
+        'Kesbewa',
+        'Homagama',
+        'Padukka',
+        'Hanwella',
+        'Avissawella',
+        'Seethawaka'
+    ],
+    'Gampaha': [
+        'Gampaha Town',
+        'Negombo',
+        'Katunayake',
+        'Ja-Ela',
+        'Wattala',
+        'Kelaniya',
+        'Peliyagoda',
+        'Kadawatha',
+        'Ragama',
+        'Kiribathgoda',
+        'Minuwangoda',
+        'Divulapitiya',
+        'Mirigama',
+        'Nittambuwa',
+        'Veyangoda',
+        'Ganemulla',
+        'Dompe',
+        'Attanagalla',
+        'Biyagama'
+    ],
+    'Kalutara': [
+        'Kalutara Town',
+        'Panadura',
+        'Horana',
+        'Beruwala',
+        'Aluthgama',
+        'Matugama',
+        'Bandaragama',
+        'Ingiriya',
+        'Wadduwa',
+        'Dodangoda',
+        'Agalawatta',
+        'Palindanuwara',
+        'Bulathsinhala',
+        'Madurawala'
+    ],
+    
+    // Southern Province
+    'Galle': [
+        'Galle City',
+        'Hikkaduwa',
+        'Ambalangoda',
+        'Elpitiya',
+        'Bentota',
+        'Baddegama',
+        'Karapitiya',
+        'Habaraduwa',
+        'Ahangama',
+        'Balapitiya',
+        'Neluwa',
+        'Galle Fort',
+        'Unawatuna',
+        'Koggala'
+    ],
+    'Matara': [
+        'Matara Town',
+        'Weligama',
+        'Mirissa',
+        'Akuressa',
+        'Deniyaya',
+        'Dikwella',
+        'Hakmana',
+        'Kamburugamuwa',
+        'Devinuwara',
+        'Gandara',
+        'Thihagoda',
+        'Kotapola'
+    ],
+    'Hambantota': [
+        'Hambantota Town',
+        'Tangalle',
+        'Tissamaharama',
+        'Ambalantota',
+        'Beliatta',
+        'Weeraketiya',
+        'Middeniya',
+        'Lunugamvehera',
+        'Sooriyawewa',
+        'Hambegamuwa'
+    ]
+};
+
 // Check if user is already logged in when page loads
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize auth UI if on auth page
     if (window.location.pathname.includes('auth.html')) {
         initAuthPage();
     }
+    
+    // Initialize location dropdowns (district/area selectors)
+    initLocationDropdowns();
     
     // Listen for authentication state changes
     initAuthStateListener();
@@ -258,15 +627,16 @@ async function loginOwner() {
 async function signupOwner() {
     const name = document.getElementById('ownerSignupName').value.trim();
     const businessName = document.getElementById('ownerSignupBusinessName').value.trim();
-    const location = document.getElementById('ownerSignupLocation').value.trim();
+    const district = document.getElementById('ownerSignupDistrict')?.value || '';
+    const area = document.getElementById('ownerSignupArea')?.value || '';
     const email = document.getElementById('ownerSignupEmail').value.trim();
     const phone = document.getElementById('ownerSignupPhone').value.trim();
     const password = document.getElementById('ownerSignupPassword').value.trim();
     const errorElement = document.getElementById('ownerError');
 
     // Validation
-    if (!name || !businessName || !location || !email || !phone || !password) {
-        showError(errorElement, 'Please fill in all fields');
+    if (!name || !businessName || !district || !area || !email || !phone || !password) {
+        showError(errorElement, 'Please fill in all fields including district and area');
         return;
     }
 
@@ -289,7 +659,9 @@ async function signupOwner() {
         await db.collection('users').doc(user.uid).set({
             name: name,
             businessName: businessName,
-            location: location,
+            district: district,
+            area: area,
+            location: `${area}, ${district}`, // Combined for display
             email: email,
             phone: phone,
             role: 'owner',
@@ -491,13 +863,135 @@ function getUserId() {
     return user ? user.uid : null;
 }
 
+// 📍 LOCATION FUNCTIONS
+
+// Get all available districts
+function getDistricts() {
+    return Object.keys(LOCATION_DATA);
+}
+
+// Get areas for a specific district
+function getAreasForDistrict(district) {
+    return LOCATION_DATA[district] || [];
+}
+
+// Get shops by location (district and/or area)
+async function getShopsByLocation(district = null, area = null) {
+    try {
+        let query = db.collection('users').where('role', '==', 'owner');
+
+        // Filter by district if provided
+        if (district) {
+            query = query.where('district', '==', district);
+        }
+
+        // Filter by area if provided
+        if (area) {
+            query = query.where('area', '==', area);
+        }
+
+        const snapshot = await query.get();
+        const shops = [];
+
+        snapshot.forEach(doc => {
+            shops.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+
+        console.log(`✅ Found ${shops.length} shops in ${area || district || 'all locations'}`);
+        return shops;
+
+    } catch (error) {
+        console.error('Error fetching shops by location:', error);
+        return [];
+    }
+}
+
+// Populate district dropdown
+function populateDistrictDropdown(selectElementId) {
+    const selectElement = document.getElementById(selectElementId);
+    if (!selectElement) return;
+
+    // Clear existing options
+    selectElement.innerHTML = '<option value="">Select District</option>';
+
+    // Add districts
+    const districts = getDistricts();
+    districts.forEach(district => {
+        const option = document.createElement('option');
+        option.value = district;
+        option.textContent = district;
+        selectElement.appendChild(option);
+    });
+}
+
+// Populate area dropdown based on selected district
+function populateAreaDropdown(selectElementId, district) {
+    const selectElement = document.getElementById(selectElementId);
+    if (!selectElement) return;
+
+    // Clear existing options
+    selectElement.innerHTML = '<option value="">Select Area</option>';
+
+    if (!district) {
+        selectElement.disabled = true;
+        return;
+    }
+
+    selectElement.disabled = false;
+
+    // Add areas for selected district
+    const areas = getAreasForDistrict(district);
+    areas.forEach(area => {
+        const option = document.createElement('option');
+        option.value = area;
+        option.textContent = area;
+        selectElement.appendChild(option);
+    });
+}
+
+// Initialize location dropdowns on page load
+function initLocationDropdowns() {
+    // For owner signup - district dropdown
+    const ownerDistrictSelect = document.getElementById('ownerSignupDistrict');
+    if (ownerDistrictSelect) {
+        populateDistrictDropdown('ownerSignupDistrict');
+        
+        // Listen for district changes to update area dropdown
+        ownerDistrictSelect.addEventListener('change', function() {
+            populateAreaDropdown('ownerSignupArea', this.value);
+        });
+    }
+
+    // For customer location filter - district dropdown
+    const customerDistrictSelect = document.getElementById('customerFilterDistrict');
+    if (customerDistrictSelect) {
+        populateDistrictDropdown('customerFilterDistrict');
+        
+        // Listen for district changes to update area dropdown
+        customerDistrictSelect.addEventListener('change', function() {
+            populateAreaDropdown('customerFilterArea', this.value);
+        });
+    }
+}
+
 // Export functions for use in other files
 window.AuthSystem = {
     checkAuth: checkAuth,
     logout: logout,
     getCurrentUser: getCurrentUser,
     isLoggedIn: isLoggedIn,
-    getUserId: getUserId
+    getUserId: getUserId,
+    // Location functions
+    getDistricts: getDistricts,
+    getAreasForDistrict: getAreasForDistrict,
+    getShopsByLocation: getShopsByLocation,
+    populateDistrictDropdown: populateDistrictDropdown,
+    populateAreaDropdown: populateAreaDropdown,
+    initLocationDropdowns: initLocationDropdowns,
+    LOCATION_DATA: LOCATION_DATA
 };
 
 console.log('🔐 Secure Authentication System Loaded - Passwords are NEVER stored in database!');
