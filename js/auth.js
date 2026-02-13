@@ -281,7 +281,7 @@ async function signupOwner() {
     }
 
     try {
-        // Create account in Firebase Auth (password is encrypted automatically)
+        // Create shop account in Firebase Auth (password is encrypted automatically)
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
 
