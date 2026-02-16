@@ -102,7 +102,7 @@ function initCustomCursor() {
     });
 
     // Add pointer hover effect
-    const interactables = document.querySelectorAll('a, button, input, textarea, .hover-trigger, .card, .service-item, .salon-card, .slot-card');
+    const interactables = document.querySelectorAll('a, button, input, textarea, .hover-trigger, .card, .service-item, .salon-card');
     
     interactables.forEach(el => {
         el.addEventListener('mouseenter', () => {
@@ -570,7 +570,7 @@ function init3DParallax() {
 function initCardInteractivity() {
     // Select cards from all pages including dashboard/services/admin
     const tiltCards = document.querySelectorAll(
-        '.tilt, .service-item, .gallery-item, .admin-card, .service-card, .sidebar-menu, .sidebar-stats, .appointment-card, .how-card, .salon-card, .slot-card, .contact-info-card'
+        '.tilt, .service-item, .gallery-item, .admin-card, .service-card, .sidebar-menu, .sidebar-stats, .appointment-card, .how-card, .salon-card, .contact-info-card'
     );
     
     tiltCards.forEach(card => {
@@ -711,11 +711,6 @@ async function createSalonCard(owner) {
     } catch (error) {
         console.error('Error fetching salon stats:', error);
     }
-    
-    // Calculate next available slot (placeholder logic)
-    const nextHours = Math.floor(Math.random() * 3) + 1;
-    const nextMinutes = Math.floor(Math.random() * 60);
-    const nextTime = `${(currentHour + nextHours) % 24}:${nextMinutes.toString().padStart(2, '0')} ${(currentHour + nextHours) >= 12 ? 'PM' : 'AM'}`;
     
     // Display location from district and area
     const locationDisplay = owner.area && owner.district 
