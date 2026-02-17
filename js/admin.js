@@ -123,7 +123,7 @@ async function deleteOwnerData(collectionName, itemId) {
 // ===== END FIREBASE DATA ISOLATION SYSTEM =====
 
 // Initialize admin panel
-function initAdminPanel() {
+async function initAdminPanel() {
     console.log('Admin Panel Initializing...');
     console.log('DOM Ready:', document.readyState);
     
@@ -135,14 +135,14 @@ function initAdminPanel() {
     }
     
     try {
-        loadDashboardStats();
+        await loadDashboardStats();
         console.log('SUCCESS: Dashboard stats loaded');
     } catch (e) {
         console.error('ERROR: Dashboard stats error:', e);
     }
     
     try {
-        loadRecentActivity();
+        await loadRecentActivity();
         console.log('SUCCESS: Activity loaded');
     } catch (e) {
         console.error('ERROR: Activity error:', e);
@@ -156,7 +156,7 @@ function initAdminPanel() {
     }
     
     try {
-        loadServices();
+        await loadServices();
         console.log('SUCCESS: Services loaded');
     } catch (e) {
         console.error('ERROR: Services error:', e);
@@ -165,23 +165,45 @@ function initAdminPanel() {
     console.log('Admin Panel Ready!');
 }
 
-// Initialize when DOM is ready - use multiple methods for compatibility
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initAdminPanel);
-} else {
-    // DOM already loaded
-    initAdminPanel();
+// Wait for Firebase Auth to be ready before initializing
+function waitForAuth() {
+    return new Promise((resolve) => {
+        // If Firebase auth is not available yet, wait
+        if (typeof firebase === 'undefined' || !firebase.auth) {
+            console.log('Waiting for Firebase...');
+            setTimeout(() => waitForAuth().then(resolve), 100);
+            return;
+        }
+        
+        // Wait for auth state to be determined
+        const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+            unsubscribe();
+            if (user) {
+                console.log('✅ User authenticated:', user.email);
+                resolve(user);
+            } else {
+                console.log('❌ No user authenticated');
+                resolve(null);
+            }
+        });
+    });
 }
 
-// Fallback initialization
-window.addEventListener('load', function() {
-    console.log('Window loaded - verifying initialization');
-    // Only re-init if something failed
-    if (!document.querySelector('.sidebar-link.active')) {
-        console.warn('WARNING: Admin not initialized, running fallback...');
-        initAdminPanel();
-    }
-});
+// Initialize when both DOM and Firebase Auth are ready
+async function init() {
+    console.log('Waiting for Firebase Auth...');
+    await waitForAuth();
+    console.log('Firebase Auth ready, initializing admin panel...');
+    await initAdminPanel();
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    // DOM already loaded
+    init();
+}
 
 function initNavigation() {
     const sidebarLinks = document.querySelectorAll('.sidebar-link');
@@ -192,7 +214,7 @@ function initNavigation() {
     });
     
     sidebarLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
+        link.addEventListener('click', async function(e) {
             const targetSection = this.getAttribute('data-section');
             if (targetSection) {
                 e.preventDefault();
@@ -210,6 +232,17 @@ function initNavigation() {
                         section.style.display = 'none';
                     }
                 });
+                
+                // Reload data when switching to services section
+                if (targetSection === 'services') {
+                    await loadServices();
+                }
+                
+                // Reload data when switching to overview section
+                if (targetSection === 'overview') {
+                    await loadDashboardStats();
+                    await loadRecentActivity();
+                }
             }
         });
     });
@@ -405,12 +438,12 @@ function initModalButtons() {
     console.log('All modal buttons initialized');
 }
 
-function loadDashboardStats() {
+async function loadDashboardStats() {
     // Get only THIS owner's data
-    const bookings = getOwnerData('bookings', []);
-    const customers = getOwnerData('customers', []);
-    const services = getOwnerData('services', []);
-    const staff = getOwnerData('staff', []);
+    const bookings = await getOwnerData('bookings');
+    const customers = await getOwnerData('customers');
+    const services = await getOwnerData('services');
+    const staff = await getOwnerData('staff');
     
     const today = new Date().toDateString();
     
@@ -638,7 +671,7 @@ function previewPhoto(event) {
     }
 }
 
-function savePhoto() {
+async function savePhoto() {
     const name = document.getElementById('modalPhotoTitle').value.trim();
     const category = document.getElementById('modalPhotoCategory').value.trim();
     const description = document.getElementById('modalPhotoDescription').value.trim();
@@ -670,26 +703,34 @@ function savePhoto() {
     
     const reader = new FileReader();
     
-    reader.onload = function(e) {
-        const newPhoto = {
-            id: Date.now(),
-            name: name,
-            category: category,
-            description: description,
-            image: e.target.result,
-            mediaType: isVideo ? 'video' : 'image',
-            createdAt: new Date().toISOString()
-        };
-        
-        // Save with owner ID
-        saveOwnerData('customerPhotos', newPhoto);
-        
-        addActivity('camera', `New customer ${isVideo ? 'video' : 'photo'} added: ${name}`);
-        alert(`SUCCESS! ${isVideo ? 'Video' : 'Photo'} "${name}" added successfully!`);
-        
-        document.getElementById('addPhotoModal').classList.remove('active');
-        document.getElementById('photoModalForm').reset();
-        document.getElementById('photoPreview').style.display = 'none';
+    reader.onload = async function(e) {
+        try {
+            const newPhoto = {
+                name: name,
+                category: category,
+                description: description,
+                image: e.target.result,
+                mediaType: isVideo ? 'video' : 'image',
+                createdAt: new Date().toISOString()
+            };
+            
+            // Save with owner ID
+            const docId = await saveOwnerData('customerPhotos', newPhoto);
+            
+            if (!docId) {
+                throw new Error('Failed to save photo to Firebase');
+            }
+            
+            await addActivity('camera', `New customer ${isVideo ? 'video' : 'photo'} added: ${name}`);
+            alert(`SUCCESS! ${isVideo ? 'Video' : 'Photo'} "${name}" added successfully!`);
+            
+            document.getElementById('addPhotoModal').classList.remove('active');
+            document.getElementById('photoModalForm').reset();
+            document.getElementById('photoPreview').style.display = 'none';
+        } catch (error) {
+            console.error('Error saving photo:', error);
+            alert('ERROR: Failed to save photo - ' + error.message);
+        }
     };
     
     reader.onerror = function() {
@@ -784,10 +825,10 @@ function createServiceCard(service) {
         '<i class="fas ' + icon + '"></i>' +
         '</div>' +
         '<div class="service-actions">' +
-        '<button class="btn-icon btn-edit" onclick="editService(' + service.id + ')" title="Edit">' +
+        '<button class="btn-icon btn-edit" onclick="editService(\'' + service.id + '\')" title="Edit">' +
         '<i class="fas fa-edit"></i>' +
         '</button>' +
-        '<button class="btn-icon btn-delete" onclick="deleteService(' + service.id + ')" title="Delete">' +
+        '<button class="btn-icon btn-delete" onclick="deleteService(\'' + service.id + '\')" title="Delete">' +
         '<i class="fas fa-trash"></i>' +
         '</button>' +
         '</div>' +
