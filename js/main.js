@@ -1,7 +1,25 @@
 // Main JavaScript file for JK Salon website
 
+// Wait for Firebase to be ready
+function waitForFirebase() {
+    return new Promise((resolve) => {
+        // If Firebase is not available yet, wait
+        if (typeof firebase === 'undefined' || !firebase.firestore) {
+            console.log('Waiting for Firebase...');
+            setTimeout(() => waitForFirebase().then(resolve), 100);
+            return;
+        }
+        
+        console.log('✅ Firebase ready');
+        resolve();
+    });
+}
+
 // Initialize AOS (Animate On Scroll)
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    // Wait for Firebase to be ready first
+    await waitForFirebase();
+    
     // Initialize AOS if available
     if (typeof AOS !== 'undefined') {
         AOS.init({
@@ -41,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Load real salon accounts (only on home page)
     if (document.getElementById('salonGrid')) {
-        loadRealSalons();
+        await loadRealSalons();
     }
 });
 
@@ -621,17 +639,32 @@ async function loadRealSalons() {
     const salonGrid = document.getElementById('salonGrid');
     const noSalonsMessage = document.getElementById('noSalonsMessage');
     
-    if (!salonGrid || !noSalonsMessage) return;
+    if (!salonGrid || !noSalonsMessage) {
+        console.error('❌ Salon grid or no salons message element not found');
+        return;
+    }
     
     // Show loading state
     salonGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--primary-color);"></i><p style="margin-top: 20px; color: var(--text-light);">Loading salons...</p></div>';
     
     try {
+        // Check if Firebase is initialized
+        if (typeof db === 'undefined') {
+            throw new Error('Firebase Firestore is not initialized');
+        }
+        
+        console.log('🔍 Querying Firebase for salon owners...');
+        console.log('Firebase db object:', db);
+        
         // Get all salon owner accounts from Firebase
         const shopOwnersQuery = await db.collection('users').where('role', '==', 'owner').get();
         
+        console.log('📦 Query result:', shopOwnersQuery);
+        console.log('📊 Documents count:', shopOwnersQuery.size);
+        
         const salonOwners = [];
         shopOwnersQuery.forEach(doc => {
+            console.log('👤 Owner found:', doc.id, doc.data());
             salonOwners.push({
                 id: doc.id,
                 ...doc.data()
@@ -647,6 +680,7 @@ async function loadRealSalons() {
         if (salonOwners.length === 0) {
             salonGrid.style.display = 'none';
             noSalonsMessage.style.display = 'block';
+            console.log('ℹ️ No salon owners registered yet');
             return;
         }
         
@@ -656,33 +690,46 @@ async function loadRealSalons() {
         
         // Create salon cards for each registered owner
         for (const owner of salonOwners) {
-            const salonCard = await createSalonCard(owner);
-            salonGrid.appendChild(salonCard);
+            try {
+                const salonCard = await createSalonCard(owner);
+                salonGrid.appendChild(salonCard);
+            } catch (cardError) {
+                console.error('❌ Error creating card for owner:', owner.id, cardError);
+                // Continue with next owner instead of failing completely
+            }
         }
         
         console.log(`✅ Loaded ${salonOwners.length} real salon(s) from Firebase`);
         
     } catch (error) {
         console.error('❌ Error loading salons from Firebase:', error);
-        salonGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #e74c3c;"></i><p style="margin-top: 20px; color: var(--text-light);">Error loading salons. Please refresh the page.</p></div>';
+        console.error('Error details:', error.message, error.stack);
+        salonGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #e74c3c;"></i><p style="margin-top: 20px; color: var(--text-light);">Error loading salons. Please refresh the page.</p><p style="font-size: 0.9rem; opacity: 0.7; margin-top: 10px;">' + error.message + '</p></div>';
     }
 }
 
 // Create salon card element with Firebase data
 async function createSalonCard(owner) {
+    console.log('🎨 Creating card for owner:', owner.id, owner);
+    
     const card = document.createElement('div');
     card.className = 'salon-card';
     
-    // Determine if salon is "open" (business hours logic)
-    const currentHour = new Date().getHours();
-    const isOpen = currentHour >= 9 && currentHour < 20; // 9 AM - 8 PM
-    
-    // Get salon stats from Firebase
-    let serviceCount = 0;
-    let bookingCount = 0;
-    let photoCount = 0;
-    let rating = 0;
-    let reviewCount = 0;
+    try {
+        // Determine if salon is "open" (business hours logic)
+        const currentHour = new Date().getHours();
+        const isOpen = currentHour >= 9 && currentHour < 20; // 9 AM - 8 PM
+        
+        // Calculate next available time
+        const nextHour = currentHour < 9 ? 9 : (currentHour >= 20 ? 9 : currentHour + 1);
+        const nextTime = `${nextHour > 12 ? nextHour - 12 : nextHour}:00 ${nextHour >= 12 ? 'PM' : 'AM'}`;
+        
+        // Get salon stats from Firebase
+        let serviceCount = 0;
+        let bookingCount = 0;
+        let photoCount = 0;
+        let rating = 0;
+        let reviewCount = 0;
     
     try {
         // Get services count for this owner
@@ -742,7 +789,7 @@ async function createSalonCard(owner) {
             <div class="salon-stats">
                 <span><i class="fas fa-star"></i> ${rating} (${reviewCount})</span>
                 <span><i class="fas fa-images"></i> ${photoCount} ${photoCount === 1 ? 'photo' : 'photos'}</span>
-                <span><i class="fas fa-clock"></i> Next: ${isOpen ? nextTime : '11:50 AM'}</span>
+                <span><i class="fas fa-clock"></i> Next: ${isOpen ? nextTime : '9:00 AM'}</span>
             </div>
             <div class="salon-actions" style="display: flex; gap: 10px; flex-wrap: wrap;">
                 <a class="btn-secondary" href="gallery.html?ownerId=${owner.id}" style="flex: 1; min-width: 150px;">
@@ -759,7 +806,27 @@ async function createSalonCard(owner) {
         </div>
     `;
     
-    return card;
+        console.log('✅ Card created successfully for:', owner.businessName || owner.name);
+        return card;
+        
+    } catch (error) {
+        console.error('❌ Error in createSalonCard:', error);
+        console.error('Owner data:', owner);
+        
+        // Return a basic error card instead of failing
+        card.innerHTML = `
+            <div class="salon-card-content">
+                <h3>${owner.businessName || owner.name || 'Salon'}</h3>
+                <p>Unable to load details. Please try again later.</p>
+                <div class="salon-actions">
+                    <a class="btn-primary" href="booking.html?ownerId=${owner.id}">
+                        View Details
+                    </a>
+                </div>
+            </div>
+        `;
+        return card;
+    }
 }
 
 // Search salons by location (district and/or area)
@@ -778,6 +845,11 @@ async function searchSalonsByLocation() {
     salonGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--primary-color);"></i><p style="margin-top: 20px; color: var(--text-light);">Searching salons...</p></div>';
     
     try {
+        // Check if Firebase is initialized
+        if (typeof db === 'undefined') {
+            throw new Error('Firebase Firestore is not initialized');
+        }
+        
         // Build Firebase query based on filters
         let query = db.collection('users').where('role', '==', 'owner');
         
@@ -791,6 +863,8 @@ async function searchSalonsByLocation() {
             query = query.where('area', '==', selectedArea);
         }
         
+        console.log('🔍 Searching with filters:', { district: selectedDistrict, area: selectedArea });
+        
         // Execute query
         const snapshot = await query.get();
         
@@ -802,45 +876,40 @@ async function searchSalonsByLocation() {
             });
         });
         
-        console.log(`✅ Found ${filteredSalons.length} salon(s) matching the filter`);
+        console.log('✅ Found salons:', filteredSalons.length);
         
-        // Clear loading
+        // Clear grid
         salonGrid.innerHTML = '';
         
-        // Show results or empty state
+        // Show/hide based on results
         if (filteredSalons.length === 0) {
             salonGrid.style.display = 'none';
             noSalonsMessage.style.display = 'block';
-            noSalonsMessage.querySelector('h3').textContent = 'No Salons Found';
-            noSalonsMessage.querySelector('h3').insertAdjacentHTML('afterend', '<p style="color: var(--text-light); font-size: 1.1rem; margin-top: 10px;">Try selecting a different location or clear the filter to see all salons.</p>');
-            
-            // Update filter status
-            filterStatus.style.display = 'none';
         } else {
             salonGrid.style.display = 'grid';
             noSalonsMessage.style.display = 'none';
             
-            // Display filtered salons
+            // Create salon cards
             for (const owner of filteredSalons) {
-                const salonCard = await createSalonCard(owner);
-                salonGrid.appendChild(salonCard);
+                try {
+                    const salonCard = await createSalonCard(owner);
+                    salonGrid.appendChild(salonCard);
+                } catch (cardError) {
+                    console.error('❌ Error creating card for owner:', owner.id, cardError);
+                    // Continue with next owner
+                }
             }
-            
-            // Update filter status
-            let statusMessage = `Showing ${filteredSalons.length} salon(s)`;
-            if (selectedArea) {
-                statusMessage += ` in ${selectedArea}, ${selectedDistrict}`;
-            } else if (selectedDistrict) {
-                statusMessage += ` in ${selectedDistrict}`;
-            }
-            
-            filterStatusText.textContent = statusMessage;
+        }
+        
+        // Show filter status
+        if (filterStatus && filterStatusText) {
+            filterStatusText.textContent = `Found ${filteredSalons.length} salon(s) in ${selectedArea || selectedDistrict}`;
             filterStatus.style.display = 'block';
         }
         
     } catch (error) {
         console.error('❌ Error searching salons:', error);
-        salonGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #e74c3c;"></i><p style="margin-top: 20px; color: var(--text-light);">Error searching salons. Please try again.</p></div>';
+        salonGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #e74c3c;"></i><p style="margin-top: 20px; color: var(--text-light);">Error searching salons. Please try again.</p><p style="font-size: 0.9rem; opacity: 0.7; margin-top: 10px;">' + error.message + '</p></div>';
     }
 }
 

@@ -47,8 +47,16 @@ service cloud.firestore {
       // Anyone can create their own account during signup
       allow create: if isAuthenticated() && request.auth.uid == userId;
       
+      // ✅ SHOP OWNER PROFILES ARE PUBLIC (for salon directory)
+      // Anyone can read shop owner profiles (role === 'owner')
+      // This allows the homepage to display salon listings
+      allow read: if resource.data.role == 'owner';
+      
       // Users can read their own profile
       allow read: if isOwner(userId);
+      
+      // Shop owners can read all customer profiles (for booking management)
+      allow read: if hasRole('owner');
       
       // Users can update their own profile (except role - prevent privilege escalation)
       allow update: if isOwner(userId) && 
@@ -56,9 +64,6 @@ service cloud.firestore {
       
       // Only the user themselves can delete their account
       allow delete: if isOwner(userId);
-      
-      // Shop owners can read all customer profiles (for booking management)
-      allow read: if hasRole('owner');
     }
     
     // ========================================
