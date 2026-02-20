@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadCustomerPhotos(); // Load customer photos
     initGalleryFilter();
     initGalleryAnimations();
+    enforceOwnerVisibility();
     // initCursor(); // DISABLED - using normal cursor
     animateStats();
     initParallax();
@@ -13,7 +14,36 @@ document.addEventListener('DOMContentLoaded', function() {
 // Get owner filter from URL if present
 function getOwnerFilter() {
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('owner');
+    // Support both ?ownerId=... and ?owner=... for backwards compatibility
+    return urlParams.get('ownerId') || urlParams.get('owner');
+}
+
+// Hide or show owner-only controls depending on signed-in user
+function enforceOwnerVisibility() {
+    const ownerFilter = getOwnerFilter();
+
+    // Elements with class 'owner-only' are shown only to the owner of this page
+    function updateVisibility(user) {
+        const isOwner = user && ownerFilter && user.uid === ownerFilter;
+
+        document.querySelectorAll('.owner-only').forEach(el => {
+            el.style.display = isOwner ? '' : 'none';
+        });
+
+        // Hide any admin links that point to admin.html for visitors
+        document.querySelectorAll('a[href="admin.html"]').forEach(a => {
+            if (!isOwner) a.style.display = 'none';
+        });
+    }
+
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+        firebase.auth().onAuthStateChanged(user => {
+            updateVisibility(user);
+        });
+    } else {
+        // If auth not available, hide owner-only controls by default
+        updateVisibility(null);
+    }
 }
 
 // Update gallery header when viewing specific owner's gallery
@@ -65,23 +95,22 @@ async function updateGalleryStats() {
         }
         
         const snapshot = await query.get();
-        const filteredPhotos = [];
-        
+        const customerPhotos = [];
+
         snapshot.forEach(doc => {
-            filteredPhotos.push(doc.data());
+            customerPhotos.push(doc.data());
         });
-        
+
         const totalPhotosEl = document.getElementById('totalPhotos');
-        
         if (totalPhotosEl) {
-            totalPhotosEl.textContent = filteredPhotos.length;
+            totalPhotosEl.textContent = customerPhotos.length;
         }
-        
+
         // Count unique categories
-        const categories = new Set(filteredPhotos.map(photo => photo.category));
+        const categories = new Set(customerPhotos.map(photo => photo.category));
         const totalCategoriesEl = document.getElementById('totalCategories');
-        if (totalCategoriesEl && categories.size > 0) {
-            totalCategoriesEl.textContent = categories.size;
+        if (totalCategoriesEl) {
+            totalCategoriesEl.textContent = categories.size || 0;
         }
         
         console.log('✅ Gallery stats updated:', filteredPhotos.length, 'photos');
@@ -110,26 +139,26 @@ async function loadCustomerPhotos() {
         
         const snapshot = await query.get();
         const customerPhotos = [];
-        
+
         snapshot.forEach(doc => {
             customerPhotos.push({
                 id: doc.id,
                 ...doc.data()
             });
         });
-        
+
         console.log('✅ Loaded', customerPhotos.length, 'photos from Firebase');
-        
+
         if (customerPhotos.length > 0) {
             console.log('Loading customer photos:', customerPhotos.length, ownerFilter ? '(filtered by owner)' : '');
-            
-            filteredPhotos.forEach(photo => {
+
+            customerPhotos.forEach(photo => {
                 const galleryItem = document.createElement('div');
                 galleryItem.className = `gallery-item ${photo.category}`;
                 
                 // Determine media type
-                const isVideo = photo.mediaType === 'video' || (photo.image && photo.image.match(/\.(mp4|webm|ogg)$/i));
-                const mediaUrl = photo.image || photo.imageData;
+                const isVideo = photo.mediaType === 'video' || (photo.image && String(photo.image).match(/\.(mp4|webm|ogg)$/i));
+                const mediaUrl = photo.image || photo.imageData || photo.imageDataUrl || '';
                 
                 // Get category display name
                 const categoryNames = {

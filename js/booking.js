@@ -43,8 +43,14 @@ async function loadServicesFromAdmin() {
     if (!serviceSelect) return;
 
     try {
-        // Get services from Firebase
-        const servicesSnapshot = await db.collection('services').get();
+        // Get services from Firebase (support optional owner filter via ?ownerId=...)
+        const urlParams = new URLSearchParams(window.location.search);
+        const ownerFilter = urlParams.get('ownerId') || urlParams.get('owner');
+
+        let servicesQuery = db.collection('services');
+        if (ownerFilter) servicesQuery = servicesQuery.where('ownerId', '==', ownerFilter);
+
+        const servicesSnapshot = await servicesQuery.get();
         const services = [];
         
         servicesSnapshot.forEach(doc => {
@@ -128,8 +134,14 @@ async function loadStaffFromAdmin() {
     if (!staffSelect) return;
 
     try {
-        // Get staff from Firebase
-        const staffSnapshot = await db.collection('staff').get();
+        // Get staff from Firebase (support optional owner filter via ?ownerId=...)
+        const urlParams = new URLSearchParams(window.location.search);
+        const ownerFilter = urlParams.get('ownerId') || urlParams.get('owner');
+
+        let staffQuery = db.collection('staff');
+        if (ownerFilter) staffQuery = staffQuery.where('ownerId', '==', ownerFilter);
+
+        const staffSnapshot = await staffQuery.get();
         const staff = [];
         
         staffSnapshot.forEach(doc => {

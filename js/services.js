@@ -22,6 +22,7 @@ window.addEventListener('load', function() {
         try { initScrollAnimations(); } catch(e) { console.error('Animations init error:', e); }
         try { initSmoothScroll(); } catch(e) { console.error('Smooth scroll init error:', e); }
         try { initQuickActions(); } catch(e) { console.error('Quick actions init error:', e); }
+        enforceOwnerVisibility();
         
         console.log('%c✓ ALL INITIALIZED', 'background: green; color: white; padding: 5px 10px; font-weight: bold;');
     } catch (error) {
@@ -42,7 +43,16 @@ async function loadDynamicServices() {
         }
         
         // Fetch services from Firebase
-        const servicesSnapshot = await db.collection('services').get();
+        // Support optional owner filtering via URL param (?ownerId=... or ?owner=...)
+        const urlParams = new URLSearchParams(window.location.search);
+        const ownerFilter = urlParams.get('ownerId') || urlParams.get('owner');
+
+        let servicesQuery = db.collection('services');
+        if (ownerFilter) {
+            servicesQuery = servicesQuery.where('ownerId', '==', ownerFilter);
+        }
+
+        const servicesSnapshot = await servicesQuery.get();
         const services = [];
         
         servicesSnapshot.forEach(doc => {
@@ -103,6 +113,31 @@ async function loadDynamicServices() {
         if (servicesContainer) {
             servicesContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: #e74c3c;"><i class="fas fa-exclamation-triangle" style="font-size: 2rem;"></i><p style="margin-top: 15px;">Failed to load services. Please refresh the page.</p></div>';
         }
+    }
+}
+
+// Hide or show owner-only controls depending on signed-in user
+function enforceOwnerVisibility() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const ownerFilter = urlParams.get('ownerId') || urlParams.get('owner');
+
+    function updateVisibility(user) {
+        const isOwner = user && ownerFilter && user.uid === ownerFilter;
+
+        document.querySelectorAll('.owner-only').forEach(el => {
+            el.style.display = isOwner ? '' : 'none';
+        });
+
+        // Hide admin links to prevent non-owners from seeing edit/owner pages
+        document.querySelectorAll('a[href="admin.html"]').forEach(a => {
+            if (!isOwner) a.style.display = 'none';
+        });
+    }
+
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+        firebase.auth().onAuthStateChanged(user => updateVisibility(user));
+    } else {
+        updateVisibility(null);
     }
 }
 
